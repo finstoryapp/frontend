@@ -3,8 +3,9 @@ import { retrieveLaunchParams, parseInitData } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
 
 export default function Me() {
-  const [name, setName] = useState<any>();
-  const [id, setId] = useState<any>();
+  const [name, setName] = useState<string | undefined>();
+  const [id, setId] = useState<number | string | undefined>();
+
   useEffect(() => {
     const { initDataRaw } = retrieveLaunchParams();
     const initData = parseInitData(initDataRaw);
