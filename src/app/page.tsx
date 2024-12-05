@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export default function Me() {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<number | string | undefined>();
+  const [message, setMessage] = useState<string | undefined>();
 
   useEffect(() => {
     const { initDataRaw } = retrieveLaunchParams();
@@ -39,6 +40,23 @@ export default function Me() {
       .catch((error) => {
         console.error("Error:", error);
       });
+    fetch(url + "auth/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setMessage(JSON.parse(data));
+        console.log("Success:", data);
+      });
   }, []);
 
   return (
@@ -51,6 +69,10 @@ export default function Me() {
       <div>
         <code>Ваш id: </code>
         <code className="font-mono font-bold">{id ? id : ""}</code>
+      </div>
+      <div>
+        <code>Сообщение с сервера: </code>
+        <code className="font-mono font-bold">{message ? message : ""}</code>
       </div>
     </div>
   );
