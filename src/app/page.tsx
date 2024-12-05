@@ -15,9 +15,6 @@ export default function Me() {
     setName(initData.user?.firstName);
     setId(initData.user?.id);
 
-    const apiUrl =
-      process.env.NEXT_PUBLIC_BACKEND_HOST || "http://127.0.0.1:3001/";
-
     // Use fetchUtil for login request
     fetchUtil("auth/login", {
       method: "POST",
