@@ -22,21 +22,20 @@ export default function Me() {
     })
       .then((data) => {
         console.log("Login Success:", data);
+        // Use fetchUtil for the 'me' request
+        fetchUtil("auth/me", {
+          method: "GET",
+        })
+          .then((data) => {
+            setMessage(data["message"]);
+            console.log("Me Success:", data);
+          })
+          .catch((error) => {
+            console.error("Me Error:", error);
+          });
       })
       .catch((error) => {
         console.error("Login Error:", error);
-      });
-
-    // Use fetchUtil for the 'me' request
-    fetchUtil("auth/me", {
-      method: "GET",
-    })
-      .then((data) => {
-        setMessage(data["message"]);
-        console.log("Me Success:", data);
-      })
-      .catch((error) => {
-        console.error("Me Error:", error);
       });
   }, []);
 
