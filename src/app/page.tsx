@@ -54,7 +54,7 @@ export default function Me() {
         return response.json();
       })
       .then((data) => {
-        setMessage(JSON.parse(data));
+        setMessage(data["message"]);
         console.log("Success:", data);
       });
   }, []);
