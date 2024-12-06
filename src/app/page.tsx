@@ -15,14 +15,12 @@ export default function Me() {
     setName(initData.user?.firstName);
     setId(initData.user?.id);
 
-    // Use fetchUtil for login request
     fetchUtil("auth/login", {
       method: "POST",
       body: JSON.stringify({ initData: initDataRaw }),
     })
       .then((data) => {
         console.log("Login Success:", data);
-        // Use fetchUtil for the 'me' request
         fetchUtil("auth/me", {
           method: "GET",
         })
