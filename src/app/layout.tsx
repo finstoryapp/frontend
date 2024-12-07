@@ -14,6 +14,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <header>
+          <span>Finstor</span>
+          <span>y</span>
+        </header>
         <div className="content">{children}</div>
         <nav className="navbar">
           <Link href="/" className={pathname === "/" ? "active" : ""}>

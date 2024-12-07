@@ -11,6 +11,22 @@ body {
   margin: 0 !important;
   font-family: "GothamPro";
 }
+html {
+  background-color: #08233f;
+  height: calc(100vh - 85px);
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+header span {
+  color: white;
+}
+header span:last-child {
+  color: #f7df1e;
+}
 .content {
   padding-bottom: 85px;
 }
