@@ -4,13 +4,10 @@ import { AppRoot, Placeholder } from "@telegram-apps/telegram-ui";
 
 export default function Statistics() {
   return (
-    <div className="text-sm" style={{ color: "black" }}>
+    <div className="text-sm" style={{ color: "white" }}>
       <AppRoot>
-        <Placeholder
-          header="Тут будет статистика"
-          description="Добавляйте расходы и она появится"
-          color="--tgui--text_color"
-        >
+        <Placeholder description="Вы зашли в статистику 🫥">
+          {" "}
           <img
             alt="Telegram sticker"
             src="/gifs/statistics.gif"

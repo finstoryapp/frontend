@@ -21,6 +21,7 @@ export default function RootLayout({
       </head>
       <body>
         <header>
+          <code style={{ color: "white" }}>v0.02 &nbsp;</code>
           <span>Finstor</span>
           <span>y</span>
         </header>

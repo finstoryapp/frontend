@@ -21,11 +21,12 @@ export default function Me() {
     })
       .then((data) => {
         console.log("Login Success:", data);
-        fetchUtil("auth/me", {
+        fetchUtil("api/me", {
           method: "GET",
         })
           .then((data) => {
-            setMessage(data["message"]);
+            console.log(data);
+            setMessage(JSON.stringify(data));
             console.log("Me Success:", data);
           })
           .catch((error) => {
@@ -40,16 +41,18 @@ export default function Me() {
   return (
     <div
       className="text-sm"
-      style={{ backgroundColor: "white", color: "black" }}
+      style={{ backgroundColor: "transparent", color: "white" }}
     >
       <code>Welcome back, ваше имя: </code>
       <code className="font-mono font-bold">{name ? name : ""}</code>
       <div>
         <code>Ваш id: </code>
         <code className="font-mono font-bold">{id ? id : ""}</code>
+        <hr />
       </div>
       <div>
-        <code>Сообщение с сервера: </code>
+        <code style={{ display: "block" }}>Сообщение с сервера: </code>
+        <br />
         <code className="font-mono font-bold">{message ? message : ""}</code>
       </div>
     </div>

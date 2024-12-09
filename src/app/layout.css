@@ -6,6 +6,7 @@
 }
 * {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  user-select: none;
 }
 body {
   margin: 0 !important;
@@ -62,4 +63,7 @@ header span:last-child {
 }
 .navbar a.active {
   color: #4f93ff;
+}
+code {
+  word-break: break-all;
 }
