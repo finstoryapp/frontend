@@ -9,6 +9,7 @@ export default function Statistics() {
         <Placeholder
           header="Тут будет статистика"
           description="Добавляйте расходы и она появится"
+          color="--tgui--text_color"
         >
           <img
             alt="Telegram sticker"

@@ -1,7 +1,7 @@
 "use client";
 import { retrieveLaunchParams, parseInitData } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
-import { fetchUtil } from "../utils/utilFetch"; // Import the utility function
+import { fetchUtil } from "../utils/utilFetch";
 
 export default function Me() {
   const [name, setName] = useState<string | undefined>();
@@ -11,7 +11,7 @@ export default function Me() {
   useEffect(() => {
     const { initDataRaw } = retrieveLaunchParams();
     const initData = parseInitData(initDataRaw);
-
+    console.log(initData);
     setName(initData.user?.firstName);
     setId(initData.user?.id);
 
