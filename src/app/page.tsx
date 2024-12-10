@@ -7,36 +7,45 @@ export default function Me() {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<number | string | undefined>();
   const [message, setMessage] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const { initDataRaw } = retrieveLaunchParams();
-    const initData = parseInitData(initDataRaw);
-    console.log(initData);
-    setName(initData.user?.firstName);
-    setId(initData.user?.id);
+    async function initializeUser() {
+      try {
+        const { initDataRaw } = retrieveLaunchParams();
+        const initData = parseInitData(initDataRaw);
 
-    fetchUtil("auth/login", {
-      method: "POST",
-      body: JSON.stringify({ initData: initDataRaw }),
-    })
-      .then((data) => {
-        console.log("Login Success:", data);
-        fetchUtil("api/me", {
+        setName(initData.user?.firstName);
+        setId(initData.user?.id);
+
+        const loginData = await fetchUtil("auth/login", {
+          method: "POST",
+          body: JSON.stringify({ initData: initDataRaw }),
+        });
+
+        const userData = await fetchUtil("api/me", {
           method: "GET",
-        })
-          .then((data) => {
-            console.log(data);
-            setMessage(JSON.stringify(data));
-            console.log("Me Success:", data);
-          })
-          .catch((error) => {
-            console.error("Me Error:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Login Error:", error);
-      });
+        });
+
+        setMessage(JSON.stringify(userData));
+        setIsLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setIsLoading(false);
+      }
+    }
+
+    initializeUser();
   }, []);
+
+  if (isLoading) {
+    return <div style={{ color: "white" }}>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-sm text-white">Error: {error}</div>;
+  }
 
   return (
     <div
