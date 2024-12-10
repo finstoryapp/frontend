@@ -3,6 +3,7 @@ import "./layout.css";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export default function RootLayout({
   children,
@@ -28,11 +29,14 @@ export default function RootLayout({
         <div className="content">{children}</div>
         <nav className="navbar">
           <Link href="/" className={pathname === "/" ? "active" : ""}>
-            <img
+            <Image
               src={
                 pathname === "/" ? "/icons/home_active.svg" : "/icons/home.svg"
               }
               alt="Домашняя"
+              width={24}
+              height={24}
+              priority={false}
             />
             Домашняя
           </Link>
@@ -40,13 +44,16 @@ export default function RootLayout({
             href="/accounts"
             className={pathname === "/accounts" ? "active" : ""}
           >
-            <img
+            <Image
               src={
                 pathname === "/accounts"
                   ? "/icons/accounts_active.svg"
                   : "/icons/accounts.svg"
               }
               alt="Счета"
+              width={24}
+              height={24}
+              priority={false}
             />
             Счета
           </Link>
@@ -54,13 +61,16 @@ export default function RootLayout({
             href="/statistics"
             className={pathname === "/statistics" ? "active" : ""}
           >
-            <img
+            <Image
               src={
                 pathname === "/statistics"
                   ? "/icons/statistics_active.svg"
                   : "/icons/statistics.svg"
               }
               alt="Статистика"
+              width={24}
+              height={24}
+              priority={false}
             />
             Статистика
           </Link>
@@ -68,13 +78,16 @@ export default function RootLayout({
             href="/settings"
             className={pathname === "/settings" ? "active" : ""}
           >
-            <img
+            <Image
               src={
                 pathname === "/settings"
                   ? "/icons/settings_active.svg"
                   : "/icons/settings.svg"
               }
               alt="Настройки"
+              width={24}
+              height={24}
+              priority={false}
             />
             Настройки
           </Link>
