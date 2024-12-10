@@ -19,7 +19,7 @@ export default function Me() {
         setName(initData.user?.firstName);
         setId(initData.user?.id);
 
-        const loginData = await fetchUtil("auth/login", {
+        await fetchUtil("auth/login", {
           method: "POST",
           body: JSON.stringify({ initData: initDataRaw }),
         });
