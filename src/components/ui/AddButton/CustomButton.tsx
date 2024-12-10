@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import styles from "./CustomButton.module.css";
+import Image from "next/image";
 
 interface CustomButtonProps {
   children: React.ReactNode;
@@ -9,6 +10,8 @@ interface CustomButtonProps {
   backgroundColor?: string;
   height?: string;
   width?: string;
+  iconWidth?: number;
+  iconHeight?: number;
 }
 
 export const CustomButton = ({
@@ -19,6 +22,8 @@ export const CustomButton = ({
   backgroundColor,
   height,
   width,
+  iconWidth = 24,
+  iconHeight = 24,
 }: CustomButtonProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -71,9 +76,21 @@ export const CustomButton = ({
     >
       {children}
       {iconPath ? (
-        <img src={iconPath} alt="Button icon" />
+        <Image
+          src={iconPath}
+          alt="Button icon"
+          width={iconWidth}
+          height={iconHeight}
+          priority={false}
+        />
       ) : (
-        <img src="/icons/plus.svg" alt="Plus icon" />
+        <Image
+          src="/icons/plus.svg"
+          alt="Plus icon"
+          width={iconWidth}
+          height={iconHeight}
+          priority={false}
+        />
       )}
     </button>
   );
