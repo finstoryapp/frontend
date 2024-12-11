@@ -23,3 +23,52 @@
   font-size: 20px;
   border-radius: 20px;
 }
+.accountHeadWrapper {
+  display: flex;
+  gap: 50px;
+}
+.accountHead {
+  padding: 12px;
+  border-radius: 12px;
+  background-color: #3582ff;
+}
+.accountHeader {
+  display: flex;
+  justify-content: space-between;
+}
+.accountHead p {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.sum p {
+  font-size: 16px;
+}
+.sumText {
+  font-size: 30px !important;
+  font-weight: 300 !important;
+}
+.currencyHeader {
+  font-size: 16px !important;
+  font-weight: 700;
+}
+.currencyText {
+  font-size: 30px !important;
+  font-weight: 500;
+}
+/* For accounts items */
+.accountItem {
+  border-radius: 12px;
+  padding: 12px;
+  background-color: #2a5d91;
+}
+.accountItem:first-child {
+  margin-top: 15px;
+}
+.accountItem:not(:last-child) {
+  margin-bottom: 8px;
+}
+.accountItemHeader {
+  display: flex;
+  justify-content: space-between;
+}

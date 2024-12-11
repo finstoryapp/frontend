@@ -2,7 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Account {
   id: string;
-  name: string;
+  accountId: string;
+  accountName: string;
+  currency: string;
   // ... other properties
 }
 
