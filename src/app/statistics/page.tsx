@@ -3,8 +3,7 @@ import Image from "next/image";
 
 export default function Statistics() {
   return (
-    <div className="text-sm font-medium text-foreground">
-      <p className="text-base font-semibold tracking-wide">p</p>
+    <div className="text-sm font-medium text-foreground flex justify-center items-center">
       <Image
         src="/gifs/statistics.gif"
         alt="your-alt-text"

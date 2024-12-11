@@ -2,7 +2,7 @@
 import { retrieveLaunchParams, parseInitData } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
 import { fetchUtil } from "../utils/utilFetch";
-
+import { Spinner } from "@nextui-org/react";
 export default function Me() {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<number | string | undefined>();
@@ -40,7 +40,11 @@ export default function Me() {
   }, []);
 
   if (isLoading) {
-    return <div style={{ color: "white" }}>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
   if (error) {
