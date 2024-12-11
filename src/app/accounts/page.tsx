@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { Spinner } from "@nextui-org/react";
 import { fetchUtil } from "@/utils/utilFetch";
 import { useDispatch, useSelector } from "react-redux";
-import { addAccount, setAccounts } from "@/store/slices/accountsSlice";
+import { setAccounts } from "@/store/slices/accountsSlice";
 import { RootState } from "@/store/store";
 
 export default function Accounts() {
@@ -36,18 +36,30 @@ export default function Accounts() {
           <Spinner />
         </div>
       ) : (
-        <div className={styles.addButton}>
-          <Button
-            color="primary"
-            onPress={handleAddClick}
-            className={styles.addButtonStyled}
-            endContent={
-              <Image src="/icons/plus.svg" alt="plus" width={24} height={24} />
-            }
-          >
-            Создать счёт
-          </Button>
-        </div>
+        <>
+          <div className={styles.accountsList}>
+            {accounts.map((account) => (
+              <div key={account.id}>{account.name}</div>
+            ))}
+          </div>
+          <div className={styles.addButton}>
+            <Button
+              color="primary"
+              onPress={handleAddClick}
+              className={styles.addButtonStyled}
+              endContent={
+                <Image
+                  src="/icons/plus.svg"
+                  alt="plus"
+                  width={24}
+                  height={24}
+                />
+              }
+            >
+              Создать счёт
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Account {
-  // Add your account properties here
   id: string;
   name: string;
   // ... other properties
