@@ -7,13 +7,13 @@ export default function Statistics() {
   return (
     <div className="text-sm" style={{ color: "white" }}>
       <AppRoot>
-        <Placeholder description="Вы зашли в статистику 🫥">
+        <Placeholder description="Учитывайте расходы, чтобы увидеть статистику">
           {" "}
           <Image
-            src="your-source"
+            src="/gifs/statistics.gif"
             alt="your-alt-text"
-            width={24}
-            height={24}
+            width={100}
+            height={100}
             priority={false}
           />
         </Placeholder>
