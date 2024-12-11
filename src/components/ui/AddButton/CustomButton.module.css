@@ -10,7 +10,7 @@
   width: 288px;
   height: 66px;
   left: 50%;
-  top: 73vh;
+  bottom: calc(-100% + 70px);
   transform: translateX(-50%);
 
   background: #3582ff;

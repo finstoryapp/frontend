@@ -1,5 +1,6 @@
 "use client";
 import { CustomButton } from "@/components/ui/AddButton/CustomButton";
+import styles from "./page.module.css";
 
 export default function Accounts() {
   const handleAddClick = () => {
@@ -7,7 +8,7 @@ export default function Accounts() {
   };
 
   return (
-    <div className="text-sm">
+    <div className={styles.container}>
       <CustomButton onClick={handleAddClick}>Добавить счёт</CustomButton>
     </div>
   );
