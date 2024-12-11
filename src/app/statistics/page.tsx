@@ -1,11 +1,10 @@
 "use client";
-import "@telegram-apps/telegram-ui/dist/styles.css";
 import Image from "next/image";
 
 export default function Statistics() {
   return (
-    <div className="text-sm" style={{ color: "white" }}>
-      {" "}
+    <div className="text-sm font-medium text-foreground">
+      <p className="text-base font-semibold tracking-wide">p</p>
       <Image
         src="/gifs/statistics.gif"
         alt="your-alt-text"

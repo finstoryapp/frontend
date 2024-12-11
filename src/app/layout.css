@@ -8,12 +8,15 @@
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   user-select: none;
 }
+:root {
+  --background: #08233f;
+}
 body {
   margin: 0 !important;
   font-family: "GothamPro";
 }
 html {
-  background-color: #08233f;
+  background-color: #08233f !important;
   height: calc(100vh - 85px);
 }
 header {
