@@ -28,6 +28,7 @@
   gap: 50px;
 }
 .accountHead {
+  color: white;
   padding: 12px;
   border-radius: 12px;
   background-color: #3582ff;
@@ -58,6 +59,7 @@
 }
 /* For accounts items */
 .accountItem {
+  color: white;
   border-radius: 12px;
   padding: 12px;
   background-color: #2a5d91;
