@@ -1,6 +1,6 @@
 "use client";
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { fetchUtil } from "../utils/utilFetch";
 import { Spinner } from "@nextui-org/react";
 
