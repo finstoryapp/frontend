@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { fetchUtil } from "../utils/utilFetch";
 import { Spinner } from "@nextui-org/react";
 export default function Me() {
-  const [name, setName] = useState<string | undefined>();
-  const [id, setId] = useState<number | string | undefined>();
   const [message, setMessage] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,10 +12,6 @@ export default function Me() {
     async function initializeUser() {
       try {
         const { initDataRaw } = retrieveLaunchParams();
-        const initData = parseInitData(initDataRaw);
-
-        setName(initData.user?.firstName);
-        setId(initData.user?.id);
 
         await fetchUtil("auth/login", {
           method: "POST",
@@ -56,13 +50,6 @@ export default function Me() {
       className="text-sm"
       style={{ backgroundColor: "transparent", color: "white" }}
     >
-      <code>Welcome back, ваше имя: </code>
-      <code className="font-mono font-bold">{name ? name : ""}</code>
-      <div>
-        <code>Ваш id: </code>
-        <code className="font-mono font-bold">{id ? id : ""}</code>
-        <hr />
-      </div>
       <div>
         <code style={{ display: "block" }}>Сообщение с сервера: </code>
         <br />

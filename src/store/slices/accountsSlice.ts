@@ -5,7 +5,6 @@ interface Account {
   accountId: string;
   accountName: string;
   currency: string;
-  // ... other properties
 }
 
 interface AccountsState {
