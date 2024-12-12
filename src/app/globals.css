@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  color: white;
+}
 :root {
   --background: #ffffff;
   --foreground: #7c7c7c;
@@ -12,7 +15,6 @@
     --foreground: #ededed;
   }
 }
-
 body {
   color: var(--foreground);
   background: var(--background);

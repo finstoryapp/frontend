@@ -1,0 +1,40 @@
+.container {
+  height: calc(100vh - 140px);
+  background-color: #15314c;
+  border-radius: 20px;
+  padding: 11px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25), 0px 0px 40px rgba(0, 0, 0, 0.25);
+}
+.month {
+  display: flex;
+  justify-content: space-between;
+  margin: 0px 30px 18px 30px;
+}
+.date {
+  font-size: 30px;
+  font-weight: 700;
+}
+.sum {
+  background: #3582ff;
+  border-radius: 24px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+  padding: 15px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-bottom: 12px;
+  z-index: 1;
+}
+.sumText {
+  font-weight: 700;
+  font-size: 20px;
+}
+.sumValue {
+  font-size: 40px;
+  font-weight: 400;
+}
+.sumCurrency {
+  font-size: 20px;
+}

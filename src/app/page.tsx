@@ -2,7 +2,9 @@
 import { retrieveLaunchParams, parseInitData } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
 import { fetchUtil } from "../utils/utilFetch";
-import { Spinner, user } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
+
+import styles from "./main.module.css";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/slices/userSlice";
@@ -11,7 +13,7 @@ import { RootState } from "@/store/store";
 export default function Me() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
-  const [isLoading, setIsLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,37 +30,75 @@ export default function Me() {
           method: "GET",
         });
         dispatch(setUser(userData));
-        setIsLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
-        setIsLoading(false);
       }
     }
 
     initializeUser();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center mt-10">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="text-sm text-white">Error: {error}</div>;
-  }
-
   return (
-    <div
-      className="text-sm"
-      style={{ backgroundColor: "transparent", color: "white" }}
-    >
-      <div>
-        <code style={{ display: "block" }}>Сообщение с сервера: </code>
-        <br />
+    <>
+      <div className={styles.header}>
+        <div className={styles.month}>
+          <button className={styles.prevMonthBtn}>
+            {" "}
+            <svg
+              width="10"
+              height="18"
+              viewBox="0 0 10 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8.75 1.5L1.25 9L8.75 16.5"
+                stroke="#3E9FFF"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <p className={styles.date}>Октябрь 2024</p>
+          <button
+            className={styles.prevMonthBtn}
+            style={{ visibility: "hidden" }}
+          >
+            {" "}
+            <svg
+              width="10"
+              height="18"
+              viewBox="0 0 10 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8.75 1.5L1.25 9L8.75 16.5"
+                stroke="#3E9FFF"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className={styles.sum}>
+          <p className={styles.sumText}>Все счета за месяц</p>
+          <p className={styles.sumValue}>
+            -3650 <span className={styles.sumCurrency}>USD</span>
+          </p>
+        </div>
       </div>
-    </div>
+      <div className={styles.container}>
+        {loading ? (
+          <div className={styles.loading}>
+            <Spinner />
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+    </>
   );
 }
