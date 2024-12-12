@@ -18,7 +18,7 @@
 }
 .date {
   font-size: 30px;
-  font-weight: 700;
+  font-family: "GothamProBold";
 }
 .sum {
   background: #3582ff;
@@ -34,7 +34,7 @@
   z-index: 1;
 }
 .sumText {
-  font-weight: 700;
+  font-family: "GothamProBold";
   font-size: 20px;
 }
 .sumValue {
@@ -55,4 +55,30 @@
   height: 56px;
   font-size: 20px;
   border-radius: 20px;
+}
+.accountWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 16px;
+}
+.accountWrapperRightBtn svg {
+  transform: rotate(180deg);
+}
+.accountWrapperBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.accountWrapperBoxName {
+  color: #6d9dcf;
+  font-size: 20px;
+  font-family: "GothamProBold";
+}
+.accountWrapperBoxValue {
+  font-size: 30px;
+}
+.accountWrapperBoxValue span {
+  font-size: 20px;
+  color: #6d9dcf;
+  font-family: "GothamProBold";
 }

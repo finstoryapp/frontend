@@ -46,17 +46,20 @@
 .sum p {
   font-size: 16px;
 }
+.sum p:first-child {
+  font-family: "GothamProBold";
+}
 .sumText {
   font-size: 30px !important;
-  font-weight: 300 !important;
+  font-family: "GothamProLight" !important;
 }
 .currencyHeader {
   font-size: 16px !important;
-  font-weight: 700;
+  font-family: "GothamProBold";
 }
 .currencyText {
   font-size: 30px !important;
-  font-weight: 500;
+  font-family: "GothamProBold";
 }
 /* For accounts items */
 .accountItem {
