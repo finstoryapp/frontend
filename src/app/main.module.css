@@ -1,3 +1,9 @@
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+}
 .container {
   height: calc(100vh - 140px);
   background-color: #15314c;

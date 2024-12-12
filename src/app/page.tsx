@@ -1,5 +1,5 @@
 "use client";
-import { retrieveLaunchParams, parseInitData } from "@telegram-apps/sdk";
+import { retrieveLaunchParams } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
 import { fetchUtil } from "../utils/utilFetch";
 import { Spinner } from "@nextui-org/react";
@@ -12,9 +12,7 @@ import { RootState } from "@/store/store";
 
 export default function Me() {
   const dispatch = useDispatch();
-  const { userData, loading } = useSelector((state: RootState) => state.user);
-
-  const [error, setError] = useState<string | null>(null);
+  const { loading } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     async function initializeUser() {
@@ -31,7 +29,7 @@ export default function Me() {
         });
         dispatch(setUser(userData));
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        console.log(err instanceof Error ? err.message : "An error occurred");
       }
     }
 
