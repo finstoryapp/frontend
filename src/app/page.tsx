@@ -2,9 +2,15 @@
 import { retrieveLaunchParams, parseInitData } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
 import { fetchUtil } from "../utils/utilFetch";
-import { Spinner } from "@nextui-org/react";
+import { Spinner, user } from "@nextui-org/react";
+
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/store/slices/userSlice";
+import { RootState } from "@/store/store";
+
 export default function Me() {
-  const [message, setMessage] = useState<string | undefined>();
+  const dispatch = useDispatch();
+  const { userData, loading } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,8 +27,7 @@ export default function Me() {
         const userData = await fetchUtil("api/me", {
           method: "GET",
         });
-
-        setMessage(JSON.stringify(userData));
+        dispatch(setUser(userData));
         setIsLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -53,7 +58,6 @@ export default function Me() {
       <div>
         <code style={{ display: "block" }}>Сообщение с сервера: </code>
         <br />
-        <code className="font-mono font-bold">{message ? message : ""}</code>
       </div>
     </div>
   );
