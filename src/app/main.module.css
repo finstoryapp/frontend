@@ -5,7 +5,7 @@
   margin-top: 100px;
 }
 .container {
-  height: calc(100vh - 140px);
+  height: calc(100vh - 330px);
   background-color: #15314c;
   border-radius: 20px;
   padding: 11px;
@@ -43,4 +43,16 @@
 }
 .sumCurrency {
   font-size: 20px;
+}
+.addButton {
+  position: fixed;
+  bottom: 110px;
+  right: 50%;
+  transform: translateX(50%);
+}
+.addButtonStyled {
+  width: 288px;
+  height: 56px;
+  font-size: 20px;
+  border-radius: 20px;
 }

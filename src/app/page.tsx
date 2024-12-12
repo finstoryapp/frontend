@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { fetchUtil } from "../utils/utilFetch";
 import { Spinner } from "@nextui-org/react";
 
+import { Button } from "@nextui-org/button";
+import Image from "next/image";
+
 import styles from "./main.module.css";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +15,7 @@ import { RootState } from "@/store/store";
 
 export default function Me() {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state: RootState) => state.user);
+  const { userData, loading } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     async function initializeUser() {
@@ -96,6 +99,20 @@ export default function Me() {
         ) : (
           <></>
         )}
+      </div>
+      <div className={styles.addButton}>
+        <Button
+          color="primary"
+          onPress={() => {
+            console.log(userData);
+          }}
+          className={styles.addButtonStyled}
+          endContent={
+            <Image src="/icons/plus.svg" alt="plus" width={24} height={24} />
+          }
+        >
+          Добавить расход
+        </Button>
       </div>
     </>
   );
