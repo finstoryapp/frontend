@@ -5,7 +5,7 @@ interface Categories {
   color: string;
 }
 
-interface User {
+export interface User {
   id: string;
   telegramId: string;
   categories: Categories[];
@@ -16,12 +16,12 @@ interface User {
 }
 
 interface UserState {
-  userData: User[];
+  userData: User | null;
   loading: boolean;
 }
 
 const initialState: UserState = {
-  userData: [],
+  userData: null,
   loading: true,
 };
 
@@ -29,7 +29,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User[]>) => {
+    setUser: (state, action: PayloadAction<User>) => {
       state.userData = action.payload;
       state.loading = false;
     },

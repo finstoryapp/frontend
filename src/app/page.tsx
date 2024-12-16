@@ -1,6 +1,6 @@
 "use client";
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchUtil } from "../utils/utilFetch";
 import { Spinner } from "@nextui-org/react";
 
@@ -12,12 +12,78 @@ import styles from "./main.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/slices/userSlice";
 import { RootState } from "@/store/store";
+import { getUnixMonthStartEnd } from "@/utils/getUnixMonthStartEnd";
+import { IExpense } from "@/types/IExpense";
 
 export default function Me() {
   const dispatch = useDispatch();
+  const [date, setDate] = useState(() => {
+    const currentDate = new Date();
+    return {
+      month: currentDate.getMonth(),
+      year: currentDate.getFullYear(),
+      isPrevious: false,
+    };
+  });
+
   const { userData, loading } = useSelector((state: RootState) => state.user);
+  const [expenses, setExpenses] = useState<IExpense | null>(null);
+
+  const russianMonths = [
+    "Январь",
+    "Февраль",
+    "Март",
+    "Апрель",
+    "Май",
+    "Июнь",
+    "Июль",
+    "Август",
+    "Сентябрь",
+    "Октябрь",
+    "Ноябрь",
+    "Декабрь",
+  ];
+
+  function goPrevMonth() {
+    setDate((prevDate) => {
+      const prevMonth = prevDate.month === 0 ? 11 : prevDate.month - 1;
+      const prevYear = prevDate.month === 0 ? prevDate.year - 1 : prevDate.year;
+      const isPrevious = true;
+
+      return { ...prevDate, month: prevMonth, year: prevYear, isPrevious };
+    });
+  }
+  function goNextMonth() {
+    setDate((prevDate) => {
+      const nextMonth = prevDate.month === 11 ? 0 : prevDate.month + 1;
+      const nextYear =
+        prevDate.month === 11 ? prevDate.year + 1 : prevDate.year;
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
+      const isPrevious = !(
+        nextMonth === currentMonth && nextYear === currentYear
+      );
+
+      return { ...prevDate, month: nextMonth, year: nextYear, isPrevious };
+    });
+  }
 
   useEffect(() => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonthIndex = currentDate.getMonth();
+
+    const currentEndStart = getUnixMonthStartEnd(
+      currentYear,
+      currentMonthIndex + 1
+    );
+
+    setDate({
+      month: currentMonthIndex,
+      year: currentYear,
+      isPrevious: false,
+    });
     async function initializeUser() {
       try {
         const { initDataRaw } = retrieveLaunchParams();
@@ -30,6 +96,11 @@ export default function Me() {
         const userData = await fetchUtil("api/me", {
           method: "GET",
         });
+
+        const expensesData = await fetchUtil(
+          `api/expenses_list/range?from=${currentEndStart.start}&to=${currentEndStart.end}`
+        );
+        setExpenses(expensesData);
         dispatch(setUser(userData));
       } catch (err) {
         console.log(err instanceof Error ? err.message : "An error occurred");
@@ -37,13 +108,13 @@ export default function Me() {
     }
 
     initializeUser();
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
       <div className={styles.header}>
         <div className={styles.month}>
-          <button className={styles.prevMonthBtn}>
+          <button className={styles.prevMonthBtn} onClick={() => goPrevMonth()}>
             {" "}
             <svg
               width="10"
@@ -61,10 +132,14 @@ export default function Me() {
               />
             </svg>
           </button>
-          <p className={styles.date}>Октябрь 2024</p>
+          <p className={styles.date}>
+            {russianMonths[date.month]} {date.year}
+          </p>
+
           <button
-            className={styles.prevMonthBtn}
-            style={{ visibility: "hidden" }}
+            className={styles.nextMonthBtn}
+            style={date.isPrevious ? {} : { visibility: "hidden" }}
+            onClick={() => goNextMonth()}
           >
             {" "}
             <svg
@@ -85,9 +160,12 @@ export default function Me() {
           </button>
         </div>
         <div className={styles.sum}>
-          <p className={styles.sumText}>Все счета за месяц</p>
+          <p className={styles.sumText}>Расход за месяц</p>
           <p className={styles.sumValue}>
-            -3650 <span className={styles.sumCurrency}>USD</span>
+            {expenses ? 0 : " "}{" "}
+            <span className={styles.sumCurrency}>
+              {userData?.defaultCurrency ?? ""}
+            </span>
           </p>
         </div>
       </div>
@@ -150,7 +228,9 @@ export default function Me() {
         <Button
           color="primary"
           onPress={() => {
-            console.log(userData);
+            console.log(userData?.defaultCurrency ?? "");
+            console.log(expenses);
+            console.log(date);
           }}
           className={styles.addButtonStyled}
           endContent={
