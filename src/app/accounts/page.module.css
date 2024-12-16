@@ -6,7 +6,7 @@
 }
 
 .container {
-  height: calc(100vh - 135px);
+  height: calc(100vh);
   background-color: #15314c;
   border-radius: 20px;
   padding: 11px;

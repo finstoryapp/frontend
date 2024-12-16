@@ -14,6 +14,7 @@ import { setUser } from "@/store/slices/userSlice";
 import { RootState } from "@/store/store";
 import { getUnixMonthStartEnd } from "@/utils/getUnixMonthStartEnd";
 import { IExpense } from "@/types/IExpense";
+import { IExpensesAmount } from "@/types/IExpensesAmount";
 
 export default function Me() {
   const dispatch = useDispatch();
@@ -27,8 +28,8 @@ export default function Me() {
   });
 
   const { userData, loading } = useSelector((state: RootState) => state.user);
-  const [expenses, setExpenses] = useState<IExpense | null>(null);
-
+  const [expenses, setExpenses] = useState<IExpense[] | null>(null);
+  const [sum, setSum] = useState<number>(0);
   const russianMonths = [
     "Январь",
     "Февраль",
@@ -43,6 +44,29 @@ export default function Me() {
     "Ноябрь",
     "Декабрь",
   ];
+
+  function aggregateAccounts(data: IExpense[] | null): IExpensesAmount[] {
+    // Типизируем result как объект с ключами-строками и значениями типа IExpensesAmount
+    const result: Record<string, IExpensesAmount> = {};
+
+    data?.forEach((item) => {
+      const { accountName, currency, accountId } = item.account;
+      const amount = parseFloat(item.amount);
+
+      if (!result[accountId]) {
+        result[accountId] = {
+          accountName,
+          currency,
+          accountId,
+          sum: 0,
+        };
+      }
+
+      result[accountId].sum += amount;
+    });
+
+    return Object.values(result);
+  }
 
   function goPrevMonth() {
     setDate((prevDate) => {
@@ -79,11 +103,6 @@ export default function Me() {
       currentMonthIndex + 1
     );
 
-    setDate({
-      month: currentMonthIndex,
-      year: currentYear,
-      isPrevious: false,
-    });
     async function initializeUser() {
       try {
         const { initDataRaw } = retrieveLaunchParams();
@@ -109,6 +128,57 @@ export default function Me() {
 
     initializeUser();
   }, [dispatch]);
+
+  useEffect(() => {
+    async function updateExpenses() {
+      try {
+        const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
+
+        // Запрос данных о расходах
+        const expensesData = await fetchUtil(
+          `api/expenses_list/range?from=${start}&to=${end}`
+        );
+
+        setExpenses(expensesData);
+
+        const aggregatedAccounts = aggregateAccounts(expensesData);
+        console.log(aggregatedAccounts);
+        const convertedSums = await Promise.all(
+          aggregatedAccounts.map(async (item) => {
+            try {
+              const response = await fetch(
+                `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${
+                  userData?.defaultCurrency ?? "USD"
+                }`
+              );
+
+              if (!response.ok) {
+                throw new Error(
+                  `Currency conversion failed: ${response.statusText}`
+                );
+              }
+
+              const { rate } = await response.json();
+              return item.sum * rate;
+            } catch (error) {
+              console.error(
+                `Error converting currency for account ${item.accountId}:`,
+                error
+              );
+              return 0;
+            }
+          })
+        );
+
+        const totalSum = convertedSums.reduce((acc, sum) => acc + sum, 0);
+        setSum(+totalSum.toFixed(2));
+      } catch (error) {
+        console.error("Error updating expenses:", error);
+      }
+    }
+
+    updateExpenses();
+  }, [date, userData]);
 
   return (
     <>
@@ -162,9 +232,9 @@ export default function Me() {
         <div className={styles.sum}>
           <p className={styles.sumText}>Расход за месяц</p>
           <p className={styles.sumValue}>
-            {expenses ? 0 : " "}{" "}
+            {expenses ? sum : "~"}{" "}
             <span className={styles.sumCurrency}>
-              {userData?.defaultCurrency ?? ""}
+              {userData?.defaultCurrency ?? "..."}
             </span>
           </p>
         </div>

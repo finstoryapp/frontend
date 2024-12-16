@@ -5,7 +5,7 @@
   margin-top: 100px;
 }
 .container {
-  height: calc(100vh - 330px);
+  height: calc(100vh);
   background-color: #15314c;
   border-radius: 20px;
   padding: 11px;
@@ -24,7 +24,7 @@
   background: #3582ff;
   border-radius: 24px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
-  padding: 15px 50px;
+  padding: 10px 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
