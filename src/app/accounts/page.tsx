@@ -13,7 +13,7 @@ import { RootState } from "@/store/store";
 
 export default function Accounts() {
   const dispatch = useDispatch();
-  const { accounts, loading } = useSelector(
+  const { accounts, loading_accounts } = useSelector(
     (state: RootState) => state.accounts
   );
 
@@ -36,12 +36,12 @@ export default function Accounts() {
 
   return (
     <div className={styles.container}>
-      {loading ? (
+      {loading_accounts ? (
         <div className={styles.loading}>
           <Spinner />
         </div>
       ) : (
-        <>
+        <div>
           <div className={styles.accountHead}>
             <div className={styles.accountHeader}>
               <p>Сумма всех счетов</p>
@@ -118,7 +118,7 @@ export default function Accounts() {
               Создать счёт
             </Button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

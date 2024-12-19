@@ -19,12 +19,13 @@ import { setUser } from "@/store/slices/userSlice";
 import { RootState } from "@/store/store";
 import { getUnixMonthStartEnd } from "@/utils/getUnixMonthStartEnd";
 import { IExpense } from "@/types/IExpense";
-import { IExpensesAmount } from "@/types/IExpensesAmount";
+import { setAccounts } from "@/store/slices/accountsSlice";
 
 export default function Me() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { accounts } = useSelector((state: RootState) => state.accounts);
 
   const [date, setDate] = useState(() => {
     const currentDate = new Date();
@@ -34,10 +35,7 @@ export default function Me() {
       isPrevious: false,
     };
   });
-  const [accounts, setAccounts] = useState<IExpensesAmount[]>();
   const [expenses, setExpenses] = useState<IExpense[] | null>(null);
-  const [sum, setSum] = useState<number>(0);
-  const [currentAccountIndex, setCurrentAccountIndex] = useState<number>(0); // Track the current account
 
   const russianMonths = [
     "Январь",
@@ -54,36 +52,36 @@ export default function Me() {
     "Декабрь",
   ];
 
-  function aggregateAccounts(data: IExpense[] | null): IExpensesAmount[] {
-    if (!data) {
-      return [];
-    }
+  // function aggregateAccounts(data: IExpense[] | null): IExpensesAmount[] {
+  //   if (!data) {
+  //     return [];
+  //   }
 
-    const result: Record<string, IExpensesAmount> = {};
-    data.forEach((item) => {
-      const { account } = item;
-      const { accountName, currency, accountId } = account || {};
-      const amount = parseFloat(item.amount);
+  //   const result: Record<string, IExpensesAmount> = {};
+  //   data.forEach((item) => {
+  //     const { account } = item;
+  //     const { accountName, currency, accountId } = account || {};
+  //     const amount = parseFloat(item.amount);
 
-      if (!accountName || !currency || !accountId || isNaN(amount)) {
-        console.warn(`Invalid data in expense:`, item);
-        return;
-      }
+  //     if (!accountName || !currency || !accountId || isNaN(amount)) {
+  //       console.warn(`Invalid data in expense:`, item);
+  //       return;
+  //     }
 
-      if (!result[accountId]) {
-        result[accountId] = {
-          accountName,
-          currency,
-          accountId,
-          sum: 0,
-        };
-      }
+  //     if (!result[accountId]) {
+  //       result[accountId] = {
+  //         accountName,
+  //         currency,
+  //         accountId,
+  //         sum: 0,
+  //       };
+  //     }
 
-      result[accountId].sum += amount;
-    });
+  //     result[accountId].sum += amount;
+  //   });
 
-    return Object.values(result);
-  }
+  //   return Object.values(result);
+  // }
 
   function goPrevMonth() {
     setDate((prevDate) => {
@@ -147,70 +145,80 @@ export default function Me() {
   }, [dispatch]);
 
   useEffect(() => {
-    setCurrentAccountIndex(0);
-    async function updateExpenses() {
-      try {
-        const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
-
-        const expensesData = await fetchUtil(
-          `api/expenses_list/range?from=${start}&to=${end}`
-        );
-
-        setExpenses(expensesData);
-
-        const aggregatedAccounts = aggregateAccounts(expensesData);
-        setAccounts(aggregatedAccounts);
-        const convertedSums = await Promise.all(
-          aggregatedAccounts.map(async (item) => {
-            try {
-              const response = await fetch(
-                `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${
-                  userData?.defaultCurrency ?? "USD"
-                }`
-              );
-
-              if (!response.ok) {
-                throw new Error(
-                  `Currency conversion failed: ${response.statusText}`
-                );
-              }
-
-              const { rate } = await response.json();
-              return item.sum * rate;
-            } catch (error) {
-              console.error(
-                `Error converting currency for account ${item.accountId}:`,
-                error
-              );
-              return 0;
-            }
-          })
-        );
-
-        const totalSum = convertedSums.reduce((acc, sum) => acc + sum, 0);
-        setSum(+totalSum.toFixed(2));
-      } catch (error) {
-        console.error("Error updating expenses:", error);
-      }
+    async function fetchAccounts() {
+      const accounts = await fetchUtil("api/accounts_list", {
+        method: "GET",
+      });
+      dispatch(setAccounts(accounts));
     }
+    fetchAccounts();
+  }, [dispatch]);
 
-    updateExpenses();
-  }, [date, userData]);
+  // useEffect(() => {
+  //   setCurrentAccountIndex(0);
+  //   async function updateExpenses() {
+  //     try {
+  //       const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
 
-  const handlePrevAccount = () => {
-    if (currentAccountIndex > 0) {
-      setCurrentAccountIndex(currentAccountIndex - 1);
-    }
-  };
+  //       const expensesData = await fetchUtil(
+  //         `api/expenses_list/range?from=${start}&to=${end}`
+  //       );
 
-  const handleNextAccount = () => {
-    if (accounts && currentAccountIndex < accounts.length - 1) {
-      setCurrentAccountIndex(currentAccountIndex + 1);
-    }
-  };
+  //       setExpenses(expensesData);
+
+  //       const aggregatedAccounts = aggregateAccounts(expensesData);
+  //       setAccounts(aggregatedAccounts);
+  //       const convertedSums = await Promise.all(
+  //         aggregatedAccounts.map(async (item) => {
+  //           try {
+  //             const response = await fetch(
+  //               `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${
+  //                 userData?.defaultCurrency ?? "USD"
+  //               }`
+  //             );
+
+  //             if (!response.ok) {
+  //               throw new Error(
+  //                 `Currency conversion failed: ${response.statusText}`
+  //               );
+  //             }
+
+  //             const { rate } = await response.json();
+  //             return item.sum * rate;
+  //           } catch (error) {
+  //             console.error(
+  //               `Error converting currency for account ${item.accountId}:`,
+  //               error
+  //             );
+  //             return 0;
+  //           }
+  //         })
+  //       );
+
+  //       const totalSum = convertedSums.reduce((acc, sum) => acc + sum, 0);
+  //       setSum(+totalSum.toFixed(2));
+  //     } catch (error) {
+  //       console.error("Error updating expenses:", error);
+  //     }
+  //   }
+
+  //   updateExpenses();
+  // }, [date, userData]);
+
+  // const handlePrevAccount = () => {
+  //   if (currentAccountIndex > 0) {
+  //     setCurrentAccountIndex(currentAccountIndex - 1);
+  //   }
+  // };
+
+  // const handleNextAccount = () => {
+  //   if (accounts && currentAccountIndex < accounts.length - 1) {
+  //     setCurrentAccountIndex(currentAccountIndex + 1);
+  //   }
+  // };
 
   return (
-    <>
+    <div>
       <div className={styles.header}>
         <div className={styles.month}>
           <button className={styles.prevMonthBtn} onClick={() => goPrevMonth()}>
@@ -260,7 +268,7 @@ export default function Me() {
         <div className={styles.sum}>
           <p className={styles.sumText}>Расход за месяц</p>
           <p className={styles.sumValue}>
-            {expenses ? -1 * sum : "~"}{" "}
+            {expenses ? -1 * 0 : "~"}{" "}
             <span className={styles.sumCurrency}>
               {userData?.defaultCurrency ?? "..."}
             </span>
@@ -273,8 +281,8 @@ export default function Me() {
             <Spinner />
           </div>
         ) : (
-          <>
-            <div className={styles.accountWrapper}>
+          <div>
+            {/* <div className={styles.accountWrapper}>
               {accounts?.length === 0 ? (
                 <span className={styles.accountNoAccount}>
                   За этот месяц записей нет.
@@ -282,7 +290,7 @@ export default function Me() {
               ) : (
                 accounts &&
                 accounts.length > 0 && (
-                  <>
+                  <div className={styles.accountWrapperContainer}>
                     {accounts.length > 1 && (
                       <button
                         className={styles.accountWrapperLeftBtn}
@@ -348,10 +356,10 @@ export default function Me() {
                         </svg>
                       </button>
                     )}
-                  </>
+                  </div>
                 )
               )}
-            </div>
+            </div> */}
             <div className={styles.expensesContainer}>
               {expenses
                 ?.sort((a, b) => {
@@ -374,10 +382,10 @@ export default function Me() {
 
                   const dayNames = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
                   const day = dayNames[date.getDay()];
-                  let currentAccountId = 0;
-                  if (accounts && accounts?.length > 0) {
-                    currentAccountId = +accounts[currentAccountIndex].accountId;
-                  }
+                  const currentAccountId = 0;
+                  // if (accounts && accounts?.length > 0) {
+                  //   currentAccountId = +accounts[currentAccountIndex].accountId;
+                  // }
 
                   return currentAccountId === +expense.accountId ? (
                     <div className={styles.expenseItem} key={expense.id}>
@@ -424,7 +432,7 @@ export default function Me() {
                   ) : null; // Return null if the condition is false (you can use null instead of "")
                 })}
             </div>
-          </>
+          </div>
         )}
       </div>
       <div className={styles.addButton}>
@@ -436,49 +444,65 @@ export default function Me() {
             console.log(expenses);
             console.log(date);
             console.log(accounts);
-            console.log(currentAccountIndex);
+            // console.log(currentAccountIndex);
             onOpen();
           }}
           className={styles.addButtonStyled}
           endContent={
-            <Image src="/icons/plus.svg" alt="plus" width={24} height={24} />
+            <Image
+              src="/icons/plus.svg"
+              alt="plus"
+              width={24}
+              height={24}
+              priority
+            />
           }
         >
           Добавить расход
         </Button>
       </div>{" "}
-      <Drawer isOpen={isOpen} placement={"bottom"} onOpenChange={onOpenChange}>
+      <Drawer
+        isOpen={isOpen}
+        placement={"bottom"}
+        onOpenChange={onOpenChange}
+        className="dark"
+        backdrop="blur"
+        hideCloseButton
+        disableAnimation
+      >
         <DrawerContent className={styles.drawer}>
           {(onClose) => (
-            <>
-              <DrawerHeader className="flex flex-col gap-1">
-                Добавить расход в счет
+            <div>
+              <button onClick={() => onClose()} className={styles.closeButton}>
+                <img src="/icons/close.svg" alt="close" />
+              </button>
+              <DrawerHeader className="flex gap-1 relative">
+                Добавить расход
               </DrawerHeader>
-              <DrawerBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod.
-                </p>
-              </DrawerBody>
-              <DrawerFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
+              <DrawerBody className={styles.drawerBody}></DrawerBody>
+              <DrawerFooter className={styles.drawerFooter}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onClose();
+                  }}
+                  className={styles.addButtonStyled}
+                  endContent={
+                    <Image
+                      src="/icons/check.svg"
+                      alt="check"
+                      width={24}
+                      height={24}
+                    />
+                  }
+                >
+                  Добавить расход
                 </Button>
               </DrawerFooter>
-            </>
+            </div>
           )}
         </DrawerContent>
       </Drawer>
-    </>
+    </div>
   );
 }

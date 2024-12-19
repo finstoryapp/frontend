@@ -9,12 +9,12 @@ interface Account {
 
 interface AccountsState {
   accounts: Account[];
-  loading: boolean;
+  loading_accounts: boolean;
 }
 
 const initialState: AccountsState = {
   accounts: [],
-  loading: true,
+  loading_accounts: true,
 };
 
 const accountsSlice = createSlice({
@@ -23,7 +23,7 @@ const accountsSlice = createSlice({
   reducers: {
     setAccounts: (state, action: PayloadAction<Account[]>) => {
       state.accounts = action.payload;
-      state.loading = false;
+      state.loading_accounts = false;
     },
     addAccount: (state, action: PayloadAction<Account>) => {
       state.accounts.push(action.payload);

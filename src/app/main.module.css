@@ -5,6 +5,7 @@
   margin-top: 100px;
 }
 .container {
+  color: white;
   min-height: 100vh;
   background-color: #15314c;
   border-radius: 20px;
@@ -17,6 +18,7 @@
   justify-content: space-between;
   margin: 0px 30px 18px 30px;
   position: relative;
+  color: white;
 }
 .month button::before {
   content: "";
@@ -42,6 +44,7 @@
   font-family: "GothamProBold";
 }
 .sum {
+  color: white;
   background: #3582ff;
   border-radius: 24px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
@@ -93,6 +96,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.accountWrapperContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 .accountWrapperBoxName {
   color: #6d9dcf;
@@ -206,7 +214,45 @@
 }
 /* Drawer, add expense */
 .drawer {
+  color: white;
   max-height: 90vh;
   height: 90vh;
+  width: 100%;
+  box-shadow: 0 -0.2px 0px 2px rgba(79, 147, 255, 1);
+  border-radius: 30px 30px 0px 0px;
   background: #15314c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.drawerBody {
+  display: flex;
+  align-items: center;
+  height: 320px;
+  min-height: 320px;
+}
+.closeButton {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  transition: 0.3s;
+}
+.closeButton:hover {
+  transform: scale(1.1);
+}
+.closeButton::before {
+  position: absolute;
+  content: "";
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  transform: translate(-50%, -35%);
+}
+.drawerFooter {
+  position: absolute;
+  bottom: 0;
+  padding-right: 0;
+  transform: translate(-20%);
 }

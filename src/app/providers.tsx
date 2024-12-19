@@ -1,5 +1,5 @@
-import { NextUIProvider } from "@nextui-org/react";
+import "./globals.css";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <NextUIProvider>{children}</NextUIProvider>;
+  return <main>{children}</main>;
 }
