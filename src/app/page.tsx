@@ -498,7 +498,7 @@ export default function Me() {
       </Drawer>
       <Modal isOpen={isModalRemoveExpenseOpen} className="dark" backdrop="blur">
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 Modal Title
