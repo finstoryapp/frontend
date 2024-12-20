@@ -358,8 +358,19 @@ export default function Me() {
                   return dateB - dateA;
                 })
                 .map((expense) => {
+                  // Validate expense and required fields
+                  if (
+                    !expense ||
+                    !expense.createdAt ||
+                    !expense.accountId ||
+                    !expense.amount
+                  ) {
+                    console.error("Invalid expense data:", expense);
+                    return null;
+                  }
+
                   const createdAt: number = +expense.createdAt;
-                  if (!createdAt) {
+                  if (!createdAt || isNaN(createdAt)) {
                     console.error("Invalid createdAt:", createdAt);
                     return null;
                   }
@@ -372,10 +383,31 @@ export default function Me() {
 
                   const dayNames = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
                   const day = dayNames[date.getDay()];
-                  const currentAccountId =
-                    +accounts[currentAccountIndex].accountId;
 
-                  return currentAccountId === +expense.accountId ? (
+                  // Safely access accounts and currentAccountId
+                  const currentAccount = accounts?.[currentAccountIndex] || {};
+                  const currentAccountId = +currentAccount.accountId;
+
+                  if (!currentAccountId || isNaN(currentAccountId)) {
+                    console.error(
+                      "Invalid current account ID:",
+                      currentAccountId
+                    );
+                    return null;
+                  }
+
+                  // Check if the expense belongs to the current account
+                  if (currentAccountId !== +expense.accountId) {
+                    return null;
+                  }
+
+                  // Safely retrieve category color
+                  const category = userData?.categories?.find(
+                    (category) => category.name === expense.categoryName
+                  );
+                  const categoryColor = category?.color || "000000"; // Default color
+
+                  return (
                     <div className={styles.expenseItem} key={expense.id}>
                       <p className={styles.expenseItemDate}>
                         {`${date.getDate()} ${day}`}
@@ -387,14 +419,7 @@ export default function Me() {
                         <div
                           className={styles.expenseItemCategoryCircle}
                           style={{
-                            backgroundColor: `#${
-                              userData?.categories
-                                .filter(
-                                  (category) =>
-                                    category.name === expense.categoryName
-                                )
-                                .map((category) => category.color)[0]
-                            }`,
+                            backgroundColor: `#${categoryColor}`,
                           }}
                         ></div>
                         <span>{expense.categoryName}</span>
@@ -423,7 +448,7 @@ export default function Me() {
                         </svg>
                       </button>
                     </div>
-                  ) : null;
+                  );
                 })}
             </div>
           </div>
@@ -496,7 +521,12 @@ export default function Me() {
           )}
         </DrawerContent>
       </Drawer>
-      <Modal isOpen={isModalRemoveExpenseOpen} className="dark" backdrop="blur">
+      <Modal
+        isOpen={isModalRemoveExpenseOpen}
+        className="dark removeModal"
+        backdrop="blur"
+        size="xs"
+      >
         <ModalContent>
           {() => (
             <>
