@@ -52,37 +52,6 @@ export default function Me() {
     "Декабрь",
   ];
 
-  // function aggregateAccounts(data: IExpense[] | null): IExpensesAmount[] {
-  //   if (!data) {
-  //     return [];
-  //   }
-
-  //   const result: Record<string, IExpensesAmount> = {};
-  //   data.forEach((item) => {
-  //     const { account } = item;
-  //     const { accountName, currency, accountId } = account || {};
-  //     const amount = parseFloat(item.amount);
-
-  //     if (!accountName || !currency || !accountId || isNaN(amount)) {
-  //       console.warn(`Invalid data in expense:`, item);
-  //       return;
-  //     }
-
-  //     if (!result[accountId]) {
-  //       result[accountId] = {
-  //         accountName,
-  //         currency,
-  //         accountId,
-  //         sum: 0,
-  //       };
-  //     }
-
-  //     result[accountId].sum += amount;
-  //   });
-
-  //   return Object.values(result);
-  // }
-
   function goPrevMonth() {
     setDate((prevDate) => {
       const prevMonth = prevDate.month === 0 ? 11 : prevDate.month - 1;
@@ -107,6 +76,20 @@ export default function Me() {
       return { ...prevDate, month: nextMonth, year: nextYear, isPrevious };
     });
   }
+
+  const [currentAccountSum, setCurrentAccountSum] = useState<number>(0);
+  const [currentAccountIndex, setCurrentAccountIndex] = useState<number>(0);
+  const handlePrevAccount = () => {
+    if (currentAccountIndex > 0) {
+      setCurrentAccountIndex(currentAccountIndex - 1);
+    }
+  };
+
+  const handleNextAccount = () => {
+    if (accounts && currentAccountIndex < accounts.length - 1) {
+      setCurrentAccountIndex(currentAccountIndex + 1);
+    }
+  };
 
   useEffect(() => {
     const currentDate = new Date();
@@ -142,7 +125,7 @@ export default function Me() {
     }
 
     initializeUser();
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -154,68 +137,35 @@ export default function Me() {
     fetchAccounts();
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   setCurrentAccountIndex(0);
-  //   async function updateExpenses() {
-  //     try {
-  //       const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
+  useEffect(() => {
+    async function updateExpenses() {
+      const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
+      const expensesData = await fetchUtil(
+        `api/expenses_list/range?from=${start}&to=${end}`
+      );
+      setExpenses(expensesData);
 
-  //       const expensesData = await fetchUtil(
-  //         `api/expenses_list/range?from=${start}&to=${end}`
-  //       );
-
-  //       setExpenses(expensesData);
-
-  //       const aggregatedAccounts = aggregateAccounts(expensesData);
-  //       setAccounts(aggregatedAccounts);
-  //       const convertedSums = await Promise.all(
-  //         aggregatedAccounts.map(async (item) => {
-  //           try {
-  //             const response = await fetch(
-  //               `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${
-  //                 userData?.defaultCurrency ?? "USD"
-  //               }`
-  //             );
-
-  //             if (!response.ok) {
-  //               throw new Error(
-  //                 `Currency conversion failed: ${response.statusText}`
-  //               );
-  //             }
-
-  //             const { rate } = await response.json();
-  //             return item.sum * rate;
-  //           } catch (error) {
-  //             console.error(
-  //               `Error converting currency for account ${item.accountId}:`,
-  //               error
-  //             );
-  //             return 0;
-  //           }
-  //         })
-  //       );
-
-  //       const totalSum = convertedSums.reduce((acc, sum) => acc + sum, 0);
-  //       setSum(+totalSum.toFixed(2));
-  //     } catch (error) {
-  //       console.error("Error updating expenses:", error);
-  //     }
-  //   }
-
-  //   updateExpenses();
-  // }, [date, userData]);
-
-  // const handlePrevAccount = () => {
-  //   if (currentAccountIndex > 0) {
-  //     setCurrentAccountIndex(currentAccountIndex - 1);
-  //   }
-  // };
-
-  // const handleNextAccount = () => {
-  //   if (accounts && currentAccountIndex < accounts.length - 1) {
-  //     setCurrentAccountIndex(currentAccountIndex + 1);
-  //   }
-  // };
+      if (expensesData && accounts.length !== 0) {
+        console.log("Expenses:", expensesData);
+        console.log(accounts[currentAccountIndex]);
+        // Count sum for CURRENT account from CURRENT MONTH expenses
+        const accountSum = expensesData.reduce(
+          (accumulator: number, currentValue: IExpense) => {
+            if (
+              accounts[currentAccountIndex].accountId === currentValue.accountId
+            ) {
+              return accumulator + +currentValue.amount;
+            } else {
+              return accumulator;
+            }
+          },
+          0
+        );
+        setCurrentAccountSum(accountSum);
+      }
+    }
+    updateExpenses();
+  }, [currentAccountIndex, date, accounts]);
 
   return (
     <div>
@@ -282,7 +232,7 @@ export default function Me() {
           </div>
         ) : (
           <div>
-            {/* <div className={styles.accountWrapper}>
+            <div className={styles.accountWrapper}>
               {accounts?.length === 0 ? (
                 <span className={styles.accountNoAccount}>
                   За этот месяц записей нет.
@@ -290,7 +240,7 @@ export default function Me() {
               ) : (
                 accounts &&
                 accounts.length > 0 && (
-                  <div className={styles.accountWrapperContainer}>
+                  <>
                     {accounts.length > 1 && (
                       <button
                         className={styles.accountWrapperLeftBtn}
@@ -324,7 +274,7 @@ export default function Me() {
                         {accounts[currentAccountIndex]?.accountName}
                       </p>
                       <p className={styles.accountWrapperBoxValue}>
-                        {-1 * accounts[currentAccountIndex]?.sum}{" "}
+                        {-1 * currentAccountSum}{" "}
                         <span>{accounts[currentAccountIndex]?.currency}</span>
                       </p>
                     </div>
@@ -356,10 +306,10 @@ export default function Me() {
                         </svg>
                       </button>
                     )}
-                  </div>
+                  </>
                 )
               )}
-            </div> */}
+            </div>
             <div className={styles.expensesContainer}>
               {expenses
                 ?.sort((a, b) => {
@@ -382,10 +332,8 @@ export default function Me() {
 
                   const dayNames = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
                   const day = dayNames[date.getDay()];
-                  const currentAccountId = 0;
-                  // if (accounts && accounts?.length > 0) {
-                  //   currentAccountId = +accounts[currentAccountIndex].accountId;
-                  // }
+                  const currentAccountId =
+                    +accounts[currentAccountIndex].accountId;
 
                   return currentAccountId === +expense.accountId ? (
                     <div className={styles.expenseItem} key={expense.id}>
@@ -429,7 +377,7 @@ export default function Me() {
                         </svg>
                       </button>
                     </div>
-                  ) : null; // Return null if the condition is false (you can use null instead of "")
+                  ) : null;
                 })}
             </div>
           </div>
@@ -444,7 +392,6 @@ export default function Me() {
             console.log(expenses);
             console.log(date);
             console.log(accounts);
-            // console.log(currentAccountIndex);
             onOpen();
           }}
           className={styles.addButtonStyled}
