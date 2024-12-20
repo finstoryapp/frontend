@@ -12,6 +12,13 @@ import {
   DrawerBody,
   DrawerFooter,
 } from "@nextui-org/drawer";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@nextui-org/react";
 import styles from "./main.module.css";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -20,23 +27,13 @@ import { RootState } from "@/store/store";
 import { getUnixMonthStartEnd } from "@/utils/getUnixMonthStartEnd";
 import { IExpense } from "@/types/IExpense";
 import { setAccounts } from "@/store/slices/accountsSlice";
-
+import { IFullSumAccumulator } from "@/types/IFullSumAccumulator";
+import { IUser } from "@/store/slices/userSlice";
 export default function Me() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { accounts } = useSelector((state: RootState) => state.accounts);
-
-  const [date, setDate] = useState(() => {
-    const currentDate = new Date();
-    return {
-      month: currentDate.getMonth(),
-      year: currentDate.getFullYear(),
-      isPrevious: false,
-    };
-  });
-  const [expenses, setExpenses] = useState<IExpense[] | null>(null);
-
   const russianMonths = [
     "Январь",
     "Февраль",
@@ -52,6 +49,21 @@ export default function Me() {
     "Декабрь",
   ];
 
+  //! COMPONENT's STATES
+  const [date, setDate] = useState(() => {
+    const currentDate = new Date();
+    return {
+      month: currentDate.getMonth(),
+      year: currentDate.getFullYear(),
+      isPrevious: false,
+    };
+  });
+  const [expenses, setExpenses] = useState<IExpense[] | null>(null);
+  const [currentAccountSum, setCurrentAccountSum] = useState<number>(0);
+  const [currentAccountIndex, setCurrentAccountIndex] = useState<number>(0);
+  const [fullSum, setFullSum] = useState<number>(0);
+
+  //! FUNCTIONS
   function goPrevMonth() {
     setDate((prevDate) => {
       const prevMonth = prevDate.month === 0 ? 11 : prevDate.month - 1;
@@ -76,31 +88,19 @@ export default function Me() {
       return { ...prevDate, month: nextMonth, year: nextYear, isPrevious };
     });
   }
-
-  const [currentAccountSum, setCurrentAccountSum] = useState<number>(0);
-  const [currentAccountIndex, setCurrentAccountIndex] = useState<number>(0);
   const handlePrevAccount = () => {
     if (currentAccountIndex > 0) {
       setCurrentAccountIndex(currentAccountIndex - 1);
     }
   };
-
   const handleNextAccount = () => {
     if (accounts && currentAccountIndex < accounts.length - 1) {
       setCurrentAccountIndex(currentAccountIndex + 1);
     }
   };
 
+  //! EFFECTS
   useEffect(() => {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonthIndex = currentDate.getMonth();
-
-    const currentEndStart = getUnixMonthStartEnd(
-      currentYear,
-      currentMonthIndex + 1
-    );
-
     async function initializeUser() {
       try {
         const { initDataRaw } = retrieveLaunchParams();
@@ -110,14 +110,54 @@ export default function Me() {
           body: JSON.stringify({ initData: initDataRaw }),
         });
 
-        const userData = await fetchUtil("api/me", {
+        const userData: IUser = await fetchUtil("api/me", {
           method: "GET",
         });
+        const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
 
         const expensesData = await fetchUtil(
-          `api/expenses_list/range?from=${currentEndStart.start}&to=${currentEndStart.end}`
+          `api/expenses_list/range?from=${start}&to=${end}`
         );
         setExpenses(expensesData);
+        // Calculate the full expenses sum
+
+        let fullSumAccumulator: IFullSumAccumulator[] = [];
+        let fullSumResult: number = 0;
+
+        expensesData.forEach((expense: IExpense) => {
+          const foundCurrency = fullSumAccumulator.find(
+            (element) => element.currency === expense.account.currency
+          );
+
+          if (!foundCurrency) {
+            fullSumAccumulator.push({
+              currency: expense.account.currency,
+              amount: +expense.amount,
+            });
+          } else {
+            foundCurrency.amount += +expense.amount;
+          }
+        });
+
+        for (const item of fullSumAccumulator) {
+          if (item.currency === userData?.defaultCurrency) {
+            fullSumResult += item.amount;
+          } else {
+            try {
+              const response = await fetch(
+                `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${
+                  userData?.defaultCurrency ?? "USD"
+                }`
+              );
+              const exchangeRate = await response.json();
+              fullSumResult += item.amount * exchangeRate.rate; // Assuming the API response has a `rate` field
+            } catch (error) {
+              console.error("Error fetching exchange rate:", error);
+            }
+          }
+        }
+        setFullSum(+fullSumResult.toFixed(2));
+
         dispatch(setUser(userData));
       } catch (err) {
         console.log(err instanceof Error ? err.message : "An error occurred");
@@ -125,7 +165,7 @@ export default function Me() {
     }
 
     initializeUser();
-  }, []);
+  }, [date]);
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -146,8 +186,6 @@ export default function Me() {
       setExpenses(expensesData);
 
       if (expensesData && accounts.length !== 0) {
-        console.log("Expenses:", expensesData);
-        console.log(accounts[currentAccountIndex]);
         // Count sum for CURRENT account from CURRENT MONTH expenses
         const accountSum = expensesData.reduce(
           (accumulator: number, currentValue: IExpense) => {
@@ -218,7 +256,7 @@ export default function Me() {
         <div className={styles.sum}>
           <p className={styles.sumText}>Расход за месяц</p>
           <p className={styles.sumValue}>
-            {expenses ? -1 * 0 : "~"}{" "}
+            {expenses ? -1 * fullSum : "~"}{" "}
             <span className={styles.sumCurrency}>
               {userData?.defaultCurrency ?? "..."}
             </span>
@@ -450,6 +488,45 @@ export default function Me() {
           )}
         </DrawerContent>
       </Drawer>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="dark">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Modal Title
+              </ModalHeader>
+              <ModalBody>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+                <p>
+                  Magna exercitation reprehenderit magna aute tempor cupidatat
+                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
+                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
+                  aliqua enim laboris do dolor eiusmod. Et mollit incididunt
+                  nisi consectetur esse laborum eiusmod pariatur proident Lorem
+                  eiusmod et. Culpa deserunt nostrud ad veniam.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  Action
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
