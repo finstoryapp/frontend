@@ -33,6 +33,7 @@ export default function Me() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   const { accounts } = useSelector((state: RootState) => state.accounts);
   const russianMonths = [
     "Январь",
@@ -62,7 +63,8 @@ export default function Me() {
   const [currentAccountSum, setCurrentAccountSum] = useState<number>(0);
   const [currentAccountIndex, setCurrentAccountIndex] = useState<number>(0);
   const [fullSum, setFullSum] = useState<number>(0);
-
+  const [isModalRemoveExpenseOpen, setIsModalRemoveExpenseOpen] =
+    useState<boolean>(false);
   //! FUNCTIONS
   function goPrevMonth() {
     setDate((prevDate) => {
@@ -121,7 +123,7 @@ export default function Me() {
         setExpenses(expensesData);
         // Calculate the full expenses sum
 
-        let fullSumAccumulator: IFullSumAccumulator[] = [];
+        const fullSumAccumulator: IFullSumAccumulator[] = [];
         let fullSumResult: number = 0;
 
         expensesData.forEach((expense: IExpense) => {
@@ -397,7 +399,13 @@ export default function Me() {
                         ></div>
                         <span>{expense.categoryName}</span>
                       </div>
-                      <button className={styles.expenseItemButton}>
+                      <button
+                        className={styles.expenseItemButton}
+                        onClick={() => {
+                          setIsModalRemoveExpenseOpen(true);
+                          console.log(expense.id);
+                        }}
+                      >
                         <svg
                           width="8"
                           height="15"
@@ -488,7 +496,7 @@ export default function Me() {
           )}
         </DrawerContent>
       </Drawer>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="dark">
+      <Modal isOpen={isModalRemoveExpenseOpen} className="dark" backdrop="blur">
         <ModalContent>
           {(onClose) => (
             <>
@@ -516,11 +524,14 @@ export default function Me() {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                <Button color="danger" variant="light" onPress={() => {}}>
+                  Отменить
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
+                <Button
+                  color="primary"
+                  onPress={() => setIsModalRemoveExpenseOpen(false)}
+                >
+                  Удалить
                 </Button>
               </ModalFooter>
             </>
