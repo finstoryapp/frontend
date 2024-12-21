@@ -299,11 +299,12 @@ export default function Me() {
 
   useEffect(() => {
     fetchAccounts();
-  }, [dispatch]);
+  }, [userData]);
 
   useEffect(() => {
     updateExpenses();
   }, [currentAccountIndex, date, accounts]);
+
   useEffect(() => {
     if (inputElement.current) {
       inputElement.current.onfocus = () => {
