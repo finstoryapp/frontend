@@ -8,7 +8,8 @@ const russianWeekDays: string[] = ["пн", "вт", "ср", "чт", "пт", "сб
  * @returns {string} - Russian weekday abbreviation
  */
 function getRussianWeekDay(date: Date): string {
-  return russianWeekDays[date.getDay() - 1]; // Adjust to match Russian week days
+  const dayIndex = date.getDay(); // 0 (вс) до 6 (сб)
+  return russianWeekDays[dayIndex === 0 ? 6 : dayIndex - 1]; // Если 0 (вс), используем индекс 6
 }
 
 /**
