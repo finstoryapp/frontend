@@ -70,6 +70,10 @@ export default function Me() {
   const [currentSelectedDayIndex, setCurrentSelectedDayIndex] =
     useState<number>(4);
   const [clickedCategory, setClickedCategory] = useState<string | null>(null);
+  const [expenseValue, setExpenseValue] = useState<number | string>("");
+  const [emptyCategoryError, setEmptyCategoryError] = useState<boolean>(false);
+  const [emptyValueError, setEmptyValueError] = useState<boolean>(false);
+  const [isSending, setIsSending] = useState(false);
 
   //! FUNCTIONS
   function goPrevMonth() {
@@ -107,7 +111,19 @@ export default function Me() {
     }
   };
   const handleCategoryClick = (categoryName: string) => {
+    setEmptyCategoryError(false);
     setClickedCategory(categoryName);
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.valueAsNumber;
+    setEmptyCategoryError(false);
+    if (inputValue < 0) {
+      setExpenseValue(0);
+    } else if (inputValue > 100000000) {
+      setExpenseValue(100000000);
+    } else {
+      setExpenseValue(inputValue || "");
+    }
   };
 
   //! ASYNC FUNCTIONS
@@ -229,6 +245,45 @@ export default function Me() {
       console.log(err instanceof Error ? err.message : "An error occurred");
     }
   }
+  const handlePress = async (onClose: () => void) => {
+    if (clickedCategory && +expenseValue !== 0) {
+      const expenseData = {
+        amount: expenseValue,
+        accountId: +accounts[currentAccountIndex]?.accountId,
+        categoryName: clickedCategory,
+        time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
+      };
+
+      setIsSending(true);
+
+      try {
+        const response = await fetchUtil("api/add_expense", {
+          method: "POST",
+          body: JSON.stringify(expenseData),
+        });
+
+        console.log("Данные успешно отправлены", response);
+        onClose();
+      } catch (error) {
+        console.error("Ошибка при отправке данных:", error);
+      } finally {
+        fetchAccounts();
+        fetchExpenses();
+        setIsSending(false);
+        setClickedCategory(null);
+        setCurrentSelectedDayIndex(4);
+        setEmptyCategoryError(false);
+        setExpenseValue("");
+      }
+    } else {
+      if (!clickedCategory) {
+        setEmptyCategoryError(true);
+      }
+      if (+expenseValue <= 0) {
+        setEmptyValueError(true);
+      }
+    }
+  };
 
   //! EFFECTS
   useEffect(() => {
@@ -431,7 +486,6 @@ export default function Me() {
                   return dateB - dateA;
                 })
                 .map((expense) => {
-                  // Validate expense and required fields
                   if (
                     !expense ||
                     !expense.createdAt ||
@@ -567,7 +621,11 @@ export default function Me() {
               <DrawerHeader className="flex gap-1 pb-0">
                 <button
                   onClick={() => {
+                    setIsSending(false);
+                    setClickedCategory(null);
                     setCurrentSelectedDayIndex(4);
+                    setEmptyCategoryError(false);
+                    setExpenseValue("");
                     onClose();
                   }}
                   className={styles.closeButton}
@@ -634,25 +692,40 @@ export default function Me() {
                     ))}
                   </div>
                 </div>
+                {emptyCategoryError && <>Нужно выбрать категорию</>}
+                <div className={styles.inputExpenseContainer}>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    autoFocus
+                    min={0}
+                    value={expenseValue}
+                    onChange={handleChange}
+                    max={100000000}
+                    className={styles.inputExpense}
+                  />
+                </div>
+                {emptyValueError && <>Нужно ввести расход</>}
               </DrawerBody>
               <DrawerFooter className={styles.drawerFooter}>
                 <Button
                   color="primary"
-                  onPress={() => {
-                    onClose();
-                    setCurrentSelectedDayIndex(4);
-                  }}
+                  onPress={() => handlePress(onClose)}
                   className={styles.addButtonStyled}
                   endContent={
-                    <Image
-                      src="/icons/check.svg"
-                      alt="check"
-                      width={24}
-                      height={24}
-                    />
+                    isSending ? (
+                      <Spinner color="white" />
+                    ) : (
+                      <Image
+                        src="/icons/check.svg"
+                        alt="check"
+                        width={24}
+                        height={24}
+                      />
+                    )
                   }
                 >
-                  Добавить расход
+                  {isSending ? "" : "Добавить расход"}
                 </Button>
               </DrawerFooter>
             </div>
