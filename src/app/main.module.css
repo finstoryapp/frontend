@@ -232,6 +232,7 @@
   min-height: 320px;
   width: 100%;
   padding-top: 0;
+  overflow-x: hidden;
 }
 .closeButton {
   position: absolute;
@@ -239,19 +240,20 @@
   right: 25px;
   transition: 0.3s;
 }
+
 .closeButton:hover {
   transform: scale(1.1);
 }
+
 .closeButton::before {
   position: absolute;
   content: "";
-  position: absolute;
   width: 48px;
   height: 48px;
   background: transparent;
   transform: translate(-50%, -35%);
-  z-index: 1000;
 }
+
 .removeModalFooter {
   display: flex;
   flex-direction: row;
@@ -287,4 +289,49 @@
 }
 .drawerTitle {
   font-family: "GothamProBold";
+}
+.tabs,
+.categoriesContainer {
+  background-color: #1d4a75;
+  border-radius: 30px;
+  width: 100vw;
+  display: flex;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.categoriesContainer {
+  justify-content: start;
+  max-width: 100vw;
+  padding-left: 18px;
+  overflow-x: scroll;
+}
+.tabs span,
+.categories span {
+  border-radius: 8px;
+  background-color: #0a2c4c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #6caeed;
+  font-family: "GothamProBold";
+  cursor: pointer;
+  height: 38px;
+  transition: 0.3s;
+}
+.tabs span {
+  width: 67px;
+}
+.categories span {
+  padding: 0px 10px;
+  min-width: max-content;
+}
+.tabs span:hover,
+.categories span:hover {
+  background-color: #092138;
+}
+.activeTab {
+  background-color: #3582ff !important;
+  color: white !important;
 }

@@ -28,6 +28,8 @@ import { IExpense } from "@/types/IExpense";
 import { setAccounts } from "@/store/slices/accountsSlice";
 import { IFullSumAccumulator } from "@/types/IFullSumAccumulator";
 import { IUser } from "@/store/slices/userSlice";
+import { getWeekDays } from "@/utils/getWeekDays";
+
 export default function Me() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
@@ -64,6 +66,8 @@ export default function Me() {
   const [isModalRemoveExpenseOpen, setIsModalRemoveExpenseOpen] =
     useState<boolean>(false);
   const [currentExpenseId, setCurrentExpenseId] = useState<number>(-1);
+  const [currentSelectedDayIndex, setCurrentSelectedDayIndex] =
+    useState<number>(4);
 
   //! FUNCTIONS
   function goPrevMonth() {
@@ -525,10 +529,16 @@ export default function Me() {
         <DrawerContent className={styles.drawer}>
           {(onClose) => (
             <div>
-              <button onClick={() => onClose()} className={styles.closeButton}>
-                <img src="/icons/close.svg" alt="close" />
-              </button>
-              <DrawerHeader className="flex gap-1 relative pb-0">
+              <DrawerHeader className="flex gap-1 pb-0">
+                <button
+                  onClick={() => {
+                    setCurrentSelectedDayIndex(4);
+                    onClose();
+                  }}
+                  className={styles.closeButton}
+                >
+                  <img src="/icons/close.svg" alt="close" />
+                </button>
                 Добавить расход
               </DrawerHeader>
               <DrawerBody className={styles.drawerBody}>
@@ -545,12 +555,37 @@ export default function Me() {
                     </span>
                   </div>
                 </div>
+                <div className={styles.tabs}>
+                  {getWeekDays()
+                    .reverse()
+                    .map((day, index) => (
+                      <span
+                        key={day.unix}
+                        className={
+                          index === currentSelectedDayIndex
+                            ? styles.activeTab
+                            : ""
+                        }
+                        onClick={() => setCurrentSelectedDayIndex(index)}
+                      >
+                        {day.date}
+                      </span>
+                    ))}
+                </div>
+                <div className={styles.categories}>
+                  <div className={styles.categoriesContainer}>
+                    {userData?.categories.map((category) => (
+                      <span key={category.name}>{category.name}</span>
+                    ))}
+                  </div>
+                </div>
               </DrawerBody>
               <DrawerFooter className={styles.drawerFooter}>
                 <Button
                   color="primary"
                   onPress={() => {
                     onClose();
+                    setCurrentSelectedDayIndex(4);
                   }}
                   className={styles.addButtonStyled}
                   endContent={
