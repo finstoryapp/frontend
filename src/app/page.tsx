@@ -117,7 +117,7 @@ export default function Me() {
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.valueAsNumber;
-    setEmptyCategoryError(false);
+    setEmptyValueError(false);
     if (inputValue < 0) {
       setExpenseValue(0);
     } else if (inputValue > 100000000) {
@@ -305,23 +305,10 @@ export default function Me() {
     updateExpenses();
   }, [currentAccountIndex, date, accounts]);
 
-  useEffect(() => {
-    const handleClick = () => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    };
-    document.addEventListener("click", handleClick);
-    return () => {
-      document.removeEventListener("click", handleClick);
-    };
-  }, []);
-
   const categoriesContainerRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef<boolean>(false);
   const startX = useRef<number>(0);
   const scrollLeft = useRef<number>(0);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   //! DRAG CATEGORIES
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -719,10 +706,8 @@ export default function Me() {
                 {emptyCategoryError && <>Нужно выбрать категорию</>}
                 <div className={styles.inputExpenseContainer}>
                   <input
-                    ref={inputRef}
                     type="number"
                     placeholder="0"
-                    autoFocus
                     min={0}
                     value={expenseValue}
                     onChange={handleChange}
@@ -730,7 +715,7 @@ export default function Me() {
                     className={styles.inputExpense}
                   />
                 </div>
-                {emptyValueError && <>Нужно ввести расход</>}
+                {emptyValueError ? <>Нужно ввести расход</> : ""}
               </DrawerBody>
               <DrawerFooter className={styles.drawerFooter}>
                 <Button

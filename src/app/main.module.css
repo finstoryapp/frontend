@@ -79,8 +79,7 @@
   height: 56px;
   font-size: 20px;
   border-radius: 20px;
-  position: absolute;
-  top: 0px;
+  top: 5px;
 }
 .addButtonStyled:hover {
   opacity: 1;
@@ -230,8 +229,7 @@
 .drawerBody {
   display: flex;
   align-items: center;
-  height: 310px;
-  min-height: 280px;
+  max-height: 364px;
   width: 100%;
   padding-top: 0;
   overflow-x: hidden;
@@ -358,8 +356,8 @@
   position: relative;
 }
 .drawerFooter {
-  padding: 15px;
   display: flex;
+  padding-top: 0px;
   flex-direction: column;
   align-items: center;
   position: relative;
