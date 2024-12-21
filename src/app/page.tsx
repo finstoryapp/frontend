@@ -16,7 +16,6 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-  ModalBody,
   ModalFooter,
 } from "@nextui-org/react";
 import styles from "./main.module.css";
@@ -33,7 +32,6 @@ export default function Me() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
   const { accounts } = useSelector((state: RootState) => state.accounts);
   const russianMonths = [
     "Январь",
@@ -65,6 +63,8 @@ export default function Me() {
   const [fullSum, setFullSum] = useState<number>(0);
   const [isModalRemoveExpenseOpen, setIsModalRemoveExpenseOpen] =
     useState<boolean>(false);
+  const [currentExpenseId, setCurrentExpenseId] = useState<number>(-1);
+
   //! FUNCTIONS
   function goPrevMonth() {
     setDate((prevDate) => {
@@ -101,109 +101,143 @@ export default function Me() {
     }
   };
 
-  //! EFFECTS
-  useEffect(() => {
-    async function initializeUser() {
+  //! ASYNC FUNCTIONS
+  async function removeExpense(id: number) {
+    if (id !== -1) {
       try {
-        const { initDataRaw } = retrieveLaunchParams();
-
-        await fetchUtil("auth/login", {
-          method: "POST",
-          body: JSON.stringify({ initData: initDataRaw }),
+        const response = await fetchUtil(`api/delete_expense/${id}`, {
+          method: "DELETE",
         });
+        if (response.message) {
+          setCurrentExpenseId(-1);
+          console.log("Expense deleted successfully!");
+          fetchAccounts();
+          fetchExpenses();
+          return "Deleted";
+        } else {
+          setCurrentExpenseId(-1);
+          console.error(response);
+        }
+      } catch (error) {
+        console.log(error);
+        setCurrentExpenseId(-1);
+      }
+    } else {
+      return "Error";
+    }
+  }
+  async function updateExpenses() {
+    const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
+    const expensesData = await fetchUtil(
+      `api/expenses_list/range?from=${start}&to=${end}`
+    );
+    setExpenses(expensesData);
 
-        const userData: IUser = await fetchUtil("api/me", {
-          method: "GET",
-        });
-        const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
-
-        const expensesData = await fetchUtil(
-          `api/expenses_list/range?from=${start}&to=${end}`
-        );
-        setExpenses(expensesData);
-        // Calculate the full expenses sum
-
-        const fullSumAccumulator: IFullSumAccumulator[] = [];
-        let fullSumResult: number = 0;
-
-        expensesData.forEach((expense: IExpense) => {
-          const foundCurrency = fullSumAccumulator.find(
-            (element) => element.currency === expense.account.currency
-          );
-
-          if (!foundCurrency) {
-            fullSumAccumulator.push({
-              currency: expense.account.currency,
-              amount: +expense.amount,
-            });
+    if (expensesData && accounts.length !== 0) {
+      // Count sum for CURRENT account from CURRENT MONTH expenses
+      const accountSum = expensesData.reduce(
+        (accumulator: number, currentValue: IExpense) => {
+          if (
+            accounts[currentAccountIndex].accountId === currentValue.accountId
+          ) {
+            return accumulator + +currentValue.amount;
           } else {
-            foundCurrency.amount += +expense.amount;
+            return accumulator;
           }
-        });
+        },
+        0
+      );
+      setCurrentAccountSum(accountSum);
+    }
+  }
+  async function fetchAccounts() {
+    const accounts = await fetchUtil("api/accounts_list", {
+      method: "GET",
+    });
+    dispatch(setAccounts(accounts));
+  }
+  async function fetchExpenses() {
+    const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
 
-        for (const item of fullSumAccumulator) {
-          if (item.currency === userData?.defaultCurrency) {
-            fullSumResult += item.amount;
-          } else {
-            try {
-              const response = await fetch(
-                `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${
-                  userData?.defaultCurrency ?? "USD"
-                }`
-              );
-              const exchangeRate = await response.json();
-              fullSumResult += item.amount * exchangeRate.rate; // Assuming the API response has a `rate` field
-            } catch (error) {
-              console.error("Error fetching exchange rate:", error);
-            }
+    const expensesData = await fetchUtil(
+      `api/expenses_list/range?from=${start}&to=${end}`
+    );
+    console.log(expensesData);
+    setExpenses(expensesData);
+
+    const fullSumAccumulator: IFullSumAccumulator[] = [];
+    let fullSumResult: number = 0;
+
+    expensesData.forEach((expense: IExpense) => {
+      const foundCurrency = fullSumAccumulator.find(
+        (element) => element.currency === expense.account.currency
+      );
+
+      if (!foundCurrency) {
+        fullSumAccumulator.push({
+          currency: expense.account.currency,
+          amount: +expense.amount,
+        });
+      } else {
+        foundCurrency.amount += +expense.amount;
+      }
+    });
+    if (!userData?.defaultCurrency) {
+      setFullSum(0);
+    } else {
+      for (const item of fullSumAccumulator) {
+        if (item.currency === userData?.defaultCurrency) {
+          fullSumResult += item.amount;
+        } else {
+          try {
+            const response = await fetch(
+              `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${userData?.defaultCurrency}`
+            );
+            const exchangeRate = await response.json();
+            fullSumResult += item.amount * exchangeRate.rate;
+          } catch (error) {
+            console.error("Error fetching exchange rate:", error);
           }
         }
-        setFullSum(+fullSumResult.toFixed(2));
-
-        dispatch(setUser(userData));
-      } catch (err) {
-        console.log(err instanceof Error ? err.message : "An error occurred");
       }
     }
+    setFullSum(+fullSumResult.toFixed(2));
+  }
+  async function initializeUser() {
+    try {
+      const { initDataRaw } = retrieveLaunchParams();
 
+      await fetchUtil("auth/login", {
+        method: "POST",
+        body: JSON.stringify({ initData: initDataRaw }),
+      });
+      const userData: IUser = await fetchUtil("api/me", {
+        method: "GET",
+      });
+      fetchExpenses();
+      dispatch(setUser(userData));
+    } catch (err) {
+      console.log(err instanceof Error ? err.message : "An error occurred");
+    }
+  }
+
+  //! EFFECTS
+
+  useEffect(() => {
     initializeUser();
   }, [date]);
 
   useEffect(() => {
-    async function fetchAccounts() {
-      const accounts = await fetchUtil("api/accounts_list", {
-        method: "GET",
-      });
-      dispatch(setAccounts(accounts));
+    if (userData) {
+      fetchExpenses();
     }
+  }, [userData]);
+
+  useEffect(() => {
     fetchAccounts();
   }, [dispatch]);
 
   useEffect(() => {
-    async function updateExpenses() {
-      const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
-      const expensesData = await fetchUtil(
-        `api/expenses_list/range?from=${start}&to=${end}`
-      );
-      setExpenses(expensesData);
-
-      if (expensesData && accounts.length !== 0) {
-        // Count sum for CURRENT account from CURRENT MONTH expenses
-        const accountSum = expensesData.reduce(
-          (accumulator: number, currentValue: IExpense) => {
-            if (
-              accounts[currentAccountIndex].accountId === currentValue.accountId
-            ) {
-              return accumulator + +currentValue.amount;
-            } else {
-              return accumulator;
-            }
-          },
-          0
-        );
-        setCurrentAccountSum(accountSum);
-      }
-    }
     updateExpenses();
   }, [currentAccountIndex, date, accounts]);
 
@@ -428,7 +462,7 @@ export default function Me() {
                         className={styles.expenseItemButton}
                         onClick={() => {
                           setIsModalRemoveExpenseOpen(true);
-                          console.log(expense.id);
+                          setCurrentExpenseId(+expense.id);
                         }}
                       >
                         <svg
@@ -494,10 +528,24 @@ export default function Me() {
               <button onClick={() => onClose()} className={styles.closeButton}>
                 <img src="/icons/close.svg" alt="close" />
               </button>
-              <DrawerHeader className="flex gap-1 relative">
+              <DrawerHeader className="flex gap-1 relative pb-0">
                 Добавить расход
               </DrawerHeader>
-              <DrawerBody className={styles.drawerBody}></DrawerBody>
+              <DrawerBody className={styles.drawerBody}>
+                <div className={styles.drawerHeader}>
+                  <span className={styles.drawerHeaderAccount}>
+                    {accounts[currentAccountIndex]?.accountName}
+                  </span>
+                  <div>
+                    <span className={styles.drawerHeaderSum}>
+                      {-1 * currentAccountSum}
+                    </span>
+                    <span className={styles.drawerHeaderCurrency}>
+                      {accounts[currentAccountIndex]?.currency}
+                    </span>
+                  </div>
+                </div>
+              </DrawerBody>
               <DrawerFooter className={styles.drawerFooter}>
                 <Button
                   color="primary"
@@ -523,43 +571,35 @@ export default function Me() {
       </Drawer>
       <Modal
         isOpen={isModalRemoveExpenseOpen}
-        className="dark removeModal"
+        className="dark w-52"
         backdrop="blur"
-        size="xs"
+        placement="center"
+        hideCloseButton
+        disableAnimation
       >
         <ModalContent>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Modal Title
+              <ModalHeader
+                className={`flex flex-col gap-1 ${styles.removeModalHeader}`}
+              >
+                Удалить запись?
               </ModalHeader>
-              <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                  nisi consectetur esse laborum eiusmod pariatur proident Lorem
-                  eiusmod et. Culpa deserunt nostrud ad veniam.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={() => {}}>
+              <ModalFooter className={styles.removeModalFooter}>
+                <Button
+                  color="danger"
+                  onPress={() => {
+                    setIsModalRemoveExpenseOpen(false);
+                  }}
+                >
                   Отменить
                 </Button>
                 <Button
                   color="primary"
-                  onPress={() => setIsModalRemoveExpenseOpen(false)}
+                  onPress={() => {
+                    removeExpense(currentExpenseId);
+                    setIsModalRemoveExpenseOpen(false);
+                  }}
                 >
                   Удалить
                 </Button>
