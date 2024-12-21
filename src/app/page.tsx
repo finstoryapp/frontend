@@ -1,10 +1,11 @@
 "use client";
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchUtil } from "../utils/utilFetch";
 import { Spinner, useDisclosure } from "@nextui-org/react";
 import { Button } from "@nextui-org/button";
 import Image from "next/image";
+
 import {
   Drawer,
   DrawerContent,
@@ -68,6 +69,7 @@ export default function Me() {
   const [currentExpenseId, setCurrentExpenseId] = useState<number>(-1);
   const [currentSelectedDayIndex, setCurrentSelectedDayIndex] =
     useState<number>(4);
+  const [clickedCategory, setClickedCategory] = useState<string | null>(null);
 
   //! FUNCTIONS
   function goPrevMonth() {
@@ -103,6 +105,9 @@ export default function Me() {
     if (accounts && currentAccountIndex < accounts.length - 1) {
       setCurrentAccountIndex(currentAccountIndex + 1);
     }
+  };
+  const handleCategoryClick = (categoryName: string) => {
+    setClickedCategory(categoryName);
   };
 
   //! ASYNC FUNCTIONS
@@ -226,7 +231,6 @@ export default function Me() {
   }
 
   //! EFFECTS
-
   useEffect(() => {
     initializeUser();
   }, [date]);
@@ -244,6 +248,37 @@ export default function Me() {
   useEffect(() => {
     updateExpenses();
   }, [currentAccountIndex, date, accounts]);
+  const categoriesContainerRef = useRef<HTMLDivElement | null>(null);
+  const isDragging = useRef<boolean>(false);
+  const startX = useRef<number>(0);
+  const scrollLeft = useRef<number>(0);
+
+  //! DRAG CATEGORIES
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (categoriesContainerRef.current) {
+      isDragging.current = true;
+      startX.current = e.clientX;
+      scrollLeft.current = categoriesContainerRef.current.scrollLeft;
+    }
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !categoriesContainerRef.current) return;
+    const x = e.clientX;
+    const walk = (x - startX.current) * 1;
+    categoriesContainerRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+  };
+  const handleWheel = (e: React.WheelEvent) => {
+    if (categoriesContainerRef.current) {
+      const delta = e.deltaY;
+      categoriesContainerRef.current.scrollLeft += delta;
+    }
+  };
 
   return (
     <div>
@@ -573,9 +608,29 @@ export default function Me() {
                     ))}
                 </div>
                 <div className={styles.categories}>
-                  <div className={styles.categoriesContainer}>
+                  <div
+                    ref={categoriesContainerRef}
+                    className={styles.categoriesContainer}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseLeave}
+                    onWheel={handleWheel}
+                  >
                     {userData?.categories.map((category) => (
-                      <span key={category.name}>{category.name}</span>
+                      <span
+                        onClick={() => {
+                          handleCategoryClick(category.name);
+                        }}
+                        className={`${styles.categoryItem} ${
+                          clickedCategory === category.name
+                            ? styles.clicked
+                            : ""
+                        }`}
+                        key={category.name}
+                      >
+                        {category.name}
+                      </span>
                     ))}
                   </div>
                 </div>

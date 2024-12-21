@@ -36,7 +36,7 @@ export function getWeekDays(): WeekDay[] {
 
   // Generate the past 4 days
   for (let i = 1; i <= 4; i++) {
-    let pastDate: Date = new Date(currentDate);
+    const pastDate: Date = new Date(currentDate);
     pastDate.setDate(currentDate.getDate() - i); // Subtract i days
 
     result.push({

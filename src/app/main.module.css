@@ -305,10 +305,12 @@
   justify-content: start;
   max-width: 100vw;
   padding-left: 18px;
+  padding-right: 18px;
   overflow-x: scroll;
 }
 .tabs span,
 .categories span {
+  display: inline-block;
   border-radius: 8px;
   background-color: #0a2c4c;
   display: flex;
@@ -331,7 +333,11 @@
 .categories span:hover {
   background-color: #092138;
 }
-.activeTab {
+.categories span:active {
+  cursor: grab;
+}
+.activeTab,
+.clicked {
   background-color: #3582ff !important;
   color: white !important;
 }
