@@ -479,104 +479,111 @@ export default function Me() {
               )}
             </div>
             <div className={styles.expensesContainer}>
-              {expenses
-                ?.sort((a, b) => {
-                  const dateA = +a.createdAt;
-                  const dateB = +b.createdAt;
-                  return dateB - dateA;
-                })
-                .map((expense) => {
-                  if (
-                    !expense ||
-                    !expense.createdAt ||
-                    !expense.accountId ||
-                    !expense.amount
-                  ) {
-                    console.error("Invalid expense data:", expense);
-                    return null;
-                  }
+              {/* Проверка на наличие расходов */}
+              {expenses && expenses.length ? (
+                expenses
+                  .filter((expense) => expense?.createdAt) // Фильтрация на случай неправильных данных
+                  .sort((a, b) => {
+                    const dateA = +a.createdAt;
+                    const dateB = +b.createdAt;
+                    return dateB - dateA; // Сортировка по дате
+                  })
+                  .map((expense) => {
+                    // Проверка на корректность данных
+                    if (
+                      !expense.createdAt ||
+                      !expense.accountId ||
+                      !expense.amount
+                    ) {
+                      console.error("Invalid expense data:", expense);
+                      return null;
+                    }
 
-                  const createdAt: number = +expense.createdAt;
-                  if (!createdAt || isNaN(createdAt)) {
-                    console.error("Invalid createdAt:", createdAt);
-                    return null;
-                  }
+                    const createdAt: number = +expense.createdAt;
+                    if (isNaN(createdAt)) {
+                      console.error("Invalid createdAt:", createdAt);
+                      return null;
+                    }
 
-                  const date = new Date(createdAt);
-                  if (isNaN(date.getTime())) {
-                    console.error("Invalid date:", createdAt);
-                    return null;
-                  }
+                    const date = new Date(createdAt);
+                    if (isNaN(date.getTime())) {
+                      console.error("Invalid date:", createdAt);
+                      return null;
+                    }
 
-                  const dayNames = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
-                  const day = dayNames[date.getDay()];
+                    const dayNames = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+                    const day = dayNames[date.getDay()];
 
-                  // Safely access accounts and currentAccountId
-                  const currentAccount = accounts?.[currentAccountIndex] || {};
-                  const currentAccountId = +currentAccount.accountId;
+                    // Проверка на существование currentAccountId
+                    const currentAccount =
+                      accounts?.[currentAccountIndex] || {};
+                    const currentAccountId = +currentAccount.accountId;
 
-                  if (!currentAccountId || isNaN(currentAccountId)) {
-                    console.error(
-                      "Invalid current account ID:",
-                      currentAccountId
+                    if (!currentAccountId || isNaN(currentAccountId)) {
+                      console.error(
+                        "Invalid current account ID:",
+                        currentAccountId
+                      );
+                      return null;
+                    }
+
+                    // Проверка на соответствие accountId расходов
+                    if (currentAccountId !== +expense.accountId) {
+                      return null;
+                    }
+
+                    // Получение категории и цвета
+                    const category = userData?.categories?.find(
+                      (category) => category.name === expense.categoryName
                     );
-                    return null;
-                  }
+                    const categoryColor = category?.color || "cccccc"; // Используем дефолтный цвет, если категория не найдена
 
-                  // Check if the expense belongs to the current account
-                  if (currentAccountId !== +expense.accountId) {
-                    return null;
-                  }
-
-                  // Safely retrieve category color
-                  const category = userData?.categories?.find(
-                    (category) => category.name === expense.categoryName
-                  );
-                  const categoryColor = category?.color || "000000"; // Default color
-
-                  return (
-                    <div className={styles.expenseItem} key={expense.id}>
-                      <p className={styles.expenseItemDate}>
-                        {`${date.getDate()} ${day}`}
-                      </p>
-                      <p className={styles.expenseItemAmount}>
-                        {-1 * +expense.amount}
-                      </p>
-                      <div className={styles.expenseItemCategory}>
-                        <div
-                          className={styles.expenseItemCategoryCircle}
-                          style={{
-                            backgroundColor: `#${categoryColor}`,
+                    return (
+                      <div className={styles.expenseItem} key={expense.id}>
+                        <p className={styles.expenseItemDate}>
+                          {`${date.getDate()} ${day}`}
+                        </p>
+                        <p className={styles.expenseItemAmount}>
+                          {-1 * +expense.amount}
+                        </p>
+                        <div className={styles.expenseItemCategory}>
+                          <div
+                            className={styles.expenseItemCategoryCircle}
+                            style={{
+                              backgroundColor: `#${categoryColor}`,
+                            }}
+                          ></div>
+                          <span>{expense.categoryName}</span>
+                        </div>
+                        <button
+                          className={styles.expenseItemButton}
+                          onClick={() => {
+                            setIsModalRemoveExpenseOpen(true);
+                            setCurrentExpenseId(+expense.id);
                           }}
-                        ></div>
-                        <span>{expense.categoryName}</span>
-                      </div>
-                      <button
-                        className={styles.expenseItemButton}
-                        onClick={() => {
-                          setIsModalRemoveExpenseOpen(true);
-                          setCurrentExpenseId(+expense.id);
-                        }}
-                      >
-                        <svg
-                          width="8"
-                          height="15"
-                          viewBox="0 0 8 15"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
                         >
-                          <path
-                            d="M1 1.5L7 7.5L1 13.5"
-                            stroke="#81B1E0"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  );
-                })}
+                          <svg
+                            width="8"
+                            height="15"
+                            viewBox="0 0 8 15"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1 1.5L7 7.5L1 13.5"
+                              stroke="#81B1E0"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    );
+                  })
+              ) : (
+                <p>Загрузка расходов...</p> // Сообщение, если нет расходов
+              )}
             </div>
           </div>
         )}
