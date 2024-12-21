@@ -304,11 +304,26 @@ export default function Me() {
   useEffect(() => {
     updateExpenses();
   }, [currentAccountIndex, date, accounts]);
+  useEffect(() => {
+    if (inputElement.current) {
+      inputElement.current.onfocus = () => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+      };
+    }
+
+    return () => {
+      if (inputElement.current) {
+        inputElement.current.onfocus = null;
+      }
+    };
+  }, []);
 
   const categoriesContainerRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef<boolean>(false);
   const startX = useRef<number>(0);
   const scrollLeft = useRef<number>(0);
+  const inputElement = useRef<HTMLInputElement | null>(null);
 
   //! DRAG CATEGORIES
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -706,6 +721,7 @@ export default function Me() {
                 {emptyCategoryError && <>Нужно выбрать категорию</>}
                 <div className={styles.inputExpenseContainer}>
                   <input
+                    ref={inputElement}
                     type="number"
                     placeholder="0"
                     min={0}
