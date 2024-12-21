@@ -775,7 +775,7 @@ export default function Me() {
               </ModalHeader>
               <ModalFooter className={styles.removeModalFooter}>
                 <Button
-                  color="danger"
+                  color="primary"
                   onPress={() => {
                     setIsModalRemoveExpenseOpen(false);
                   }}
@@ -783,7 +783,7 @@ export default function Me() {
                   Отменить
                 </Button>
                 <Button
-                  color="primary"
+                  color="danger"
                   onPress={() => {
                     removeExpense(currentExpenseId);
                     setIsModalRemoveExpenseOpen(false);
