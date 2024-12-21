@@ -79,6 +79,8 @@
   height: 56px;
   font-size: 20px;
   border-radius: 20px;
+  position: absolute;
+  top: 0px;
 }
 .addButtonStyled:hover {
   opacity: 1;
@@ -228,7 +230,7 @@
 .drawerBody {
   display: flex;
   align-items: center;
-  height: 280px;
+  height: 310px;
   min-height: 280px;
   width: 100%;
   padding-top: 0;
@@ -277,12 +279,7 @@
   font-size: 25px;
   margin-right: 5px;
 }
-.drawerFooter {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+
 .drawerTitle {
   font-family: "GothamProBold";
 }
@@ -338,8 +335,6 @@
   color: white !important;
 }
 .inputExpense {
-  position: fixed;
-  transform: translate(-50%);
   border-radius: 8px;
   background-color: #1d4a75;
   outline: none;
@@ -360,5 +355,12 @@
   box-shadow: 0 -0.2px 0px 2px rgba(79, 147, 255, 1);
 }
 .inputExpenseContainer {
+  position: relative;
+}
+.drawerFooter {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: relative;
 }
