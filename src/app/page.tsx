@@ -482,14 +482,13 @@ export default function Me() {
               {/* Проверка на наличие расходов */}
               {expenses && expenses.length ? (
                 expenses
-                  .filter((expense) => expense?.createdAt) // Фильтрация на случай неправильных данных
+                  .filter((expense) => expense?.createdAt)
                   .sort((a, b) => {
                     const dateA = +a.createdAt;
                     const dateB = +b.createdAt;
-                    return dateB - dateA; // Сортировка по дате
+                    return dateB - dateA;
                   })
                   .map((expense) => {
-                    // Проверка на корректность данных
                     if (
                       !expense.createdAt ||
                       !expense.accountId ||
@@ -582,7 +581,7 @@ export default function Me() {
                     );
                   })
               ) : (
-                <p>Загрузка расходов...</p> // Сообщение, если нет расходов
+                <p>Добавляйте расходы и они появятся.</p>
               )}
             </div>
           </div>
