@@ -30,6 +30,7 @@ import { setAccounts } from "@/store/slices/accountsSlice";
 import { IFullSumAccumulator } from "@/types/IFullSumAccumulator";
 import { IUser } from "@/store/slices/userSlice";
 import { getWeekDays } from "@/utils/getWeekDays";
+import { IAccount } from "@/types/IAccount";
 
 export default function Me() {
   const dispatch = useDispatch();
@@ -176,10 +177,10 @@ export default function Me() {
     }
   }
   async function fetchAccounts() {
-    const accounts = await fetchUtil("api/accounts_list", {
+    const accounts: IAccount[] = await fetchUtil("api/accounts_list", {
       method: "GET",
     });
-    dispatch(setAccounts(accounts));
+    if (accounts) dispatch(setAccounts(accounts));
   }
   async function fetchExpenses() {
     const { start, end } = getUnixMonthStartEnd(date.year, date.month + 1);
@@ -610,6 +611,9 @@ export default function Me() {
             console.log(expenses);
             console.log(date);
             console.log(accounts);
+            if (accounts.length === 0) {
+              fetchAccounts();
+            }
             onOpen();
           }}
           className={styles.addButtonStyled}
