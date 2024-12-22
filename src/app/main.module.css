@@ -225,7 +225,13 @@
   display: flex;
   flex-direction: column;
 }
-
+.categoryCircle {
+  margin-left: 5px;
+  display: block;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+}
 .drawerBody {
   display: flex;
   align-items: center;

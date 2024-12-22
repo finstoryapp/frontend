@@ -715,6 +715,10 @@ export default function Me() {
                         key={category.name}
                       >
                         {category.name}
+                        <div
+                          className={styles.categoryCircle}
+                          style={{ backgroundColor: `#${category.color}` }}
+                        ></div>
                       </span>
                     ))}
                   </div>
