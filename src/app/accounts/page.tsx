@@ -28,7 +28,20 @@ export default function Accounts() {
   const { accounts, loading_accounts } = useSelector(
     (state: RootState) => state.accounts
   );
-
+  const currencies = [
+    "USD",
+    "RUB",
+    "EUR",
+    "AMD",
+    "UAH",
+    "BYN",
+    "KZT",
+    "GEL",
+    "KGS",
+    "MDL",
+    "TJS",
+    "UZS",
+  ];
   const handleAddClick = () => {
     onOpen();
     accounts.forEach((element) => {
@@ -154,9 +167,22 @@ export default function Accounts() {
                     Новый счет
                   </DrawerHeader>
                   <DrawerBody className={styles.drawerBody}>
-                    <div className="accountName">
+                    <div className={styles.accountName}>
                       <p>Название счета</p>
                       <input type="text" />
+                    </div>
+                    <div className={styles.accountCurrency}>
+                      {currencies.map((currency) => {
+                        return (
+                          <span
+                            onClick={() => {}}
+                            className={`${styles.currencyItem}`}
+                            key={currency}
+                          >
+                            {currency}
+                          </span>
+                        );
+                      })}
                     </div>
                   </DrawerBody>
                   <DrawerFooter className={styles.drawerFooter}>

@@ -82,3 +82,8 @@ header span:last-child {
 code {
   word-break: break-all;
 }
+html,
+body {
+  scroll-behavior: auto; /* Устраняет резкие перемещения */
+  overscroll-behavior: contain; /* Блокирует нежелательное скроллирование */
+}

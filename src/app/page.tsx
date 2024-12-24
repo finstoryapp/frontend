@@ -126,6 +126,11 @@ export default function Me() {
       setExpenseValue(inputValue || "");
     }
   };
+  const handleFocus = () => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 300);
+  };
 
   //! ASYNC FUNCTIONS
   async function removeExpense(id: number) {
@@ -729,11 +734,13 @@ export default function Me() {
                     ref={inputElement}
                     type="number"
                     placeholder="0"
-                    min={0}
                     value={expenseValue}
                     onChange={handleChange}
-                    max={100000000}
                     className={styles.inputExpense}
+                    max={10000000}
+                    onFocus={handleFocus}
+                    inputMode="decimal"
+                    aria-describedby="amount"
                   />
                 </div>
                 {emptyValueError ? <>Нужно ввести расход</> : ""}

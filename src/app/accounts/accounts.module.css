@@ -23,6 +23,7 @@
   height: 56px;
   font-size: 20px;
   border-radius: 20px;
+  top: 5px;
 }
 .accountHeadWrapper {
   display: flex;
@@ -79,9 +80,16 @@
   justify-content: space-between;
 }
 .drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 1000;
+  overflow-y: auto;
   color: white;
   max-height: 90vh;
-  height: 90vh;
+  height: 81vh;
   width: 100%;
   box-shadow: 0 -0.2px 0px 2px rgba(79, 147, 255, 1);
   border-radius: 30px 30px 0px 0px;
@@ -89,14 +97,15 @@
   display: flex;
   flex-direction: column;
 }
-
 .closeButton {
   position: absolute;
   top: 25px;
   right: 25px;
   transition: 0.3s;
 }
-
+.drawerBody {
+  align-items: center;
+}
 .closeButton::before {
   position: absolute;
   content: "";
@@ -106,12 +115,68 @@
   transform: translate(-50%, -35%);
 }
 .drawerFooter {
-  position: fixed;
-  bottom: 20px;
-  padding: 0;
-  left: 50%;
-  transform: translate(-50%);
   display: flex;
+  padding-top: 0px;
   flex-direction: column;
   align-items: center;
+  position: relative;
+}
+.accountName {
+  background-color: #1d4a75;
+  border-radius: 30px;
+  width: 364px;
+  height: 100px;
+  gap: 4px;
+  padding: 10px;
+  text-align: center;
+}
+.accountName p {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-family: "GothamProBold";
+}
+.accountName input {
+  border-radius: 8px;
+  background-color: #15314c;
+  outline: none;
+  font-size: 20px;
+  font-family: "GothamProBold";
+  text-align: center;
+  width: 240px;
+  transition: 30s;
+  box-shadow: 0px 0px 0px 2px rgba(79, 147, 255, 1);
+  caret-color: #6caeed;
+}
+.accountName input:focus {
+  background-color: #1d4a75;
+}
+.accountCurrency {
+  background-color: #1d4a75;
+  height: 64px;
+  width: 364px;
+  padding: 0px 18px;
+  border-radius: 30px;
+}
+.accountCurrency {
+  display: flex;
+  justify-content: start;
+  gap: 3px;
+  padding-left: 18px;
+  padding-right: 18px;
+  overflow-x: scroll;
+  align-items: center;
+}
+.currencyItem {
+  padding: 0px 10px;
+  display: inline-block;
+  border-radius: 8px;
+  background-color: #0a2c4c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #6caeed;
+  font-family: "GothamProBold";
+  cursor: pointer;
+  height: 38px;
+  width: 73px;
 }
