@@ -6,10 +6,11 @@
 }
 
 .container {
-  height: calc(130vh);
+  min-height: 100vh;
   background-color: #15314c;
   border-radius: 20px;
   padding: 11px;
+  padding-bottom: 186px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25), 0px 0px 40px rgba(0, 0, 0, 0.25);
 }
 .addButton {
@@ -17,6 +18,10 @@
   bottom: 110px;
   right: 50%;
   transform: translateX(50%);
+}
+.addButtonStyled:hover {
+  opacity: 1;
+  transform: scale(1.01);
 }
 .addButtonStyled {
   width: 288px;
@@ -179,4 +184,41 @@
   cursor: pointer;
   height: 38px;
   width: 73px;
+}
+.currencyItem:active {
+  cursor: grab;
+}
+.selectedCurrency {
+  background-color: #3582ff !important;
+  color: white !important;
+}
+.accountCurrency span:hover {
+  background-color: #092138;
+}
+.accountError {
+  font-size: 12px !important;
+  margin: 0;
+  margin-top: 3px;
+}
+.accountItemHeader {
+  font-size: 18px;
+  font-family: "GothamProBold";
+}
+.removeModalFooter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+}
+.removeModalHeader {
+  color: white;
+  padding-bottom: 0px;
+  padding-top: 13px;
+}
+.warning {
+  font-size: 11px;
+  padding: 0px;
+  line-height: 11px;
+  text-align: center;
 }

@@ -2,7 +2,7 @@
 import styles from "./accounts.module.css";
 import { Button } from "@nextui-org/button";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Spinner, useDisclosure } from "@nextui-org/react";
 import { fetchUtil } from "@/utils/utilFetch";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,10 +19,15 @@ import {
   DrawerBody,
   DrawerFooter,
 } from "@nextui-org/drawer";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+} from "@nextui-org/react";
 
 export default function Accounts() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
   const dispatch = useDispatch();
   const { userData } = useSelector((state: RootState) => state.user);
   const { accounts, loading_accounts } = useSelector(
@@ -42,12 +47,26 @@ export default function Accounts() {
     "TJS",
     "UZS",
   ];
+
+  //! STATES
+  const [currentSelectedCurrency, setCurrentSelectedCurrency] =
+    useState<string>("USD");
+  const [currentAccountName, setCurrentAccountName] = useState<string>("");
+  const [isSending, setIsSending] = useState<boolean>(false);
+  const [isAccountExist, setIsAccountExist] = useState<boolean>(false);
+  const [isModalRemoveAccountOpen, setIsModalRemoveAccountOpen] =
+    useState<boolean>(false);
+  const [removingAccountId, setRemovingAccountId] = useState<number>(-1);
+
+  //! FUNSTIONS
   const handleAddClick = () => {
     onOpen();
     accounts.forEach((element) => {
       console.log(element.id);
     });
   };
+
+  //! ASYNC FUNCTIONS
   async function fetchAccounts() {
     const accounts: IAccount[] = await fetchUtil("api/accounts_list", {
       method: "GET",
@@ -71,7 +90,101 @@ export default function Accounts() {
       console.log(err instanceof Error ? err.message : "An error occurred");
     }
   }
+  async function handlePress(onClose: () => void) {
+    if (currentAccountName.length !== 0) {
+      const accountData = {
+        accountName: currentAccountName,
+        currency: currentSelectedCurrency,
+      };
 
+      setIsSending(true);
+
+      try {
+        try {
+          const response = await fetchUtil("api/add_account", {
+            method: "POST",
+            body: JSON.stringify(accountData),
+          });
+
+          if (!response.ok) {
+            setIsAccountExist(true);
+          }
+
+          console.log("Успешный ответ:", response);
+          setCurrentAccountName("");
+          setCurrentSelectedCurrency("USD");
+          onClose();
+        } catch (error: any) {
+          setIsAccountExist(true);
+          console.log("Ошибка сети или обработки:", error.message);
+        }
+      } catch (e) {
+        console.log(e);
+        setIsSending(false);
+      } finally {
+        fetchAccounts();
+        console.log("OK");
+        setIsSending(false);
+      }
+    }
+  }
+  async function removeAccount(id: number) {
+    if (id !== -1) {
+      try {
+        const response = await fetchUtil(`api/delete_account/${id}`, {
+          method: "DELETE",
+        });
+        if (response.message) {
+          setRemovingAccountId(-1);
+          console.log("Account deleted successfully!");
+          fetchAccounts();
+          return "Deleted";
+        } else {
+          setRemovingAccountId(-1);
+          console.error(response);
+        }
+      } catch (error) {
+        console.log(error);
+        setRemovingAccountId(-1);
+      }
+    } else {
+      return "Error";
+    }
+  }
+  //! REFS
+  const currenciesContainerRef = useRef<HTMLDivElement | null>(null);
+  const isDragging = useRef<boolean>(false);
+  const startX = useRef<number>(0);
+  const scrollLeft = useRef<number>(0);
+
+  //! DRAG CATEGORIES
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (currenciesContainerRef.current) {
+      isDragging.current = true;
+      startX.current = e.clientX;
+      scrollLeft.current = currenciesContainerRef.current.scrollLeft;
+    }
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !currenciesContainerRef.current) return;
+    const x = e.clientX;
+    const walk = (x - startX.current) * 1;
+    currenciesContainerRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+  };
+  const handleWheel = (e: React.WheelEvent) => {
+    if (currenciesContainerRef.current) {
+      const delta = e.deltaY;
+      currenciesContainerRef.current.scrollLeft += delta;
+    }
+  };
+
+  //! EFFECTS
   useEffect(() => {
     initializeUser();
     fetchAccounts();
@@ -99,7 +212,12 @@ export default function Accounts() {
                 <div className={styles.accountItemHeader}>
                   <p>{account.accountName}</p>
                   {accounts.length !== 1 ? (
-                    <button>
+                    <button
+                      onClick={() => {
+                        setRemovingAccountId(+account.id);
+                        setIsModalRemoveAccountOpen(true);
+                      }}
+                    >
                       <svg
                         width="8"
                         height="15"
@@ -169,14 +287,43 @@ export default function Accounts() {
                   <DrawerBody className={styles.drawerBody}>
                     <div className={styles.accountName}>
                       <p>Название счета</p>
-                      <input type="text" />
+                      <input
+                        type="text"
+                        maxLength={20}
+                        value={currentAccountName}
+                        onChange={(e) => {
+                          setCurrentAccountName(e.target.value);
+                          setIsAccountExist(false);
+                        }}
+                      />
+                      {isAccountExist ? (
+                        <p className={styles.accountError}>
+                          Такой аккаунт уже есть
+                        </p>
+                      ) : (
+                        ""
+                      )}
                     </div>
-                    <div className={styles.accountCurrency}>
+                    <div
+                      className={styles.accountCurrency}
+                      ref={currenciesContainerRef}
+                      onMouseDown={handleMouseDown}
+                      onMouseMove={handleMouseMove}
+                      onMouseUp={handleMouseUp}
+                      onMouseLeave={handleMouseLeave}
+                      onWheel={handleWheel}
+                    >
                       {currencies.map((currency) => {
                         return (
                           <span
-                            onClick={() => {}}
-                            className={`${styles.currencyItem}`}
+                            onClick={() => {
+                              setCurrentSelectedCurrency(currency);
+                            }}
+                            className={`${styles.currencyItem} ${
+                              currentSelectedCurrency === currency
+                                ? styles.selectedCurrency
+                                : ""
+                            }`}
                             key={currency}
                           >
                             {currency}
@@ -188,25 +335,70 @@ export default function Accounts() {
                   <DrawerFooter className={styles.drawerFooter}>
                     <Button
                       color="primary"
-                      onPress={onClose}
+                      onPress={() => handlePress(onClose)}
                       className={styles.addButtonStyled}
                       endContent={
-                        <Image
-                          src="/icons/check.svg"
-                          alt="plus"
-                          width={24}
-                          height={24}
-                          priority
-                        />
+                        isSending ? (
+                          <Spinner color="white" />
+                        ) : (
+                          <Image
+                            src="/icons/check.svg"
+                            alt="check"
+                            width={24}
+                            height={24}
+                          />
+                        )
                       }
                     >
-                      Создать счет
+                      {isSending ? "" : "Создать счет"}
                     </Button>
                   </DrawerFooter>
                 </div>
               )}
             </DrawerContent>
-          </Drawer>
+          </Drawer>{" "}
+          <Modal
+            isOpen={isModalRemoveAccountOpen}
+            className="dark w-52"
+            backdrop="blur"
+            placement="center"
+            hideCloseButton
+            disableAnimation
+          >
+            <ModalContent>
+              {() => (
+                <>
+                  <ModalHeader
+                    className={`flex flex-col gap-1 ${styles.removeModalHeader}`}
+                  >
+                    <p>Удалить счет?</p>
+                    <p className={styles.warning}>
+                      Удалятся все связанные расходы
+                    </p>
+                  </ModalHeader>
+                  <ModalFooter className={styles.removeModalFooter}>
+                    <Button
+                      color="primary"
+                      onPress={() => {
+                        setIsModalRemoveAccountOpen(false);
+                      }}
+                    >
+                      Отменить
+                    </Button>
+                    <Button
+                      color="danger"
+                      onPress={() => {
+                        removeAccount(removingAccountId);
+                        setIsModalRemoveAccountOpen(false);
+                      }}
+                    >
+                      Удалить
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
         </div>
       )}
     </div>
