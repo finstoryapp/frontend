@@ -114,9 +114,9 @@ export default function Accounts() {
           setCurrentAccountName("");
           setCurrentSelectedCurrency("USD");
           onClose();
-        } catch (error: any) {
+        } catch (error) {
           setIsAccountExist(true);
-          console.log("Ошибка сети или обработки:", error.message);
+          console.log("Ошибка сети или обработки:", error);
         }
       } catch (e) {
         console.log(e);
