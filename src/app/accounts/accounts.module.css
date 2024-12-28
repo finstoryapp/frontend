@@ -64,7 +64,9 @@
 }
 .currencyHeader {
   font-size: 13px !important;
-  font-family: "GothamProBold";
+  font-family: "GothamProLight";
+  font-weight: normal;
+  margin-bottom: 5px;
 }
 .currencyText {
   font-size: 30px !important;

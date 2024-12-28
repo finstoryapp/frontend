@@ -1,7 +1,30 @@
 "use client";
+import { useState } from "react";
 import styles from "./settings.module.css";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  Button,
+} from "@nextui-org/react";
+import { fetchUtil } from "@/utils/utilFetch";
 
 export default function Settings() {
+  const [isModalLoadExcelOpen, setIsModalLoadExcelOpen] =
+    useState<boolean>(false);
+
+  //! ASYNC FUNCTIONS
+  async function getExcel() {
+    try {
+      await fetchUtil("api/get_excel", {
+        method: "GET",
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div
       className={`text-sm ${styles.settingsWrapper}`}
@@ -74,7 +97,12 @@ export default function Settings() {
           </a>
         </div>
         <div className={styles.setting}>
-          <button>
+          <button
+            onClick={() => {
+              getExcel();
+              setIsModalLoadExcelOpen(true);
+            }}
+          >
             {" "}
             <p>Скачать данные</p>
             <svg
@@ -116,6 +144,37 @@ export default function Settings() {
         <a href="https://t.me/Twin_7">@Twin_7</a>
       </div>
       <span className={styles.version}>Версия: v0.6.0</span>
+      <Modal
+        isOpen={isModalLoadExcelOpen}
+        className="dark w-52"
+        backdrop="blur"
+        placement="center"
+        hideCloseButton
+        disableAnimation
+      >
+        <ModalContent>
+          {() => (
+            <>
+              <ModalHeader
+                className={`flex flex-col gap-1 ${styles.removeModalHeader}`}
+              >
+                <p>Файл со всеми расходами будет выгружен в бота:</p>
+                <a href="https://t.me/finstorybot">@finstorybot</a>
+              </ModalHeader>
+              <ModalFooter className={styles.removeModalFooter}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    setIsModalLoadExcelOpen(false);
+                  }}
+                >
+                  Готово
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

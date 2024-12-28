@@ -67,3 +67,26 @@
   cursor: not-allowed;
   color: #3582ff;
 }
+.removeModalHeader {
+  color: white;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+  font-family: "GothamProLight";
+  font-weight: normal;
+  padding-bottom: 0px;
+}
+.removeModalHeader a {
+  display: block;
+  margin-top: 10px;
+  color: #3582ff;
+}
+.removeModalFooter {
+  margin: 0;
+  padding: 10px;
+  padding-bottom: 24px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
