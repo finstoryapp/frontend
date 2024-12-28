@@ -61,6 +61,7 @@ export default function Accounts() {
   //! FUNSTIONS
   const handleAddClick = () => {
     onOpen();
+    setIsAccountExist(false);
     accounts.forEach((element) => {
       console.log(element.id);
     });
@@ -86,6 +87,7 @@ export default function Accounts() {
       });
       console.log(userData);
       dispatch(setUser(userData));
+      setCurrentSelectedCurrency(userData?.defaultCurrency ?? "USD");
     } catch (err) {
       console.log(err instanceof Error ? err.message : "An error occurred");
     }
@@ -151,13 +153,23 @@ export default function Accounts() {
       return "Error";
     }
   }
+  async function updateCurrency(currency: string) {
+    try {
+      await fetchUtil("api/update_default_currency", {
+        method: "PUT",
+        body: JSON.stringify({ currency: currency }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   //! REFS
   const currenciesContainerRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef<boolean>(false);
   const startX = useRef<number>(0);
   const scrollLeft = useRef<number>(0);
-
-  //! DRAG CATEGORIES
+  //! DRAG CURRENCIES
   const handleMouseDown = (e: React.MouseEvent) => {
     if (currenciesContainerRef.current) {
       isDragging.current = true;
@@ -184,6 +196,40 @@ export default function Accounts() {
     }
   };
 
+  //! REFS FOR DEFAULT CURRENCY
+  const currenciesContainerRefDefault = useRef<HTMLDivElement | null>(null);
+  const isDraggingDefault = useRef<boolean>(false);
+  const startXDefault = useRef<number>(0);
+  const scrollLeftDefault = useRef<number>(0);
+  //! DRAG DEFAULTS
+  const handleMouseDownDefault = (e: React.MouseEvent) => {
+    if (currenciesContainerRefDefault.current) {
+      isDraggingDefault.current = true;
+      startXDefault.current = e.clientX;
+      scrollLeftDefault.current =
+        currenciesContainerRefDefault.current.scrollLeft;
+    }
+  };
+  const handleMouseMoveDefault = (e: React.MouseEvent) => {
+    if (!isDraggingDefault.current || !currenciesContainerRefDefault.current)
+      return;
+    const x = e.clientX;
+    const walk = (x - startXDefault.current) * 1;
+    currenciesContainerRefDefault.current.scrollLeft =
+      scrollLeftDefault.current - walk;
+  };
+  const handleMouseUpDefault = () => {
+    isDraggingDefault.current = false;
+  };
+  const handleMouseLeaveDefault = () => {
+    isDraggingDefault.current = false;
+  };
+  const handleWheelDefault = (e: React.WheelEvent) => {
+    if (currenciesContainerRefDefault.current) {
+      const delta = e.deltaY;
+      currenciesContainerRefDefault.current.scrollLeft += delta;
+    }
+  };
   //! EFFECTS
   useEffect(() => {
     initializeUser();
@@ -203,8 +249,45 @@ export default function Accounts() {
               <p>Управление счетами</p>
             </div>
             <p className={styles.currencyHeader}>
-              Основная валюта - {userData?.defaultCurrency}
+              Основная валюта - {currentSelectedCurrency}
             </p>
+            <div
+              className={styles.defaultCurrencyChoice}
+              ref={currenciesContainerRefDefault}
+              onMouseDown={handleMouseDownDefault}
+              onMouseMove={handleMouseMoveDefault}
+              onMouseUp={handleMouseUpDefault}
+              onMouseLeave={handleMouseLeaveDefault}
+              onWheel={handleWheelDefault}
+            >
+              {[
+                userData?.defaultCurrency,
+                ...currencies.filter(
+                  (currency) => currency !== userData?.defaultCurrency
+                ),
+              ].map((currency, index) => {
+                return (
+                  <span
+                    onClick={() => {
+                      setCurrentSelectedCurrency(currency ?? "");
+                      updateCurrency(String(currency));
+                    }}
+                    className={`${styles.currencyItem} ${
+                      currentSelectedCurrency === currency
+                        ? styles.selectedCurrency
+                        : ""
+                    } ${
+                      currency === userData?.defaultCurrency
+                        ? styles.defaultCurrency
+                        : ""
+                    }`}
+                    key={`${currency}-${index}`} // Уникальный ключ
+                  >
+                    {currency}
+                  </span>
+                );
+              })}
+            </div>
           </div>
           <div className={styles.accountsList}>
             {accounts.map((account) => (

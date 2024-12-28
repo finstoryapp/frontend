@@ -19,6 +19,9 @@
   right: 50%;
   transform: translateX(50%);
 }
+.closeButton:hover {
+  transform: scale(1.1);
+}
 .addButtonStyled:hover {
   opacity: 1;
   transform: scale(1.01);
@@ -221,4 +224,26 @@
   padding: 0px;
   line-height: 11px;
   text-align: center;
+}
+.defaultCurrencyChoice {
+  display: flex;
+  height: 64px;
+  width: 340px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: start;
+  gap: 3px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  align-items: center;
+  background-color: #2a5d91;
+}
+.defaultCurrencyChoice {
+  overflow-y: hidden;
+}
+.defaultCurrencyChoice span:first-child {
+  margin-left: 10px;
+}
+.defaultCurrencyChoice span:last-child {
+  margin-right: 10px;
 }
