@@ -566,7 +566,7 @@ export default function Me() {
                           {`${date.getDate()} ${day}`}
                         </p>
                         <p className={styles.expenseItemAmount}>
-                          {-1 * +expense.amount}
+                          {parseFloat((+expense.amount * -1).toFixed(3))}
                         </p>
                         <div className={styles.expenseItemCategory}>
                           <div

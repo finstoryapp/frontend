@@ -13,7 +13,7 @@ import { fetchUtil } from "@/utils/utilFetch";
 export default function Settings() {
   const [isModalLoadExcelOpen, setIsModalLoadExcelOpen] =
     useState<boolean>(false);
-
+  // const [isCategoryWindow, setIsCategoryWindow] = useState<boolean>(false);
   //! ASYNC FUNCTIONS
   async function getExcel() {
     try {
