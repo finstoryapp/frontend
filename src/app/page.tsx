@@ -465,7 +465,7 @@ export default function Me() {
                         {accounts[currentAccountIndex]?.accountName}
                       </p>
                       <p className={styles.accountWrapperBoxValue}>
-                        {-1 * currentAccountSum}{" "}
+                        {-1 * +currentAccountSum.toFixed(3)}{" "}
                         <span>{accounts[currentAccountIndex]?.currency}</span>
                       </p>
                     </div>
