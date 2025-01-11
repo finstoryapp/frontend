@@ -566,7 +566,7 @@ export default function Me() {
                           {`${date.getDate()} ${day}`}
                         </p>
                         <p className={styles.expenseItemAmount}>
-                          {parseFloat((+expense.amount * -1).toFixed(3))}
+                          {Math.round(+expense.amount * -1000) / 1000}
                         </p>
                         <div className={styles.expenseItemCategory}>
                           <div
