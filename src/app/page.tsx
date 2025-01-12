@@ -673,7 +673,7 @@ export default function Me() {
                   </span>
                   <div>
                     <span className={styles.drawerHeaderSum}>
-                      {-1 * currentAccountSum}
+                      {-1 * +currentAccountSum.toFixed(3)}{" "}
                     </span>
                     <span className={styles.drawerHeaderCurrency}>
                       {accounts[currentAccountIndex]?.currency}
