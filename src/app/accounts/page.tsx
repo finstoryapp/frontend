@@ -51,6 +51,8 @@ export default function Accounts() {
   //! STATES
   const [currentSelectedCurrency, setCurrentSelectedCurrency] =
     useState<string>("USD");
+  const [currentAddingSelectedCurrency, setCurrentAddingSelectedCurrency] =
+    useState<string>("USD");
   const [currentAccountName, setCurrentAccountName] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isAccountExist, setIsAccountExist] = useState<boolean>(false);
@@ -359,6 +361,7 @@ export default function Accounts() {
                   >
                     <button
                       onClick={() => {
+                        setCurrentAddingSelectedCurrency("USD");
                         onClose();
                       }}
                       className={styles.closeButton}
@@ -400,10 +403,10 @@ export default function Accounts() {
                         return (
                           <span
                             onClick={() => {
-                              setCurrentSelectedCurrency(currency);
+                              setCurrentAddingSelectedCurrency(currency);
                             }}
                             className={`${styles.currencyItem} ${
-                              currentSelectedCurrency === currency
+                              currentAddingSelectedCurrency === currency
                                 ? styles.selectedCurrency
                                 : ""
                             }`}
