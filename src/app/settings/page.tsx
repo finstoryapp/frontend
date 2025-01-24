@@ -35,7 +35,27 @@ export default function Settings() {
       {isCategoryWindow ? (
         <div className={styles.categoriesWrapper}>
           <div className={styles.categoryHeading}>
-            <h1>Категории</h1>
+            <button
+              className={styles.backToSettings}
+              onClick={() => setIsCategoryWindow(false)}
+            >
+              <svg
+                width="10"
+                height="18"
+                viewBox="0 0 10 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.75 1.5L1.25 9L8.75 16.5"
+                  stroke="#3E9FFF"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+              </svg>
+            </button>
+            <h1>Мои категории</h1>
           </div>
         </div>
       ) : (
@@ -114,6 +134,31 @@ export default function Settings() {
               >
                 {" "}
                 <p>Скачать данные</p>
+                <svg
+                  width="8"
+                  height="14"
+                  viewBox="0 0 8 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1L7 7L1 13"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className={styles.setting}>
+              <button
+                onClick={() => {
+                  window.location.href = "https://t.me/finstoryapp";
+                }}
+              >
+                {" "}
+                <p>Telegram-канал</p>
                 <svg
                   width="8"
                   height="14"

@@ -94,11 +94,35 @@
   min-height: 100vh;
   background-color: #15314c;
   border-radius: 20px;
-  padding: 11px;
+  padding: 16px;
   padding-bottom: 186px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25), 0px 0px 40px rgba(0, 0, 0, 0.25);
   width: 100%;
 }
 .categoryHeading {
+  position: relative;
+  width: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-family: "GothamProBold";
+}
+.backToSettings {
+  top: -5px;
+  left: 24px;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+}
+.backToSettings::before {
+  content: "";
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  top: -10px;
+  bottom: -10px;
+  left: -20px;
+  right: -10px;
 }
