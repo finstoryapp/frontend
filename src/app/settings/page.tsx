@@ -177,6 +177,7 @@ export default function Settings() {
               </button>
             </div>
           </div>
+          <a href="https://www.google.com/">Платежка</a>
           <div className={styles.designer}>
             <svg
               width="30"
