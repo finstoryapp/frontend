@@ -9,6 +9,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { fetchUtil } from "@/utils/utilFetch";
+import { openLink } from "@telegram-apps/sdk";
 
 export default function Settings() {
   //! STATES
@@ -176,10 +177,34 @@ export default function Settings() {
                 </svg>
               </button>
             </div>
+            <div className={styles.setting}>
+              <button
+                onClick={() => {
+                  if (openLink.isAvailable()) {
+                    openLink("https://google.com", {});
+                  }
+                }}
+              >
+                {" "}
+                <p>Тестовая внешняя ссылка</p>
+                <svg
+                  width="8"
+                  height="14"
+                  viewBox="0 0 8 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1L7 7L1 13"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
-          <a href="https://www.google.com/" target="_blank">
-            Платежка
-          </a>
           <div className={styles.designer}>
             <svg
               width="30"
