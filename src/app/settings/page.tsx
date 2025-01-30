@@ -180,9 +180,7 @@ export default function Settings() {
             <div className={styles.setting}>
               <button
                 onClick={() => {
-                  if (openLink.isAvailable()) {
-                    openLink("https://google.com", {});
-                  }
+                  openLink("https://google.com", {});
                 }}
               >
                 {" "}
