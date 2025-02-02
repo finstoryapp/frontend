@@ -9,7 +9,9 @@ import {
   Button,
 } from "@nextui-org/react";
 import { fetchUtil } from "@/utils/utilFetch";
+import { init } from "@telegram-apps/sdk";
 import { openLink } from "@telegram-apps/sdk";
+init();
 
 export default function Settings() {
   //! STATES
@@ -180,11 +182,14 @@ export default function Settings() {
             <div className={styles.setting}>
               <button
                 onClick={() => {
-                  openLink("https://google.com", {});
+                  openLink(
+                    "https://www.youtube.com/playlist?list=PLUkV5N7-7lobeKhjueqVnmEW2RFJu2yxn",
+                    {}
+                  );
                 }}
               >
                 {" "}
-                <p>Тестовая внешняя ссылка</p>
+                <p>YouTube</p>
                 <svg
                   width="8"
                   height="14"
