@@ -97,6 +97,7 @@ export default function Statistics() {
               const exchangeRate = await response.json();
               amount *= exchangeRate.rate;
             } catch (error) {
+              console.log(expenses);
               console.error("Error converting currency:", error);
             }
           }
@@ -106,7 +107,6 @@ export default function Statistics() {
           total += amount;
         }
 
-        // Convert to array format for chart
         const categoryData = Object.entries(sums).map(([name, value]) => {
           const category = userData?.categories.find(
             (cat) => cat.name === name
