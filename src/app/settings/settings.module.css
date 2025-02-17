@@ -142,8 +142,14 @@
   margin-bottom: 6px;
   transition: 0.3s all;
 }
-.category:hover {
-  background-color: #173c5f;
+@media (hover: hover) {
+  .category:hover {
+    background-color: #173c5f;
+    cursor: pointer;
+  }
+}
+.category:active {
+  background-color: #2d8be2;
   cursor: pointer;
 }
 .categoryColor {
@@ -151,4 +157,90 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+}
+.addButton {
+  position: fixed;
+  bottom: 110px;
+  right: 50%;
+  transform: translateX(50%);
+}
+.closeButton:hover {
+  transform: scale(1.1);
+}
+.addButtonStyled:hover {
+  opacity: 1;
+  transform: scale(1.01);
+}
+.addButtonStyled {
+  width: 288px;
+  height: 56px;
+  font-size: 20px;
+  border-radius: 20px;
+  top: 5px;
+}
+.drawer {
+  background-color: #15314c;
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+}
+.drawerBody {
+  padding: 16px 0;
+}
+.closeButton {
+  position: absolute;
+  transform: translateY(-50%);
+  padding: 8px;
+}
+.closeButton:hover {
+  transform: translateY(-50%) scale(1.1);
+}
+.inputContainer {
+  margin-bottom: 24px;
+}
+.inputLabel {
+  color: #6d9dcf;
+  font-family: "GothamProBold";
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.categoryInput {
+  width: 100%;
+  height: 48px;
+  background-color: #1d4a75;
+  border-radius: 12px;
+  border: none;
+  padding: 0 16px;
+  color: white;
+  font-size: 16px;
+  font-family: "GothamPro";
+}
+.categoryInput:focus {
+  outline: none;
+  background-color: #2a5d91;
+}
+.colorSection {
+  margin-bottom: 24px;
+}
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+}
+.colorOption {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.colorOption:hover {
+  transform: scale(1.1);
+}
+.selectedColor {
+  border: 2px solid #ffffff;
+  transform: scale(1.1);
+}
+.drawerFooter {
+  padding: 16px 0;
 }

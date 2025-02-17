@@ -7,6 +7,12 @@ import {
   ModalHeader,
   ModalFooter,
   Button,
+  useDisclosure,
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
 } from "@nextui-org/react";
 import { fetchUtil } from "@/utils/utilFetch";
 import { openLink, init } from "@telegram-apps/sdk";
@@ -14,16 +20,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { IUser, setUser } from "@/store/slices/userSlice";
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
 import { RootState } from "@/store/store";
+import Image from "next/image";
 
 export default function Settings() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   //! STATES
   const [isCategoryWindow, setIsCategoryWindow] = useState<boolean>(false);
   const [isModalLoadExcelOpen, setIsModalLoadExcelOpen] =
     useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [categoryName, setCategoryName] = useState("");
+  const [selectedColor, setSelectedColor] = useState("#4DB748"); // Default color
+
+  // Predefined colors array
+  const colors = [
+    "#4DB748",
+    "#90E0EF",
+    "#F3DFCA",
+    "#FF8B59",
+    "#9D4EDD",
+    "#E4C1F9",
+    "#94D2BD",
+    "#FFCFD2",
+  ];
+
   console.log(selectedCategory, loading);
 
   //! ASYNC FUNCTIONS
@@ -56,6 +79,30 @@ export default function Settings() {
   useEffect(() => {
     initializeUser();
   }, []);
+
+  const handleCreateCategory = async (onClose: () => void) => {
+    if (categoryName.trim()) {
+      try {
+        const response = await fetchUtil("api/add_category", {
+          method: "POST",
+          body: JSON.stringify({
+            name: categoryName,
+            color: selectedColor.replace("#", ""),
+          }),
+        });
+
+        if (response.message) {
+          // Refresh user data to get updated categories
+          await initializeUser();
+          onClose();
+          setCategoryName("");
+          setSelectedColor("#4DB748");
+        }
+      } catch (error) {
+        console.error("Error creating category:", error);
+      }
+    }
+  };
 
   return (
     <div
@@ -104,6 +151,96 @@ export default function Settings() {
               <p>{category.name}</p>
             </div>
           ))}
+          <div className={styles.addButton}>
+            <Button
+              color="primary"
+              onPress={onOpen}
+              className={styles.addButtonStyled}
+              endContent={
+                <Image
+                  src="/icons/plus.svg"
+                  alt="plus"
+                  width={24}
+                  height={24}
+                  priority
+                />
+              }
+            >
+              Добавить категорию
+            </Button>
+          </div>{" "}
+          <Drawer
+            isOpen={isOpen}
+            placement="bottom"
+            onOpenChange={onOpenChange}
+            className="dark"
+            backdrop="blur"
+            hideCloseButton
+            disableAnimation
+          >
+            <DrawerContent className={styles.drawer}>
+              {(onClose) => (
+                <>
+                  <DrawerHeader className="flex gap-1 pb-0">
+                    <button
+                      onClick={() => {
+                        setCategoryName("");
+                        setSelectedColor("#4DB748");
+                        onClose();
+                      }}
+                      className={styles.closeButton}
+                    >
+                      <img src="/icons/close.svg" alt="close" />
+                    </button>
+                    Создать категорию
+                  </DrawerHeader>
+
+                  <DrawerBody className={styles.drawerBody}>
+                    <div className={styles.inputContainer}>
+                      <p className={styles.inputLabel}>Название категории</p>
+                      <input
+                        type="text"
+                        value={categoryName}
+                        onChange={(e) => setCategoryName(e.target.value)}
+                        className={styles.categoryInput}
+                        placeholder="Транспорт"
+                        maxLength={50}
+                      />
+                    </div>
+
+                    <div className={styles.colorSection}>
+                      <p className={styles.inputLabel}>Цвет категории</p>
+                      <div className={styles.colorGrid}>
+                        {colors.map((color) => (
+                          <div
+                            key={color}
+                            className={`${styles.colorOption} ${
+                              selectedColor === color
+                                ? styles.selectedColor
+                                : ""
+                            }`}
+                            style={{ backgroundColor: color }}
+                            onClick={() => setSelectedColor(color)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </DrawerBody>
+
+                  <DrawerFooter className={styles.drawerFooter}>
+                    <Button
+                      color="primary"
+                      className={styles.addButtonStyled}
+                      onPress={() => handleCreateCategory(onClose)}
+                      isDisabled={!categoryName.trim()}
+                    >
+                      Создать категорию
+                    </Button>
+                  </DrawerFooter>
+                </>
+              )}
+            </DrawerContent>
+          </Drawer>
         </div>
       ) : (
         <>
