@@ -100,6 +100,7 @@
   width: 100%;
 }
 .categoryHeading {
+  margin: 10px;
   position: relative;
   width: 100%;
   display: flex;
@@ -107,6 +108,7 @@
   justify-content: center;
   font-size: 30px;
   font-family: "GothamProBold";
+  margin-bottom: 30px;
 }
 .backToSettings {
   top: -5px;
@@ -125,4 +127,28 @@
   bottom: -10px;
   left: -20px;
   right: -10px;
+}
+/* Categories styles */
+.category {
+  font-family: "GothamProBold";
+  color: white;
+  background-color: #1d4a75;
+  font-size: 20px;
+  display: flex;
+  height: 48px;
+  border-radius: 12px;
+  align-items: center;
+  padding: 0px 12px;
+  margin-bottom: 6px;
+  transition: 0.3s all;
+}
+.category:hover {
+  background-color: #173c5f;
+  cursor: pointer;
+}
+.categoryColor {
+  margin-right: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }

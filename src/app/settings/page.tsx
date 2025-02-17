@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./settings.module.css";
 import {
   Modal,
@@ -10,13 +10,21 @@ import {
 } from "@nextui-org/react";
 import { fetchUtil } from "@/utils/utilFetch";
 import { openLink, init } from "@telegram-apps/sdk";
+import { useDispatch, useSelector } from "react-redux";
+import { IUser, setUser } from "@/store/slices/userSlice";
+import { retrieveLaunchParams } from "@telegram-apps/sdk";
+import { RootState } from "@/store/store";
 
 export default function Settings() {
+  const dispatch = useDispatch();
+  const { userData, loading } = useSelector((state: RootState) => state.user);
+
   //! STATES
   const [isCategoryWindow, setIsCategoryWindow] = useState<boolean>(false);
   const [isModalLoadExcelOpen, setIsModalLoadExcelOpen] =
     useState<boolean>(false);
-  // const [isCategoryWindow, setIsCategoryWindow] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+
   //! ASYNC FUNCTIONS
   async function getExcel() {
     try {
@@ -27,6 +35,26 @@ export default function Settings() {
       console.log(err);
     }
   }
+  //! Load categories
+  async function initializeUser() {
+    try {
+      const { initDataRaw } = retrieveLaunchParams();
+
+      await fetchUtil("auth/login", {
+        method: "POST",
+        body: JSON.stringify({ initData: initDataRaw }),
+      });
+      const userData: IUser = await fetchUtil("api/me", {
+        method: "GET",
+      });
+      dispatch(setUser(userData));
+    } catch (err) {
+      console.log(err instanceof Error ? err.message : "An error occurred");
+    }
+  }
+  useEffect(() => {
+    initializeUser();
+  }, []);
 
   return (
     <div
@@ -38,7 +66,9 @@ export default function Settings() {
           <div className={styles.categoryHeading}>
             <button
               className={styles.backToSettings}
-              onClick={() => setIsCategoryWindow(false)}
+              onClick={() => {
+                setIsCategoryWindow(false);
+              }}
             >
               <svg
                 width="10"
@@ -57,7 +87,22 @@ export default function Settings() {
               </svg>
             </button>
             <h1>Мои категории</h1>
-          </div>
+          </div>{" "}
+          {userData?.categories.map((category) => (
+            <div
+              key={category.name}
+              className={styles.category}
+              onClick={() => {
+                setSelectedCategory(category.name);
+              }}
+            >
+              <div
+                className={styles.categoryColor}
+                style={{ backgroundColor: "#" + category.color }}
+              ></div>
+              <p>{category.name}</p>
+            </div>
+          ))}
         </div>
       ) : (
         <>
