@@ -13,6 +13,7 @@ import {
   DrawerHeader,
   DrawerBody,
   DrawerFooter,
+  ModalBody,
 } from "@nextui-org/react";
 import { fetchUtil } from "@/utils/utilFetch";
 import { openLink, init } from "@telegram-apps/sdk";
@@ -21,6 +22,7 @@ import { IUser, setUser } from "@/store/slices/userSlice";
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
 import { RootState } from "@/store/store";
 import Image from "next/image";
+import { HexColorPicker } from "react-colorful";
 
 export default function Settings() {
   const dispatch = useDispatch();
@@ -34,8 +36,8 @@ export default function Settings() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categoryName, setCategoryName] = useState("");
   const [selectedColor, setSelectedColor] = useState("#4DB748"); // Default color
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
-  // Predefined colors array
   const colors = [
     "#4DB748",
     "#90E0EF",
@@ -43,8 +45,6 @@ export default function Settings() {
     "#FF8B59",
     "#9D4EDD",
     "#E4C1F9",
-    "#94D2BD",
-    "#FFCFD2",
   ];
 
   console.log(selectedCategory, loading);
@@ -102,6 +102,11 @@ export default function Settings() {
         console.error("Error creating category:", error);
       }
     }
+  };
+
+  // Add custom color picker handler
+  const handleCustomColor = (color: string) => {
+    setSelectedColor(color);
   };
 
   return (
@@ -181,7 +186,7 @@ export default function Settings() {
             <DrawerContent className={styles.drawer}>
               {(onClose) => (
                 <>
-                  <DrawerHeader className="flex gap-1 pb-0">
+                  <DrawerHeader className="py-4 px-6 flex-initial text-large font-semibold flex gap-1 pb-0">
                     <button
                       onClick={() => {
                         setCategoryName("");
@@ -192,24 +197,35 @@ export default function Settings() {
                     >
                       <img src="/icons/close.svg" alt="close" />
                     </button>
-                    Создать категорию
+                    <span style={{ color: "white" }}>Создать категорию</span>
                   </DrawerHeader>
 
                   <DrawerBody className={styles.drawerBody}>
                     <div className={styles.inputContainer}>
-                      <p className={styles.inputLabel}>Название категории</p>
                       <input
                         type="text"
                         value={categoryName}
                         onChange={(e) => setCategoryName(e.target.value)}
                         className={styles.categoryInput}
-                        placeholder="Транспорт"
+                        placeholder={
+                          [
+                            "Транспорт",
+                            "Продукты",
+                            "Развлечения",
+                            "Здоровье",
+                            "Одежда",
+                            "Рестораны",
+                            "Подарки",
+                            "Спорт",
+                            "Путешествия",
+                            "Образование",
+                          ][Math.floor(Math.random() * 10)]
+                        }
                         maxLength={50}
                       />
                     </div>
 
                     <div className={styles.colorSection}>
-                      <p className={styles.inputLabel}>Цвет категории</p>
                       <div className={styles.colorGrid}>
                         {colors.map((color) => (
                           <div
@@ -220,10 +236,72 @@ export default function Settings() {
                                 : ""
                             }`}
                             style={{ backgroundColor: color }}
-                            onClick={() => setSelectedColor(color)}
+                            onClick={() => {
+                              setSelectedColor(color);
+                            }}
                           />
                         ))}
+                        <div
+                          className={`${styles.colorOption} ${
+                            !colors.includes(selectedColor)
+                              ? styles.selectedColor
+                              : ""
+                          }`}
+                          style={{ backgroundColor: selectedColor }}
+                          onClick={() => setShowColorPicker(true)}
+                        >
+                          <span>+</span>
+                        </div>
                       </div>
+
+                      <Modal
+                        isOpen={showColorPicker}
+                        onClose={() => setShowColorPicker(false)}
+                        className="dark"
+                        backdrop="blur"
+                        placement="center"
+                        hideCloseButton
+                        motionProps={{
+                          variants: {
+                            enter: {
+                              y: 0,
+                              opacity: 1,
+                              transition: {
+                                duration: 0.1,
+                              },
+                            },
+                            exit: {
+                              y: 20,
+                              opacity: 0,
+                              transition: {
+                                duration: 0.1,
+                              },
+                            },
+                          },
+                        }}
+                      >
+                        <ModalContent className={styles.modalColor}>
+                          {(onClose) => (
+                            <>
+                              <ModalHeader>
+                                <button
+                                  onClick={onClose}
+                                  className={styles.closeButton}
+                                >
+                                  <img src="/icons/close.svg" alt="close" />
+                                </button>
+                                Выберите цвет
+                              </ModalHeader>
+                              <ModalBody className={styles.colorPickerModal}>
+                                <HexColorPicker
+                                  color={selectedColor}
+                                  onChange={handleCustomColor}
+                                />
+                              </ModalBody>
+                            </>
+                          )}
+                        </ModalContent>
+                      </Modal>
                     </div>
                   </DrawerBody>
 

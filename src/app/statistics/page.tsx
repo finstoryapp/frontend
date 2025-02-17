@@ -230,9 +230,12 @@ export default function Statistics() {
               dataKey="value"
               stroke="none"
               animationDuration={400}
+              isAnimationActive={false}
+              activeShape={false}
+              focusable={false} // Убирает фокус при клике
             >
               {categorySums.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
               ))}
             </Pie>
           </PieChart>
