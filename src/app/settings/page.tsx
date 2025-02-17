@@ -24,6 +24,7 @@ export default function Settings() {
   const [isModalLoadExcelOpen, setIsModalLoadExcelOpen] =
     useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  console.log(selectedCategory, loading);
 
   //! ASYNC FUNCTIONS
   async function getExcel() {
