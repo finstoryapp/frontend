@@ -7,7 +7,6 @@ import styles from "./statistics.module.css";
 import { fetchUtil } from "@/utils/utilFetch";
 import { IExpense } from "@/types/IExpense";
 import { getUnixMonthStartEnd } from "@/utils/getUnixMonthStartEnd";
-import Image from "next/image";
 
 interface CategorySum {
   name: string;
@@ -22,6 +21,7 @@ export default function Statistics() {
   const [categorySums, setCategorySums] = useState<CategorySum[]>([]);
   const [totalSum, setTotalSum] = useState(0);
   const [currentAccountIndex, setCurrentAccountIndex] = useState(-1); // -1 for all accounts
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const currentAccount =
     currentAccountIndex === -1
@@ -40,19 +40,38 @@ export default function Statistics() {
     );
   };
 
+  const handlePrevMonth = () => {
+    setCurrentDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(prev.getMonth() - 1);
+      return newDate;
+    });
+  };
+
+  const handleNextMonth = () => {
+    const nextDate = new Date(currentDate);
+    nextDate.setMonth(currentDate.getMonth() + 1);
+    if (nextDate <= new Date()) {
+      setCurrentDate(nextDate);
+    }
+  };
+
+  const formatMonth = (date: Date) => {
+    return date.toLocaleString("ru-RU", { month: "long", year: "numeric" });
+  };
+
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
         const { start, end } = getUnixMonthStartEnd(
-          new Date().getFullYear(),
-          new Date().getMonth() + 1
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1
         );
         const expenses: IExpense[] = await fetchUtil(
           `api/expenses_list/range?from=${start}&to=${end}`
         );
         setExpenses(expenses);
 
-        // Calculate sums for each category
         const sums: { [key: string]: number } = {};
         let total = 0;
 
@@ -67,7 +86,6 @@ export default function Statistics() {
         for (const expense of filteredExpenses) {
           let amount = Math.abs(Number(expense.amount));
 
-          // Convert to default currency if showing all accounts
           if (
             currentAccountIndex === -1 &&
             expense.account.currency !== userData?.defaultCurrency
@@ -110,10 +128,54 @@ export default function Statistics() {
     if (userData && accounts) {
       fetchExpenses();
     }
-  }, [userData, accounts, currentAccountIndex]);
+  }, [userData, accounts, currentAccountIndex, currentDate]);
 
   return (
     <div className={styles.container}>
+      <div className={styles.monthSwitcher}>
+        <button onClick={handlePrevMonth}>
+          <svg
+            width="10"
+            height="18"
+            viewBox="0 0 10 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8.75 1.5L1.25 9L8.75 16.5"
+              stroke="#3E9FFF"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        <span className={styles.monthName}>{formatMonth(currentDate)}</span>
+        <button
+          onClick={handleNextMonth}
+          disabled={
+            currentDate.getMonth() === new Date().getMonth() &&
+            currentDate.getFullYear() === new Date().getFullYear()
+          }
+        >
+          <svg
+            width="10"
+            height="18"
+            viewBox="0 0 10 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8.75 1.5L1.25 9L8.75 16.5"
+              stroke="#3E9FFF"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+
       <div className={styles.accountSwitcher}>
         <button onClick={handlePrevAccount}>
           {" "}
@@ -193,7 +255,8 @@ export default function Statistics() {
             />
             <span className={styles.categoryName}>{category.name}</span>
             <span className={styles.categoryValue}>
-              {category.value.toFixed(2)} {currentAccount?.currency}
+              {category.value.toFixed(2)}{" "}
+              <span>{currentAccount?.currency}</span>
             </span>
           </div>
         ))}
