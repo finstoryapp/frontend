@@ -286,7 +286,7 @@
   align-items: center;
   padding-bottom: 50px;
 }
-.colorPickerModal :global(.react-colorful) {
+.colorPickerModal {
   width: 100%;
   max-width: 200px;
 }
