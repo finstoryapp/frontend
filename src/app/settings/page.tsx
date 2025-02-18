@@ -37,6 +37,9 @@ export default function Settings() {
   const [categoryName, setCategoryName] = useState("");
   const [selectedColor, setSelectedColor] = useState("#4DB748"); // Default color
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+  const [editingColor, setEditingColor] = useState("#4DB748");
+  const [showEditColorPicker, setShowEditColorPicker] = useState(false);
 
   const colors = [
     "#4DB748",
@@ -109,6 +112,27 @@ export default function Settings() {
     setSelectedColor(color);
   };
 
+  const handleUpdateCategoryColor = async (onClose: () => void) => {
+    try {
+      const response = await fetchUtil("api/update_category_color", {
+        method: "PUT",
+        body: JSON.stringify({
+          name: selectedCategory,
+          color: editingColor.replace("#", ""),
+        }),
+      });
+
+      if (response.message) {
+        await initializeUser();
+        onClose();
+        setSelectedCategory("");
+        setEditingColor("#4DB748");
+      }
+    } catch (error) {
+      console.error("Error updating category:", error);
+    }
+  };
+
   return (
     <div
       className={`text-sm ${styles.settingsWrapper}`}
@@ -147,6 +171,8 @@ export default function Settings() {
               className={styles.category}
               onClick={() => {
                 setSelectedCategory(category.name);
+                setEditingColor("#" + category.color);
+                setIsEditDrawerOpen(true);
               }}
             >
               <div
@@ -250,7 +276,7 @@ export default function Settings() {
                           style={{ backgroundColor: selectedColor }}
                           onClick={() => setShowColorPicker(true)}
                         >
-                          <span>+</span>
+                          <img src="/icons/plus.svg" alt="plus" />
                         </div>
                       </div>
 
@@ -313,6 +339,147 @@ export default function Settings() {
                       isDisabled={!categoryName.trim()}
                     >
                       Создать категорию
+                      <Image
+                        src="/icons/check.svg"
+                        alt="plus"
+                        width={24}
+                        height={24}
+                        priority
+                      />
+                    </Button>
+                  </DrawerFooter>
+                </>
+              )}
+            </DrawerContent>
+          </Drawer>
+          <Drawer
+            isOpen={isEditDrawerOpen}
+            placement="bottom"
+            onOpenChange={(isOpen) => {
+              setIsEditDrawerOpen(isOpen);
+              if (!isOpen) {
+                setSelectedCategory("");
+                setEditingColor("#4DB748");
+              }
+            }}
+            className="dark"
+            backdrop="blur"
+            hideCloseButton
+            disableAnimation
+          >
+            <DrawerContent className={styles.drawer}>
+              {(onClose) => (
+                <>
+                  <DrawerHeader className="   flex-initial text-large font-semibold flex gap-1 pb-0">
+                    <button
+                      onClick={() => {
+                        setSelectedCategory("");
+                        setEditingColor("#4DB748");
+                        onClose();
+                      }}
+                      className={styles.closeButton}
+                    >
+                      <img src="/icons/close.svg" alt="close" />
+                    </button>
+                    <span style={{ color: "white" }}>Изменить категорию</span>
+                  </DrawerHeader>
+
+                  <DrawerBody className={styles.drawerBody}>
+                    <div className={styles.categoryNameDisplay}>
+                      <span>{selectedCategory}</span>
+                    </div>
+                    <div className={styles.colorSection}>
+                      <div className={styles.colorGrid}>
+                        {colors.map((color) => (
+                          <div
+                            key={color}
+                            className={`${styles.colorOption} ${
+                              editingColor === color ? styles.selectedColor : ""
+                            }`}
+                            style={{ backgroundColor: color }}
+                            onClick={() => {
+                              setEditingColor(color);
+                            }}
+                          />
+                        ))}
+                        <div
+                          className={`${styles.colorOption} ${
+                            !colors.includes(editingColor)
+                              ? styles.selectedColor
+                              : ""
+                          }`}
+                          style={{ backgroundColor: editingColor }}
+                          onClick={() => setShowEditColorPicker(true)}
+                        >
+                          <img src="/icons/plus.svg" alt="plus" />
+                        </div>
+                      </div>
+
+                      <Modal
+                        isOpen={showEditColorPicker}
+                        onClose={() => setShowEditColorPicker(false)}
+                        className="dark"
+                        backdrop="blur"
+                        placement="center"
+                        hideCloseButton
+                        motionProps={{
+                          variants: {
+                            enter: {
+                              y: 0,
+                              opacity: 1,
+                              transition: {
+                                duration: 0.2,
+                              },
+                            },
+                            exit: {
+                              y: 20,
+                              opacity: 0,
+                              transition: {
+                                duration: 0.2,
+                              },
+                            },
+                          },
+                        }}
+                      >
+                        <ModalContent className={styles.modalColor}>
+                          {(onClose) => (
+                            <>
+                              <ModalHeader style={{ color: "white" }}>
+                                <button
+                                  onClick={onClose}
+                                  className={styles.closeButton}
+                                >
+                                  <img src="/icons/close.svg" alt="close" />
+                                </button>
+                                Выберите цвет
+                              </ModalHeader>
+                              <ModalBody className={styles.colorPickerModal}>
+                                <HexColorPicker
+                                  color={editingColor}
+                                  onChange={setEditingColor}
+                                />
+                              </ModalBody>
+                            </>
+                          )}
+                        </ModalContent>
+                      </Modal>
+                    </div>
+                  </DrawerBody>
+
+                  <DrawerFooter className={styles.drawerFooter}>
+                    <Button
+                      color="primary"
+                      className={styles.addButtonStyled}
+                      onPress={() => handleUpdateCategoryColor(onClose)}
+                    >
+                      Сохранить
+                      <Image
+                        src="/icons/check.svg"
+                        alt="check"
+                        width={24}
+                        height={24}
+                        priority
+                      />
                     </Button>
                   </DrawerFooter>
                 </>

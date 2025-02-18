@@ -288,10 +288,15 @@
 }
 .colorPickerModal {
   width: 100%;
-  max-width: 200px;
 }
 .modalColor {
   width: 320px;
   color: white;
   background-color: #173958;
+}
+.categoryNameDisplay {
+  font-size: 32px;
+}
+.categoryNameDisplay {
+  color: white;
 }
