@@ -740,7 +740,7 @@ export default function Settings() {
             <span>Дизайн приложения</span>
             <a href="https://t.me/Twin_7">@Twin_7</a>
           </div>
-          <span className={styles.version}>Версия: v0.6.0</span>
+          <span className={styles.version}>Версия: v1.0.0-alpha</span>
           <Modal
             isOpen={isModalLoadExcelOpen}
             className="dark w-52"
