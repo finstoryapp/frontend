@@ -23,6 +23,7 @@ import { retrieveLaunchParams } from "@telegram-apps/sdk";
 import { RootState } from "@/store/store";
 import Image from "next/image";
 import { HexColorPicker } from "react-colorful";
+import { current } from "@reduxjs/toolkit";
 
 export default function Settings() {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ export default function Settings() {
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [editingColor, setEditingColor] = useState("#4DB748");
   const [showEditColorPicker, setShowEditColorPicker] = useState(false);
+  const [isRemovingCategory, setIsRemovingCategory] = useState(false);
 
   const colors = [
     "#4DB748",
@@ -60,6 +62,31 @@ export default function Settings() {
       });
     } catch (err) {
       console.log(err);
+    }
+  }
+  async function removeCategory() {
+    console.log(selectedCategory);
+    try {
+      const encodedCategory = encodeURIComponent(selectedCategory);
+      const response = await fetchUtil(
+        `api/delete_category/${encodedCategory}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.message) {
+        setSelectedCategory("");
+        await initializeUser();
+        console.log("Expense deleted successfully!");
+        return "Deleted";
+      } else {
+        setSelectedCategory("");
+        await initializeUser();
+        console.error(response);
+      }
+    } catch (error) {
+      console.log(error);
+      setSelectedCategory("");
     }
   }
   //! Load categories
@@ -198,6 +225,48 @@ export default function Settings() {
               Добавить категорию
             </Button>
           </div>{" "}
+          <Modal
+            isOpen={isRemovingCategory}
+            className="dark w-60"
+            backdrop="blur"
+            placement="center"
+            hideCloseButton
+            disableAnimation
+          >
+            <ModalContent>
+              {() => (
+                <>
+                  <ModalHeader
+                    className={`flex flex-col gap-1 ${styles.removeModalHeader}`}
+                  >
+                    Удалить категорию?
+                  </ModalHeader>
+                  <div className={styles.removeModalWarning}>
+                    Удалятся все связанные расходы.
+                  </div>
+                  <ModalFooter className={styles.removeModalFooter}>
+                    <Button
+                      color="primary"
+                      onPress={() => {
+                        setIsRemovingCategory(false);
+                      }}
+                    >
+                      Отменить
+                    </Button>
+                    <Button
+                      color="danger"
+                      onPress={() => {
+                        removeCategory();
+                        setIsRemovingCategory(false);
+                      }}
+                    >
+                      Удалить
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
           <Drawer
             isOpen={isOpen}
             placement="bottom"
@@ -356,7 +425,6 @@ export default function Settings() {
             onOpenChange={(isOpen) => {
               setIsEditDrawerOpen(isOpen);
               if (!isOpen) {
-                setSelectedCategory("");
                 setEditingColor("#4DB748");
               }
             }}
@@ -368,7 +436,27 @@ export default function Settings() {
             <DrawerContent className={styles.drawer}>
               {(onClose) => (
                 <>
-                  <DrawerHeader className="   flex-initial text-large font-semibold flex gap-1 pb-0">
+                  <DrawerHeader className="flex-initial text-large font-semibold flex gap-1 pb-0">
+                    <button
+                      onClick={() => {
+                        setSelectedCategory("");
+                        setEditingColor("#4DB748");
+                        onClose();
+                      }}
+                      className={styles.closeButton}
+                    >
+                      <img src="/icons/close.svg" alt="close" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingColor("#4DB748");
+                        setIsRemovingCategory(true);
+                        onClose();
+                      }}
+                      className={styles.deleteButton}
+                    >
+                      <img src="/icons/trash.svg" alt="close" />
+                    </button>
                     <button
                       onClick={() => {
                         setSelectedCategory("");
