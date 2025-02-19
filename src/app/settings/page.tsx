@@ -23,7 +23,6 @@ import { retrieveLaunchParams } from "@telegram-apps/sdk";
 import { RootState } from "@/store/store";
 import Image from "next/image";
 import { HexColorPicker } from "react-colorful";
-import { current } from "@reduxjs/toolkit";
 
 export default function Settings() {
   const dispatch = useDispatch();
