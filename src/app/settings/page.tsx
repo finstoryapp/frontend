@@ -95,7 +95,6 @@ export default function Settings() {
         });
 
         if (response.message) {
-          // Refresh user data to get updated categories
           await initializeUser();
           onClose();
           setCategoryName("");
@@ -107,7 +106,6 @@ export default function Settings() {
     }
   };
 
-  // Add custom color picker handler
   const handleCustomColor = (color: string) => {
     setSelectedColor(color);
   };

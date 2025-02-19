@@ -112,10 +112,10 @@
 }
 .backToSettings {
   top: -5px;
-  left: 24px;
-  position: absolute;
+  left: 0px;
   width: 32px;
   height: 32px;
+  position: absolute;
 }
 .backToSettings::before {
   content: "";

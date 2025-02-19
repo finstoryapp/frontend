@@ -249,19 +249,21 @@ export default function Statistics() {
       </div>
 
       <div className={styles.legendContainer}>
-        {categorySums.map((category, index) => (
-          <div key={index} className={styles.legendItem}>
-            <div
-              className={styles.colorIndicator}
-              style={{ backgroundColor: category.color }}
-            />
-            <span className={styles.categoryName}>{category.name}</span>
-            <span className={styles.categoryValue}>
-              {category.value.toFixed(2)}{" "}
-              <span>{currentAccount?.currency}</span>
-            </span>
-          </div>
-        ))}
+        {categorySums
+          .sort((a, b) => b.value - a.value)
+          .map((category, index) => (
+            <div key={index} className={styles.legendItem}>
+              <div
+                className={styles.colorIndicator}
+                style={{ backgroundColor: category.color }}
+              />
+              <span className={styles.categoryName}>{category.name}</span>
+              <span className={styles.categoryValue}>
+                {category.value.toFixed(2)}{" "}
+                <span>{currentAccount?.currency}</span>
+              </span>
+            </div>
+          ))}
       </div>
     </div>
   );
