@@ -446,16 +446,21 @@ export default function Settings() {
                     >
                       <img src="/icons/close.svg" alt="close" />
                     </button>
-                    <button
-                      onClick={() => {
-                        setEditingColor("#4DB748");
-                        setIsRemovingCategory(true);
-                        onClose();
-                      }}
-                      className={styles.deleteButton}
-                    >
-                      <img src="/icons/trash.svg" alt="close" />
-                    </button>
+                    {userData?.categories.length !== 1 ? (
+                      <button
+                        onClick={() => {
+                          setEditingColor("#4DB748");
+                          setIsRemovingCategory(true);
+                          onClose();
+                        }}
+                        className={styles.deleteButton}
+                      >
+                        <img src="/icons/trash.svg" alt="close" />
+                      </button>
+                    ) : (
+                      <></>
+                    )}
+
                     <button
                       onClick={() => {
                         setSelectedCategory("");
