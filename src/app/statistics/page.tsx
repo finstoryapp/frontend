@@ -232,7 +232,7 @@ export default function Statistics() {
               animationDuration={400}
               isAnimationActive={false}
               activeShape={false}
-              focusable={false} // Убирает фокус при клике
+              focusable={false}
             >
               {categorySums.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
@@ -249,6 +249,7 @@ export default function Statistics() {
       </div>
 
       <div className={styles.legendContainer}>
+        {/* Sort categorySums only here */}
         {categorySums
           .sort((a, b) => b.value - a.value)
           .map((category, index) => (
