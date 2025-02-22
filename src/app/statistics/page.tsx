@@ -121,11 +121,7 @@ export default function Statistics() {
             (cat) => cat.name === name
           );
           // Определим цвета явно для тестирования (можно заменить на данные из userData)
-          const colorMap: { [key: string]: string } = {
-            Транспорт: "#F3E092", // Желтый для Транспорта
-            Еда: "#4DB748", // Зеленый для Еды
-            // Добавьте другие категории по необходимости
-          };
+          const colorMap: { [key: string]: string } = {};
           const defaultColor = "#cccccc"; // Запасной цвет
           return {
             name,
