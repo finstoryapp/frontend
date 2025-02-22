@@ -20,13 +20,23 @@ export default function Statistics() {
   const [expenses, setExpenses] = useState<IExpense[] | null>(null);
   const [categorySums, setCategorySums] = useState<CategorySum[]>([]);
   const [totalSum, setTotalSum] = useState(0);
-  const [currentAccountIndex, setCurrentAccountIndex] = useState(-1); // -1 for all accounts
+  const [currentAccountIndex, setCurrentAccountIndex] = useState(-1);
   const [currentDate, setCurrentDate] = useState(new Date());
-  console.log(expenses);
+
   const currentAccount =
     currentAccountIndex === -1
       ? { accountName: "Все счета", currency: userData?.defaultCurrency }
       : accounts[currentAccountIndex];
+
+  // Вспомогательная функция для нормализации цвета
+  const normalizeColor = (color?: string): string => {
+    if (!color) return "#cccccc";
+    // Если цвет уже с # и валидный HEX
+    if (/^#[0-9A-Fa-f]{6}$/.test(color)) return color;
+    // Если цвет без #, но валидный HEX
+    if (/^[0-9A-Fa-f]{6}$/.test(color)) return `#${color}`;
+    return "#cccccc"; // запасной цвет для всех некорректных случаев
+  };
 
   const handlePrevAccount = () => {
     setCurrentAccountIndex((prev) =>
@@ -113,7 +123,7 @@ export default function Statistics() {
           return {
             name,
             value,
-            color: `#${category?.color || "cccccc"}`,
+            color: normalizeColor(category?.color), // Используем нормализацию
           };
         });
 
@@ -177,7 +187,6 @@ export default function Statistics() {
 
       <div className={styles.accountSwitcher}>
         <button onClick={handlePrevAccount}>
-          {" "}
           <svg
             width="10"
             height="18"
@@ -198,7 +207,6 @@ export default function Statistics() {
           {currentAccount?.accountName}
         </span>
         <button onClick={handleNextAccount}>
-          {" "}
           <svg
             width="10"
             height="18"
@@ -231,8 +239,6 @@ export default function Statistics() {
               stroke="none"
               animationDuration={400}
               isAnimationActive={false}
-              activeShape={false}
-              focusable={false}
             >
               {categorySums.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
@@ -249,7 +255,6 @@ export default function Statistics() {
       </div>
 
       <div className={styles.legendContainer}>
-        {/* Sort categorySums only here */}
         {categorySums
           .sort((a, b) => b.value - a.value)
           .map((category, index) => (
