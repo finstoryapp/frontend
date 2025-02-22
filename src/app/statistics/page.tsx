@@ -69,7 +69,6 @@ export default function Statistics() {
   const formatMonth = (date: Date) => {
     return date.toLocaleString("ru-RU", { month: "long", year: "numeric" });
   };
-
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
@@ -116,14 +115,24 @@ export default function Statistics() {
           total += amount;
         }
 
+        // Явное сопоставление цветов с категориями
         const categoryData = Object.entries(sums).map(([name, value]) => {
           const category = userData?.categories.find(
             (cat) => cat.name === name
           );
+          // Определим цвета явно для тестирования (можно заменить на данные из userData)
+          const colorMap: { [key: string]: string } = {
+            Транспорт: "#F3E092", // Желтый для Транспорта
+            Еда: "#4DB748", // Зеленый для Еды
+            // Добавьте другие категории по необходимости
+          };
+          const defaultColor = "#cccccc"; // Запасной цвет
           return {
             name,
             value,
-            color: normalizeColor(category?.color), // Используем нормализацию
+            color: normalizeColor(
+              colorMap[name] || category?.color || defaultColor
+            ),
           };
         });
 
@@ -138,7 +147,6 @@ export default function Statistics() {
       fetchExpenses();
     }
   }, [userData, accounts, currentAccountIndex, currentDate]);
-
   return (
     <div className={styles.container}>
       <div className={styles.monthSwitcher}>
