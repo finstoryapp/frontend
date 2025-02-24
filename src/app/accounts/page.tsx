@@ -49,10 +49,11 @@ export default function Accounts() {
   ];
 
   //! STATES
+
   const [currentSelectedCurrency, setCurrentSelectedCurrency] =
-    useState<string>("USD");
+    useState<string>(userData?.defaultCurrency ?? "USD");
   const [currentAddingSelectedCurrency, setCurrentAddingSelectedCurrency] =
-    useState<string>("USD");
+    useState<string>("");
   const [currentAccountName, setCurrentAccountName] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isAccountExist, setIsAccountExist] = useState<boolean>(false);
