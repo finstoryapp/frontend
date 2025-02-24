@@ -748,7 +748,7 @@ export default function Me() {
               <DrawerFooter className={styles.drawerFooter}>
                 <Button
                   color="primary"
-                  onPress={() => handlePress(onClose)}
+                  onPress={() => (isSending ? "" : handlePress(onClose))}
                   className={styles.addButtonStyled}
                   endContent={
                     isSending ? (
