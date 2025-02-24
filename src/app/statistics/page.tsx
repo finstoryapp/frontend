@@ -188,7 +188,6 @@ export default function Statistics() {
           </svg>
         </button>
       </div>
-
       <div className={styles.accountSwitcher}>
         <button onClick={handlePrevAccount}>
           <svg
@@ -244,9 +243,15 @@ export default function Statistics() {
               animationDuration={400}
               isAnimationActive={false}
             >
-              {categorySums.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
-              ))}
+              {categorySums
+                .sort((a, b) => b.value - a.value)
+                .map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                    stroke="none"
+                  />
+                ))}
             </Pie>
           </PieChart>
         </ResponsiveContainer>
