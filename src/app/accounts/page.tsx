@@ -99,36 +99,30 @@ export default function Accounts() {
     if (currentAccountName.length !== 0) {
       const accountData = {
         accountName: currentAccountName,
-        currency: currentSelectedCurrency,
+        currency: currentAddingSelectedCurrency, // Исправлено
       };
 
       setIsSending(true);
 
       try {
-        try {
-          const response = await fetchUtil("api/add_account", {
-            method: "POST",
-            body: JSON.stringify(accountData),
-          });
+        const response = await fetchUtil("api/add_account", {
+          method: "POST",
+          body: JSON.stringify(accountData),
+        });
 
-          if (!response.ok) {
-            setIsAccountExist(true);
-          }
-
-          console.log("Успешный ответ:", response);
-          setCurrentAccountName("");
-          setCurrentSelectedCurrency("USD");
-          onClose();
-        } catch (error) {
+        if (!response.ok) {
           setIsAccountExist(true);
-          console.log("Ошибка сети или обработки:", error);
         }
-      } catch (e) {
-        console.log(e);
-        setIsSending(false);
+
+        console.log("Успешный ответ:", response);
+        setCurrentAccountName("");
+        setCurrentAddingSelectedCurrency("USD"); // Сброс на значение по умолчанию
+        onClose();
+      } catch (error) {
+        setIsAccountExist(true);
+        console.log("Ошибка сети или обработки:", error);
       } finally {
         fetchAccounts();
-        console.log("OK");
         setIsSending(false);
       }
     }
