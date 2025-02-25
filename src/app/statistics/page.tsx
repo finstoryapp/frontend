@@ -24,7 +24,7 @@ export default function Statistics() {
   const [currentAccountIndex, setCurrentAccountIndex] = useState(-1);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true); // Добавлено состояние загрузки
-
+  console.log(expenses);
   const currentAccount =
     currentAccountIndex === -1
       ? { accountName: "Все счета", currency: userData?.defaultCurrency }
@@ -107,7 +107,6 @@ export default function Statistics() {
               amount *= exchangeRate.rate;
             } catch (error) {
               console.error("Error converting currency:", error);
-              console.log(expenses);
             }
           }
 
