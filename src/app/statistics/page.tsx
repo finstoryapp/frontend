@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { Spinner } from "@nextui-org/react"; // Добавлен импорт спиннера
 import styles from "./statistics.module.css";
 import { fetchUtil } from "@/utils/utilFetch";
 import { IExpense } from "@/types/IExpense";
@@ -22,20 +23,18 @@ export default function Statistics() {
   const [totalSum, setTotalSum] = useState(0);
   const [currentAccountIndex, setCurrentAccountIndex] = useState(-1);
   const [currentDate, setCurrentDate] = useState(new Date());
-  console.log(expenses);
+  const [isLoading, setIsLoading] = useState(true); // Добавлено состояние загрузки
+
   const currentAccount =
     currentAccountIndex === -1
       ? { accountName: "Все счета", currency: userData?.defaultCurrency }
       : accounts[currentAccountIndex];
 
-  // Вспомогательная функция для нормализации цвета
   const normalizeColor = (color?: string): string => {
     if (!color) return "#cccccc";
-    // Если цвет уже с # и валидный HEX
     if (/^#[0-9A-Fa-f]{6}$/.test(color)) return color;
-    // Если цвет без #, но валидный HEX
     if (/^[0-9A-Fa-f]{6}$/.test(color)) return `#${color}`;
-    return "#cccccc"; // запасной цвет для всех некорректных случаев
+    return "#cccccc";
   };
 
   const handlePrevAccount = () => {
@@ -69,8 +68,10 @@ export default function Statistics() {
   const formatMonth = (date: Date) => {
     return date.toLocaleString("ru-RU", { month: "long", year: "numeric" });
   };
+
   useEffect(() => {
     const fetchExpenses = async () => {
+      setIsLoading(true);
       try {
         const { start, end } = getUnixMonthStartEnd(
           currentDate.getFullYear(),
@@ -94,7 +95,6 @@ export default function Statistics() {
 
         for (const expense of filteredExpenses) {
           let amount = Math.abs(Number(expense.amount));
-
           if (
             currentAccountIndex === -1 &&
             expense.account.currency !== userData?.defaultCurrency
@@ -107,6 +107,7 @@ export default function Statistics() {
               amount *= exchangeRate.rate;
             } catch (error) {
               console.error("Error converting currency:", error);
+              console.log(expenses);
             }
           }
 
@@ -115,14 +116,12 @@ export default function Statistics() {
           total += amount;
         }
 
-        // Явное сопоставление цветов с категориями
         const categoryData = Object.entries(sums).map(([name, value]) => {
           const category = userData?.categories.find(
             (cat) => cat.name === name
           );
-          // Определим цвета явно для тестирования (можно заменить на данные из userData)
           const colorMap: { [key: string]: string } = {};
-          const defaultColor = "#cccccc"; // Запасной цвет
+          const defaultColor = "#cccccc";
           return {
             name,
             value,
@@ -136,13 +135,18 @@ export default function Statistics() {
         setTotalSum(total);
       } catch (error) {
         console.error("Error fetching expenses:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (userData && accounts) {
       fetchExpenses();
+    } else {
+      setIsLoading(false);
     }
   }, [userData, accounts, currentAccountIndex, currentDate]);
+
   return (
     <div className={styles.container}>
       <div className={styles.monthSwitcher}>
@@ -228,58 +232,66 @@ export default function Statistics() {
         </button>
       </div>
 
-      <div className={styles.chartContainer}>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={categorySums}
-              cx="50%"
-              cy="50%"
-              innerRadius={120}
-              outerRadius={150}
-              paddingAngle={5}
-              dataKey="value"
-              stroke="none"
-              animationDuration={400}
-              isAnimationActive={false}
-            >
-              {categorySums
-                .sort((a, b) => b.value - a.value)
-                .map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={entry.color}
-                    stroke="none"
-                  />
-                ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-        <div className={styles.totalSum}>
-          <span className={styles.sumLabel}>Расход за месяц</span>
-          <span className={styles.sumValue}>
-            {totalSum.toFixed(2)} {currentAccount?.currency}
-          </span>
+      {isLoading ? (
+        <div className={styles.loading}>
+          <Spinner />
         </div>
-      </div>
-
-      <div className={styles.legendContainer}>
-        {categorySums
-          .sort((a, b) => b.value - a.value)
-          .map((category, index) => (
-            <div key={index} className={styles.legendItem}>
-              <div
-                className={styles.colorIndicator}
-                style={{ backgroundColor: category.color }}
-              />
-              <span className={styles.categoryName}>{category.name}</span>
-              <span className={styles.categoryValue}>
-                {category.value.toFixed(2)}{" "}
-                <span>{currentAccount?.currency}</span>
+      ) : (
+        <>
+          <div className={styles.chartContainer}>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={categorySums}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={120}
+                  outerRadius={150}
+                  paddingAngle={5}
+                  dataKey="value"
+                  stroke="none"
+                  animationDuration={400}
+                  isAnimationActive={false}
+                >
+                  {categorySums
+                    .sort((a, b) => b.value - a.value)
+                    .map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                        stroke="none"
+                      />
+                    ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className={styles.totalSum}>
+              <span className={styles.sumLabel}>Расход за месяц</span>
+              <span className={styles.sumValue}>
+                {totalSum.toFixed(2)} {currentAccount?.currency}
               </span>
             </div>
-          ))}
-      </div>
+          </div>
+
+          <div className={styles.legendContainer}>
+            {categorySums
+              .sort((a, b) => b.value - a.value)
+              .map((category, index) => (
+                <div key={index} className={styles.legendItem}>
+                  <div
+                    className={styles.colorIndicator}
+                    style={{ backgroundColor: category.color }}
+                  />
+                  <span className={styles.categoryName}>{category.name}</span>
+                  <span className={styles.categoryValue}>
+                    {category.value.toFixed(2)}{" "}
+                    <span>{currentAccount?.currency}</span>
+                  </span>
+                </div>
+              ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
