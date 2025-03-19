@@ -1,4 +1,5 @@
 "use client";
+import Subscription from "../../components/Subscription/Subscription";
 import { useEffect, useState } from "react";
 import styles from "./settings.module.css";
 import {
@@ -28,14 +29,14 @@ export default function Settings() {
   const dispatch = useDispatch();
   const { userData, loading } = useSelector((state: RootState) => state.user);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
+  const [isSubscription, setIsSubscription] = useState<boolean>(false);
   //! STATES
   const [isCategoryWindow, setIsCategoryWindow] = useState<boolean>(false);
   const [isModalLoadExcelOpen, setIsModalLoadExcelOpen] =
     useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categoryName, setCategoryName] = useState("");
-  const [selectedColor, setSelectedColor] = useState("#4DB748"); // Default color
+  const [selectedColor, setSelectedColor] = useState("#4DB748");
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [editingColor, setEditingColor] = useState("#4DB748");
@@ -579,6 +580,12 @@ export default function Settings() {
         </div>
       ) : (
         <>
+          {isSubscription ? (
+            <Subscription
+              userData={userData}
+              onClose={() => setIsSubscription(false)}
+            />
+          ) : null}
           <div className={styles.settings}>
             <div className={styles.setting}>
               <button onClick={() => setIsCategoryWindow(true)}>
@@ -600,10 +607,34 @@ export default function Settings() {
                 </svg>
               </button>
             </div>
+            <div className={`${styles.setting}`}>
+              <button
+                onClick={() => {
+                  setIsSubscription(true);
+                }}
+              >
+                <p>Подписка</p>
+                <svg
+                  width="8"
+                  height="14"
+                  viewBox="0 0 8 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1L7 7L1 13"
+                    stroke="#3582ff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>{" "}
             <div className={`${styles.setting} ${styles.disabled}`}>
               <button>
                 {" "}
-                <p>Подписка (скоро)</p>
+                <p>Тема (скоро)</p>
                 <svg
                   width="8"
                   height="14"

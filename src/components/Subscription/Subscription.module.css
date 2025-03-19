@@ -1,0 +1,50 @@
+.subscription {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent;
+}
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  backdrop-filter: blur(2px);
+}
+.main {
+  top: 128px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+  position: absolute;
+  color: black;
+  z-index: 1001;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  background-color: #0a0f2a;
+  padding: 20px;
+  width: 240px;
+  box-shadow: 0 0 2px rgba(79, 147, 255, 1);
+}
+.heading {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+.until img {
+  display: inline;
+  width: 14px;
+  margin-left: 3px;
+}
+.done {
+  height: 36px;
+  margin-top: 10px;
+  border-radius: 5px;
+  background-color: rgb(79, 147, 255);
+  transition: 0.3s;
+}
+.done:hover {
+  background-color: rgba(79, 147, 255, 0.8);
+}

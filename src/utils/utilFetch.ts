@@ -12,7 +12,7 @@ export const fetchUtil = async (url: string, options: RequestInit = {}) => {
     `${
       process.env.NEXT_PUBLIC_NODE_ENV === "development"
         ? "http://127.0.0.1:3001/"
-        : "https://finstoryapi.ilyadev.tech/"
+        : "https://finstoryapi.frontgr.com/"
     }${url}`,
     config
   );

@@ -23,7 +23,7 @@ export default function Statistics() {
   const [totalSum, setTotalSum] = useState(0);
   const [currentAccountIndex, setCurrentAccountIndex] = useState(-1);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [isLoading, setIsLoading] = useState(true); // Добавлено состояние загрузки
+  const [isLoading, setIsLoading] = useState(true);
   console.log(expenses);
   const currentAccount =
     currentAccountIndex === -1
