@@ -222,7 +222,7 @@ export default function Me() {
         } else {
           try {
             const response = await fetch(
-              `https://exchange.ilyadev.tech/get?from=${item.currency}&to=${userData?.defaultCurrency}`
+              `https://exchange.frontgr.com/get?from=${item.currency}&to=${userData?.defaultCurrency}`
             );
             const exchangeRate = await response.json();
             fullSumResult += item.amount * exchangeRate.rate;

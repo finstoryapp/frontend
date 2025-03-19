@@ -101,7 +101,7 @@ export default function Statistics() {
           ) {
             try {
               const response = await fetch(
-                `https://exchange.ilyadev.tech/get?from=${expense.account.currency}&to=${userData?.defaultCurrency}`
+                `https://exchange.frontgr.com/get?from=${expense.account.currency}&to=${userData?.defaultCurrency}`
               );
               const exchangeRate = await response.json();
               amount *= exchangeRate.rate;
