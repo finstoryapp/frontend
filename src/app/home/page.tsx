@@ -1,9 +1,9 @@
-import styles from "./page.module.css";
+import styles from "./home.module.css";
 
 const Home = () => {
   return (
     <div className={styles.hello}>
-      <p>Hello World</p>
+      <p>Домашняя страница</p>
     </div>
   );
 };

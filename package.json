@@ -20,12 +20,14 @@
     "react-dom": "^18.3.1",
     "react-horizontal-scrolling-menu": "^8.2.0",
     "react-redux": "^9.2.0",
-    "recharts": "^2.15.1"
+    "recharts": "^2.15.1",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/redux-persist": "^4.0.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
