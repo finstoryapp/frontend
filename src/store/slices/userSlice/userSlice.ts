@@ -1,24 +1,5 @@
+import { IUser, UserState } from "@/types/userTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface Categories {
-  name: string;
-  color: string;
-}
-
-export interface IUser {
-  id: string;
-  telegramId: string;
-  categories: Categories[];
-  premiumUntil: string | null;
-  defaultCurrency: string;
-  createdAt: string;
-  username: string | null;
-}
-
-interface UserState {
-  userData: IUser | null;
-  loading: boolean;
-}
 
 const initialState: UserState = {
   userData: null,

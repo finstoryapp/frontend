@@ -1,3 +1,5 @@
+// It helps maintain consistent headers, base URL, and error handling. Returns .json
+
 export const fetchUtil = async (url: string, options: RequestInit = {}) => {
   const defaultOptions: RequestInit = {
     credentials: "include",
