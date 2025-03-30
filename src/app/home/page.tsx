@@ -2,7 +2,6 @@
 
 import styles from "./home.module.css";
 import { authUser } from "@/api/userApi";
-
 const Home = () => {
   authUser();
   return (

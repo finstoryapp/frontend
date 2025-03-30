@@ -1,5 +1,6 @@
 import { IUser, UserState } from "@/types/userTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { fetchUser } from "./userThunks";
 
 const initialState: UserState = {
   userData: null,
@@ -9,13 +10,21 @@ const initialState: UserState = {
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {
-    setUser: (state, action: PayloadAction<IUser>) => {
-      state.userData = action.payload;
-      state.loading = false;
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchUser.pending, (state) => {
+      state.loading = true;
+      state.userData = null;
+    });
+    builder.addCase(
+      fetchUser.fulfilled,
+      (state, action: PayloadAction<IUser>) => {
+        state.loading = false;
+        state.userData = action.payload;
+      }
+    );
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const setUser = userSlice.actions;
 export default userSlice.reducer;

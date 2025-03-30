@@ -1,6 +1,6 @@
 "use client";
 
-import { page } from "@/store/slices/navbarSlice/selectors";
+import { page } from "@/store/slices/navbarSlice/navbarSelectors";
 import styles from "./Navbar.module.css";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
