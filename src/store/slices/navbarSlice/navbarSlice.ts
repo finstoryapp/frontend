@@ -1,10 +1,7 @@
 // Store navbar's state
 
+import { Navbar } from "@/types/navbarTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface Navbar {
-  page: "home" | "accounts" | "statistics" | "settings";
-}
 
 const initialState: Navbar = {
   page: "home",

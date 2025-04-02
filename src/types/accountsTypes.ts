@@ -5,3 +5,8 @@ export interface IAccount {
   accountName: string;
   currency: string;
 }
+export interface AccountsState {
+  loadingAccounts: boolean;
+  accounts: IAccount[] | null;
+  currentAccountIndex: number;
+}

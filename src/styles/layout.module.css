@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.header span {
+  color: var(--text-color);
+}
+.header span:last-child {
+  color: var(--text-color-primary);
+}

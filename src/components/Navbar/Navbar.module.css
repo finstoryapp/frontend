@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  background-color: var(--background-color);
+  background-color: var(--background-dark-color);
   padding: 10px 0;
   box-shadow: 0 -0.2px 2px var(--box-shadow);
 }

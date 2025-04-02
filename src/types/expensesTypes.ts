@@ -9,6 +9,13 @@ export interface IExpense {
   categoryName: string;
   account: IAccount;
 }
+export interface ExpensesState {
+  currentMonth: number;
+  currentYear: number;
+  loadingExpenses: boolean;
+  isAddExpenseWindowOpen: boolean;
+  expenses: IExpense[] | null;
+}
 export interface IExpensesAmount {
   accountName: string;
   currency: string;

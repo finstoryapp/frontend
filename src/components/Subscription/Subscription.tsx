@@ -1,4 +1,4 @@
-import { IUser } from "@/store/slices/userSlice/userSlice";
+import { IUser } from "@/types/userTypes";
 import styles from "./Subscription.module.css";
 import React from "react";
 

@@ -1,35 +1,33 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface Account {
-  id: string;
-  accountId: string;
-  accountName: string;
-  currency: string;
-}
-
-interface AccountsState {
-  accounts: Account[];
-  loading_accounts: boolean;
-}
+import { AccountsState, IAccount } from "@/types/accountsTypes";
+import { fetchAccounts } from "./accountThunks";
+import { accountsReducers } from "./accountsReducers";
 
 const initialState: AccountsState = {
-  accounts: [],
-  loading_accounts: true,
+  loadingAccounts: true,
+  accounts: null,
+  currentAccountIndex: 0,
 };
 
 const accountsSlice = createSlice({
   name: "accounts",
   initialState,
-  reducers: {
-    setAccounts: (state, action: PayloadAction<Account[]>) => {
-      state.accounts = action.payload;
-      state.loading_accounts = false;
-    },
-    addAccount: (state, action: PayloadAction<Account>) => {
-      state.accounts.push(action.payload);
-    },
+  reducers: accountsReducers,
+  extraReducers: (builder) => {
+    builder.addCase(fetchAccounts.pending, (state) => {
+      state.loadingAccounts = true;
+      state.accounts = null;
+      state.currentAccountIndex = 0;
+    });
+    builder.addCase(
+      fetchAccounts.fulfilled,
+      (state, action: PayloadAction<IAccount[]>) => {
+        state.loadingAccounts = false;
+        state.accounts = action.payload;
+        state.currentAccountIndex = 0;
+      }
+    );
   },
 });
-
-export const { setAccounts, addAccount } = accountsSlice.actions;
+export const { setCurrentAccountIndex } = accountsSlice.actions;
 export default accountsSlice.reducer;

@@ -1,0 +1,9 @@
+.expenses {
+  color: var(--text-color);
+  min-height: 100vh;
+  background-color: var(--background-color-primary);
+  border-radius: 20px;
+  padding: 11px 11px 186px;
+  box-shadow: 0 0 20px var(--box-shadow-border),
+    0 0 40px var(--box-shadow-border);
+}

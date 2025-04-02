@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar/Navbar";
 import Providers from "@/components/Providers/Providers";
-import "./global.css";
+import "@/styles/global.css";
+import styles from "@/styles/layout.module.css";
 
 export default function RootLayout({
   children,
@@ -11,6 +12,10 @@ export default function RootLayout({
     <html lang="ru">
       <body>
         <Providers>
+          <header className={styles.header}>
+            <span>Finstor</span>
+            <span>y</span>
+          </header>
           {children}
           <Navbar />
         </Providers>
