@@ -8,7 +8,7 @@ import Image from "next/image";
 
 import { usePathname } from "next/navigation";
 import { StoreProvider } from "@/store/StoreProvider";
-import { Providers } from "./providers";
+import { PostHogProvider } from "./providers";
 
 export default function RootLayout({
   children,
@@ -27,7 +27,7 @@ export default function RootLayout({
           />
         </head>
         <body>
-          <Providers>
+          <PostHogProvider>
             <header>
               <span>Finstor</span>
               <span>y</span>
@@ -100,7 +100,7 @@ export default function RootLayout({
                 Настройки
               </Link>
             </nav>
-          </Providers>
+          </PostHogProvider>
         </body>
       </html>
     </StoreProvider>
