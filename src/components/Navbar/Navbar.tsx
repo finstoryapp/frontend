@@ -9,6 +9,7 @@ import { setNavbarState } from "@/store/slices/navbarSlice/navbarSlice";
 import { Navbar as NavbarInterface } from "@/types/navbarTypes";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { paths } from "./const";
 
 const Navbar: React.FC = () => {
   const navbarState = useSelector(page);
@@ -19,23 +20,6 @@ const Navbar: React.FC = () => {
     dispatch(setNavbarState(state));
     router.push(path);
   };
-
-  const paths = [
-    { path: "/", state: "home", label: "Домашняя", icon: "home" },
-    { path: "/accounts", state: "accounts", label: "Счета", icon: "accounts" },
-    {
-      path: "/statistics",
-      state: "statistics",
-      label: "Статистика",
-      icon: "statistics",
-    },
-    {
-      path: "/settings",
-      state: "settings",
-      label: "Настройки",
-      icon: "settings",
-    },
-  ];
 
   return (
     <nav className={styles.navbar}>

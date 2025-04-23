@@ -10,11 +10,10 @@ export interface IExpense {
   account: IAccount;
 }
 export interface ExpensesState {
-  currentMonth: number;
-  currentYear: number;
   loadingExpenses: boolean;
   isAddExpenseWindowOpen: boolean;
   expenses: IExpense[] | null;
+  isAddingExpense: boolean;
 }
 export interface IExpensesAmount {
   accountName: string;
@@ -26,3 +25,9 @@ export interface IFullSumAccumulator {
   currency: string;
   amount: number;
 }
+export type IAddExpense = {
+  amount: number;
+  accountId: number;
+  categoryName: string;
+  time: number;
+};

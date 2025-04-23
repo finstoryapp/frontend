@@ -3,6 +3,7 @@ import accountsReducer from "./slices/accountsSlice/accountsSlice";
 import userReducer from "./slices/userSlice/userSlice";
 import navbarReducer from "./slices/navbarSlice/navbarSlice";
 import expensesReducer from "./slices/expensesSlice/expensesSlice";
+import expensesNavbarReducer from "./slices/expensesNavbarSlice/expensesNavbarSlice";
 
 // redux-persist
 import { persistStore, persistReducer } from "redux-persist";
@@ -22,6 +23,7 @@ export const store = configureStore({
     user: userReducer,
     navbar: persistedNavbarReducer,
     expenses: expensesReducer,
+    expensesNavbar: expensesNavbarReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
   middleware: (getDefaultMiddleware) =>

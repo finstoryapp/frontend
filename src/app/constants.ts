@@ -13,3 +13,4 @@ export const russianMonths = [
   "Ноябрь",
   "Декабрь",
 ];
+export const russianDayNames = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];

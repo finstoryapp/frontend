@@ -1,25 +1,45 @@
+import { expensesNavbarState } from "@/store/slices/expensesNavbarSlice/expensesNavbarState";
 import styles from "./ExpensesNavbar.module.css";
 import NextButtonSvg from "@/svg/NextButtonSvg";
 import PrevButtonSvg from "@/svg/PrevButtonSvg";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  nextMonth,
+  prevMonth,
+} from "@/store/slices/expensesNavbarSlice/expensesNavbarSlice";
+import { russianMonths } from "@/app/constants";
+import { fetchExpenses } from "@/store/slices/expensesSlice/expensesThunks";
+import { AppDispatch } from "@/store/store";
+import { userState } from "@/store/slices/userSlice/userSelectors";
+import { getFullMonthExpensesSum } from "@/utils/getFullMonthExpensesSum";
 
 const ExpensesNavbar: React.FC = () => {
+  const expensesNavbar = useSelector(expensesNavbarState);
+  const defaultCurrency = useSelector(userState).userData?.defaultCurrency;
+  const dispatch = useDispatch<AppDispatch>();
+
   return (
     <div className={styles.expensesNavbar}>
       <div className={styles.month}>
         <button
           className={styles.prevMonthBtn}
-          // onClick={() => goPrevMonth()}
+          onClick={() => {
+            dispatch(prevMonth());
+            dispatch(fetchExpenses());
+          }}
         >
           <PrevButtonSvg />
         </button>
         <p className={styles.date}>
-          {/* {russianMonths[date.month]} {date.year} */}
-          Апрель 2025
+          {russianMonths[expensesNavbar.month]} {expensesNavbar.year}
         </p>
         <button
           className={styles.nextMonthBtn}
-          // style={date.isPrevious ? {} : { visibility: "hidden" }}
-          // onClick={() => goNextMonth()}
+          style={!expensesNavbar.isCurrentMonth ? {} : { visibility: "hidden" }}
+          onClick={() => {
+            dispatch(nextMonth());
+            dispatch(fetchExpenses());
+          }}
         >
           <NextButtonSvg />
         </button>
@@ -27,12 +47,8 @@ const ExpensesNavbar: React.FC = () => {
       <div className={styles.sum}>
         <p className={styles.sumText}>Расход за месяц</p>
         <p className={styles.sumValue}>
-          {/* {expenses ? -1 * fullSum : "~"}{" "} */}
-          -0
-          <span className={styles.sumCurrency}>
-            USD
-            {/* {userData?.defaultCurrency ?? "..."} */}
-          </span>
+          {parseFloat(getFullMonthExpensesSum().toFixed(2))}
+          <span className={styles.sumCurrency}> {defaultCurrency}</span>
         </p>
       </div>
     </div>

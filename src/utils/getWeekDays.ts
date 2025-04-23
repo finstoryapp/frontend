@@ -1,5 +1,7 @@
 // utils/getWeekDays.ts
 
+import { WeekDay } from "@/types/utilsTypes";
+
 const russianWeekDays: string[] = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
 
 /**
@@ -10,14 +12,6 @@ const russianWeekDays: string[] = ["пн", "вт", "ср", "чт", "пт", "сб
 function getRussianWeekDay(date: Date): string {
   const dayIndex = date.getDay(); // 0 (вс) до 6 (сб)
   return russianWeekDays[dayIndex === 0 ? 6 : dayIndex - 1]; // Если 0 (вс), используем индекс 6
-}
-
-/**
- * Interface for the returned object containing date and unix time.
- */
-interface WeekDay {
-  date: string;
-  unix: number;
 }
 
 /**

@@ -17,6 +17,7 @@ export default function RootLayout({
             <span>y</span>
           </header>
           {children}
+          <div id="modal-root" />
           <Navbar />
         </Providers>
       </body>

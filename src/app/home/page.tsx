@@ -10,12 +10,17 @@ import { RotateLoader } from "react-spinners";
 import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
 import { fetchAccounts } from "@/store/slices/accountsSlice/accountThunks";
 import { useEffect } from "react";
-import ExpensesNavbar from "@/components/ExpensesNavbar/ExpensesNavbar";
 import { fetchExpenses } from "@/store/slices/expensesSlice/expensesThunks";
+import { expensesState } from "@/store/slices/expensesSlice/expensesState";
+import ExpensesNavbar from "@/components/ExpensesNavbar/ExpensesNavbar";
+import AddExpensesButton from "@/components/AddExpensesButton/AddExpensesButton";
+import AddExpenseWindow from "@/components/AddExpenseWindow/AddExpenseWindow";
+import { setAddExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
 
 const Home = () => {
   const user = useSelector(userState);
   const accounts = useSelector(accountState);
+  const expenses = useSelector(expensesState);
   const dispatch = useDispatch<AppDispatch>();
 
   // Fetch user's data and set cookies
@@ -33,6 +38,19 @@ const Home = () => {
     }
   }, [accounts.accounts, dispatch]);
 
+  // Open "Add expense" modal window by "W" key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === "KeyW") {
+        dispatch(setAddExpenseWindow(true));
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <div className={styles.home}>
       {user.loading ? (
@@ -47,6 +65,8 @@ const Home = () => {
         <>
           <ExpensesNavbar />
           <ExpensesContainer />
+          <AddExpensesButton />
+          {expenses.isAddExpenseWindowOpen ? <AddExpenseWindow /> : null}
         </>
       )}
     </div>
