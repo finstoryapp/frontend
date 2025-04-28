@@ -16,6 +16,8 @@
   --tab-hover: #092138;
   --disabled-button: #94bdff;
   --item-background: #2a5d91;
+  --danger: #c20e4d;
+  --danger-hover: #df3c75;
 }
 /* Global styles */
 * {

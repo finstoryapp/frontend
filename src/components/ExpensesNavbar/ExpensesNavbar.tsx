@@ -11,7 +11,6 @@ import { russianMonths } from "@/app/constants";
 import { fetchExpenses } from "@/store/slices/expensesSlice/expensesThunks";
 import { AppDispatch } from "@/store/store";
 import { userState } from "@/store/slices/userSlice/userSelectors";
-import { getFullMonthExpensesSum } from "@/utils/getFullMonthExpensesSum";
 
 const ExpensesNavbar: React.FC = () => {
   const expensesNavbar = useSelector(expensesNavbarState);
@@ -47,7 +46,7 @@ const ExpensesNavbar: React.FC = () => {
       <div className={styles.sum}>
         <p className={styles.sumText}>Расход за месяц</p>
         <p className={styles.sumValue}>
-          {parseFloat(getFullMonthExpensesSum().toFixed(2))}
+          {/* {parseFloat(getFullMonthExpensesSum().toFixed(2))} */}
           <span className={styles.sumCurrency}> {defaultCurrency}</span>
         </p>
       </div>

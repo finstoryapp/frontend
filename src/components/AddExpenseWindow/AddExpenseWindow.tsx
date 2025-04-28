@@ -54,10 +54,10 @@ export const AddExpenseWindow: React.FC = () => {
     }
   };
 
-  // Close the Add Expense Window by "W" key
+  // Close the Add Expense Window by "W" key or "Escape"
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "KeyW") {
+      if (event.code === "KeyW" || event.code === "Escape") {
         dispatch(setAddExpenseWindow(false));
       }
     };

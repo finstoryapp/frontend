@@ -24,7 +24,6 @@ export function getFullMonthExpensesSum(): number {
     };
   });
 
-  //! COMPLETE IT (async/await issue)
   // Calculate the total sum
   const total = accountsSum?.reduce((total, currentAccountSum) => {
     if (defaultCurrency === currentAccountSum.currency) {
@@ -33,10 +32,7 @@ export function getFullMonthExpensesSum(): number {
       const rate = getRate({
         fromCurrency: defaultCurrency,
         toCurrency: currentAccountSum.currency,
-      }).then((rate) => {
-        console.log(rate);
       });
-
       return total + currentAccountSum.sum;
     }
   }, 0);

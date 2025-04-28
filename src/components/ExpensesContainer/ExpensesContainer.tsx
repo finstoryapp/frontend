@@ -4,15 +4,18 @@ import AccountsWrapper from "@/components/AccountWrapper/AccountWrapper";
 import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
 import { expensesState } from "@/store/slices/expensesSlice/expensesState";
 import { userState } from "@/store/slices/userSlice/userSelectors";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import RightArrowLightBlue from "@/svg/RightArrowLightBlue";
 import { ClipLoader } from "react-spinners";
+import { openDeleteExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
 
 export const ExpensesContainer: React.FC = () => {
+  const dispatch = useDispatch();
   const expenses = useSelector(expensesState);
   const accounts = useSelector(accountState);
   const user = useSelector(userState);
   const expensesList = expenses.expenses;
+
   return (
     <div className={styles.expenses}>
       <AccountsWrapper />
@@ -66,7 +69,12 @@ export const ExpensesContainer: React.FC = () => {
                         ></div>
                         <span>{expense.categoryName}</span>
                       </div>
-                      <button className={styles.expenseItemButton}>
+                      <button
+                        className={styles.expenseItemButton}
+                        onClick={() => {
+                          dispatch(openDeleteExpenseWindow(expense.id));
+                        }}
+                      >
                         <RightArrowLightBlue />
                       </button>
                     </div>

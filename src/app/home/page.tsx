@@ -16,6 +16,7 @@ import ExpensesNavbar from "@/components/ExpensesNavbar/ExpensesNavbar";
 import AddExpensesButton from "@/components/AddExpensesButton/AddExpensesButton";
 import AddExpenseWindow from "@/components/AddExpenseWindow/AddExpenseWindow";
 import { setAddExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
+import DeleteExpenseWindow from "@/components/DeleteExpenseWindow/DeleteExpenseWindow";
 
 const Home = () => {
   const user = useSelector(userState);
@@ -67,6 +68,7 @@ const Home = () => {
           <ExpensesContainer />
           <AddExpensesButton />
           {expenses.isAddExpenseWindowOpen ? <AddExpenseWindow /> : null}
+          {expenses.isDeleteExpenseWindow ? <DeleteExpenseWindow /> : null}
         </>
       )}
     </div>

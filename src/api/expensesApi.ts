@@ -34,3 +34,15 @@ export async function addExpense(args: IAddExpense): Promise<IExpense> {
     throw new Error(err instanceof Error ? err.message : "An error occurred");
   }
 }
+
+// Delete a specific expense
+export async function deleteExpense(expenseId: string) {
+  try {
+    const request = fetchUtil(`api/delete_expense/${expenseId}`, {
+      method: "DELETE",
+    });
+    return request;
+  } catch (err) {
+    throw new Error(err instanceof Error ? err.message : "An error occurred");
+  }
+}

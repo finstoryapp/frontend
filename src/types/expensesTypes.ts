@@ -14,6 +14,9 @@ export interface ExpensesState {
   isAddExpenseWindowOpen: boolean;
   expenses: IExpense[] | null;
   isAddingExpense: boolean;
+  isDeleteExpenseWindow: boolean;
+  selectedExpenseId: string;
+  isDeletingExpense: boolean;
 }
 export interface IExpensesAmount {
   accountName: string;
@@ -21,13 +24,13 @@ export interface IExpensesAmount {
   accountId: string;
   sum: number;
 }
-export interface IFullSumAccumulator {
-  currency: string;
-  amount: number;
-}
 export type IAddExpense = {
   amount: number;
   accountId: number;
   categoryName: string;
   time: number;
 };
+export interface IFullMonthExpense {
+  accountsData: IAccount[];
+  defaultCurrency: string;
+}

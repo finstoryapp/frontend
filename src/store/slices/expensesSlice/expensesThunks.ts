@@ -1,4 +1,4 @@
-import { addExpense, getExpenses } from "@/api/expensesApi";
+import { addExpense, getExpenses, deleteExpense } from "@/api/expensesApi";
 import { AppDispatch } from "@/store/store";
 import { IAddExpense, IExpense } from "@/types/expensesTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -30,4 +30,13 @@ export const addNewExpense = createAsyncThunk<
 >("expenses/addNewExpense", async (args, { dispatch }) => {
   await addExpense(args);
   dispatch(fetchExpenses());
+});
+
+export const deleteExpenseById = createAsyncThunk<
+  void, // Returns nothing
+  string, // Receive a string (expense's id)
+  { state: RootState }
+>("expenses/deleteExpense", async (expenseId: string, thunkAPI) => {
+  const response = await deleteExpense(expenseId);
+  thunkAPI.dispatch(fetchExpenses());
 });

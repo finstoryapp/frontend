@@ -20,6 +20,7 @@
 }
 .accountWrapperBoxValue {
   font-size: 30px;
+  user-select: text;
 }
 .accountWrapperBoxValue span {
   font-size: 20px;

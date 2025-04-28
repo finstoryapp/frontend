@@ -1,7 +1,10 @@
 import { ExpensesState, IExpense } from "@/types/expensesTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addNewExpense, fetchExpenses } from "./expensesThunks";
-import { getYearAndMonth } from "@/utils/getYearAndMonth";
+import {
+  addNewExpense,
+  fetchExpenses,
+  deleteExpenseById,
+} from "./expensesThunks";
 import { accountsReducers } from "./expensesReducers";
 
 const initialState: ExpensesState = {
@@ -9,6 +12,9 @@ const initialState: ExpensesState = {
   isAddExpenseWindowOpen: false,
   expenses: null,
   isAddingExpense: false,
+  isDeleteExpenseWindow: false,
+  selectedExpenseId: "",
+  isDeletingExpense: false,
 };
 
 const expensesSlice = createSlice({
@@ -33,7 +39,18 @@ const expensesSlice = createSlice({
       state.isAddingExpense = false;
       state.isAddExpenseWindowOpen = false;
     });
+    builder.addCase(deleteExpenseById.pending, (state) => {
+      state.isDeletingExpense = true;
+    });
+    builder.addCase(deleteExpenseById.fulfilled, (state) => {
+      state.isDeleteExpenseWindow = false;
+      state.isDeletingExpense = false;
+    });
   },
 });
-export const { setAddExpenseWindow } = expensesSlice.actions;
+export const {
+  setAddExpenseWindow,
+  openDeleteExpenseWindow,
+  closeDeleteExpenseWindow,
+} = expensesSlice.actions;
 export default expensesSlice.reducer;
