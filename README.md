@@ -1,76 +1,5 @@
 # Finstory - Финансовый трекер
 
-Project structure:
-
-```bash
-├───api
-│       accountsApi.ts
-│       apiClient.ts
-│       categoriesApi.ts
-│       expensesApi.ts
-│       userApi.ts
-│
-├───app
-│   │   fonts.css
-│   │   global.css
-│   │   layout.tsx
-│   │   not-found.tsx
-│   │
-│   ├───accounts
-│   │       accounts.module.css
-│   │       page.tsx
-│   │
-│   ├───home
-│   │       home.module.css
-│   │       page.tsx
-│   │
-│   ├───settings
-│   │       page.tsx
-│   │       settings.module.css
-│   │
-│   └───statistics
-│           page.tsx
-│           statistics.module.css
-│
-├───components
-│   ├───Navbar
-│   │       Navbar.module.css
-│   │       Navbar.tsx
-│   │
-│   ├───Providers
-│   │       Providers.tsx
-│   │
-│   └───Subscription
-│           Subscription.module.css
-│           Subscription.tsx
-│
-├───store
-│   │   store.ts
-│   │
-│   └───slices
-│       ├───accountsSlice
-│       │       accountsSlice.ts
-│       │
-│       ├───navbarSlice
-│       │       navbarSlice.ts
-│       │       selectors.ts
-│       │
-│       └───userSlice
-│               userReducers.ts
-│               userSlice.ts
-│               userThunks.ts
-│
-├───types
-│       accountsTypes.ts
-│       categoriesTypes.ts
-│       expensesTypes.ts
-│       userTypes.ts
-│
-└───utils
-        getUnixMonthStartEnd.ts
-        getWeekDays.ts
-```
-
 ### Мысли в процессе
 
 - Текущую дату нужно записывать в слайсе с расходами, чтобы можно было получить всегда доступ к текущему месяцу. Функция getUnixMonthStartEnd получает текущий выбранный год + номер месяца. Т.е. в currentMonthName нужно хранить число.. От 1 до 12. Проверку на точность этого числа нужно сделать в функции getUnixMonthStartEnd.
@@ -92,3 +21,9 @@ Project structure:
 - Надо сделать возможность выделять общие расходы.
 
 -! ПЕРЕЕЗД ВСЕХ АСИНХРОННЫХ ШТУК НА TANSTACK QUERY
+
+- Переезд закончен.
+
+- Нужно сделать так, чтобы rates корректно работали. Как это сделать наиболее эффективно? Хранить где-то в tanstack объект с курсами для текущих валют по текущим аккаунтам? - Как вариант. Затем это можно переиспользовать. useRates() ахаха создать; Но по идее мне нужно только один раз получить rates и все. Мб сделать это обычными запросами внутри мутации?
+
+- Начинаю делать аккаунты, стараюсь минимально использовать нейросеть (только для код-чекинга)

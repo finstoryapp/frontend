@@ -1,29 +1,18 @@
-import { IUser, UserState } from "@/types/userTypes";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchUser } from "./userThunks";
+import { UserState } from "@/types/userTypes";
+import { createSlice } from "@reduxjs/toolkit";
+import { userReducers } from "./userReducers";
 
 const initialState: UserState = {
-  userData: null,
-  loading: true,
+  isPremiumWindow: false,
+  isAddingCaterogyWindow: false,
+  isEditingCategoryWindow: false,
+  isCategoriesWindow: false,
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(fetchUser.pending, (state) => {
-      state.loading = true;
-      state.userData = null;
-    });
-    builder.addCase(
-      fetchUser.fulfilled,
-      (state, action: PayloadAction<IUser>) => {
-        state.loading = false;
-        state.userData = action.payload;
-      }
-    );
-  },
+  reducers: userReducers,
 });
 
 export default userSlice.reducer;

@@ -8,14 +8,22 @@ import {
   prevMonth,
 } from "@/store/slices/expensesNavbarSlice/expensesNavbarSlice";
 import { russianMonths } from "@/app/constants";
-import { fetchExpenses } from "@/store/slices/expensesSlice/expensesThunks";
-import { AppDispatch } from "@/store/store";
-import { userState } from "@/store/slices/userSlice/userSelectors";
+import { useUser } from "@/hooks/user/useUser";
+import { useExpenses } from "@/hooks/expenses/useExpenses";
+import { getFullMonthExpensesSum } from "@/utils/getFullMonthExpensesSum";
+import { useAccounts } from "@/hooks/accounts/useAccounts";
+import { useRates } from "@/hooks/accounts/useRates";
 
 const ExpensesNavbar: React.FC = () => {
+  const { data: user } = useUser();
+  const { data: accounts } = useAccounts();
+  const { data: rates } = useRates();
+  const { data: expenses } = useExpenses();
+
+  const defaultCurrency = user?.defaultCurrency;
   const expensesNavbar = useSelector(expensesNavbarState);
-  const defaultCurrency = useSelector(userState).userData?.defaultCurrency;
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
+  const { refetch } = useExpenses();
 
   return (
     <div className={styles.expensesNavbar}>
@@ -24,7 +32,7 @@ const ExpensesNavbar: React.FC = () => {
           className={styles.prevMonthBtn}
           onClick={() => {
             dispatch(prevMonth());
-            dispatch(fetchExpenses());
+            refetch();
           }}
         >
           <PrevButtonSvg />
@@ -37,7 +45,7 @@ const ExpensesNavbar: React.FC = () => {
           style={!expensesNavbar.isCurrentMonth ? {} : { visibility: "hidden" }}
           onClick={() => {
             dispatch(nextMonth());
-            dispatch(fetchExpenses());
+            refetch();
           }}
         >
           <NextButtonSvg />
@@ -46,7 +54,14 @@ const ExpensesNavbar: React.FC = () => {
       <div className={styles.sum}>
         <p className={styles.sumText}>Расход за месяц</p>
         <p className={styles.sumValue}>
-          {/* {parseFloat(getFullMonthExpensesSum().toFixed(2))} */}
+          {parseFloat(
+            getFullMonthExpensesSum({
+              accounts: accounts!,
+              expenses: expenses!,
+              rates: rates!,
+              defaultCurrency: user?.defaultCurrency!,
+            }).toFixed(2)
+          )}
           <span className={styles.sumCurrency}> {defaultCurrency}</span>
         </p>
       </div>

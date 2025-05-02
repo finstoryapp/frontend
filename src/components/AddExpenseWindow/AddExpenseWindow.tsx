@@ -2,29 +2,34 @@ import Image from "next/image";
 import styles from "./AddExpensesWindow.module.css";
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "@/store/store";
 import { setAddExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
 import { useEffect, useRef, useState } from "react";
 import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
 import { getWeekDays } from "@/utils/getWeekDays";
-import { userState } from "@/store/slices/userSlice/userSelectors";
 import { useDraggable } from "react-use-draggable-scroll";
-import { addNewExpense } from "@/store/slices/expensesSlice/expensesThunks";
-import { expensesState } from "@/store/slices/expensesSlice/expensesState";
 import { ClipLoader } from "react-spinners";
 import { EXPENSE_MAX_AMOUNT } from "@/app/constants";
 import { getFullMonthAccountSum } from "@/utils/getFullMonthAccountSum";
+import { useUser } from "@/hooks/user/useUser";
+import { useAccounts } from "@/hooks/accounts/useAccounts";
+import { useExpenses } from "@/hooks/expenses/useExpenses";
+import { useAddExpense } from "@/hooks/expenses/useAddExpense";
 
 export const AddExpenseWindow: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const accounts = useSelector(accountState).accounts;
-  const currentAccountIndex = useSelector(accountState).currentAccountIndex;
-  const user = useSelector(userState);
-  const expenses = useSelector(expensesState);
+  const dispatch = useDispatch();
+  const { currentAccountIndex } = useSelector(accountState);
+
+  const { data: user } = useUser();
+  const { data: accounts } = useAccounts();
+  const { data: expenses } = useExpenses();
+
+  const addExpense = useAddExpense();
+  const isAddingExpense = addExpense.isPending;
 
   const currentAccountName = accounts![currentAccountIndex].accountName;
   const currentAccountCurrency = accounts![currentAccountIndex].currency;
   const ccurrentAccountId = accounts![currentAccountIndex].accountId;
+
   const [currentSelectedDayIndex, setCurrentSelectedDayIndex] = useState(4);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expenseValue, setExpenseValue] = useState(0);
@@ -71,14 +76,12 @@ export const AddExpenseWindow: React.FC = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Enter" && selectedCategory && expenseValue > 0) {
-        dispatch(
-          addNewExpense({
-            amount: expenseValue,
-            accountId: +ccurrentAccountId,
-            categoryName: selectedCategory,
-            time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
-          })
-        );
+        addExpense.mutate({
+          amount: expenseValue,
+          accountId: +ccurrentAccountId,
+          categoryName: selectedCategory,
+          time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
+        });
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -163,6 +166,7 @@ export const AddExpenseWindow: React.FC = () => {
                 (
                   -1 *
                   getFullMonthAccountSum({
+                    expenses: expenses!,
                     accountId: Number(accounts![currentAccountIndex].accountId),
                   })
                 ).toFixed(2)
@@ -190,7 +194,7 @@ export const AddExpenseWindow: React.FC = () => {
         </div>
         <div className={styles.categories}>
           <div className={styles.categoriesContainer} {...events} ref={ref}>
-            {user?.userData!.categories.map((category) => (
+            {user?.categories.map((category) => (
               <span
                 onClick={() => {
                   setSelectedCategory(category.name);
@@ -234,23 +238,17 @@ export const AddExpenseWindow: React.FC = () => {
             selectedCategory && expenseValue > 0 ? styles.activeButton : ""
           }`}
           onClick={() => {
-            if (
-              selectedCategory &&
-              expenseValue > 0 &&
-              !expenses.isAddingExpense
-            ) {
-              dispatch(
-                addNewExpense({
-                  amount: expenseValue,
-                  accountId: +ccurrentAccountId,
-                  categoryName: selectedCategory,
-                  time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
-                })
-              );
+            if (selectedCategory && expenseValue > 0 && !isAddingExpense) {
+              addExpense.mutate({
+                amount: expenseValue,
+                accountId: +ccurrentAccountId,
+                categoryName: selectedCategory,
+                time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
+              });
             }
           }}
         >
-          {expenses.isAddingExpense ? (
+          {isAddingExpense ? (
             <ClipLoader
               color="var(--text-color)"
               size={"16px"}

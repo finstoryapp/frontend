@@ -1,12 +1,12 @@
 // Returns the account's sum
-import { expensesState } from "@/store/slices/expensesSlice/expensesState";
+
 import { IGetFullMonthAccountSum } from "@/types/utilsTypes";
-import { useSelector } from "react-redux";
 
 export function getFullMonthAccountSum(args: IGetFullMonthAccountSum): number {
-  const expenses = useSelector(expensesState).expenses;
-  const expensesOfTheAccount = expenses
-    ? expenses.filter((expense) => {
+  if (!args.expenses) return 0;
+
+  const expensesOfTheAccount = args.expenses
+    ? args.expenses.filter((expense) => {
         return expense.accountId === String(args.accountId);
       })
     : [];

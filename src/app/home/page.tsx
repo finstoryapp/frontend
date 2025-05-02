@@ -1,43 +1,38 @@
 "use client";
 
 import styles from "./home.module.css";
-import { fetchUser } from "@/store/slices/userSlice/userThunks";
-import { AppDispatch } from "@/store/store";
 import { useSelector, useDispatch } from "react-redux";
-import { userState } from "@/store/slices/userSlice/userSelectors";
 import { ExpensesContainer } from "@/components/ExpensesContainer/ExpensesContainer";
 import { RotateLoader } from "react-spinners";
-import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
-import { fetchAccounts } from "@/store/slices/accountsSlice/accountThunks";
 import { useEffect } from "react";
-import { fetchExpenses } from "@/store/slices/expensesSlice/expensesThunks";
 import { expensesState } from "@/store/slices/expensesSlice/expensesState";
 import ExpensesNavbar from "@/components/ExpensesNavbar/ExpensesNavbar";
 import AddExpensesButton from "@/components/AddExpensesButton/AddExpensesButton";
 import AddExpenseWindow from "@/components/AddExpenseWindow/AddExpenseWindow";
 import { setAddExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
 import DeleteExpenseWindow from "@/components/DeleteExpenseWindow/DeleteExpenseWindow";
+import { useUser } from "@/hooks/user/useUser";
+import { useAccounts } from "@/hooks/accounts/useAccounts";
+import { useExpenses } from "@/hooks/expenses/useExpenses";
+import { setNavbarState } from "@/store/slices/navbarSlice/navbarSlice";
 
 const Home = () => {
-  const user = useSelector(userState);
-  const accounts = useSelector(accountState);
+  const dispatch = useDispatch();
   const expenses = useSelector(expensesState);
-  const dispatch = useDispatch<AppDispatch>();
+  const { isPending: isUserPending } = useUser();
 
-  // Fetch user's data and set cookies
-  useEffect(() => {
-    if (!user.userData) {
-      dispatch(fetchUser());
-    }
-  }, [user.userData, dispatch]);
+  const {} = useAccounts({
+    enabled: !isUserPending,
+  });
 
-  // Fetch other data
+  const {} = useExpenses({
+    enabled: !isUserPending,
+  });
+
+  // Set the current navbar state to home
   useEffect(() => {
-    if (!accounts.accounts) {
-      dispatch(fetchAccounts());
-      dispatch(fetchExpenses());
-    }
-  }, [accounts.accounts, dispatch]);
+    dispatch(setNavbarState({ page: "home" }));
+  }, []);
 
   // Open "Add expense" modal window by "W" key
   useEffect(() => {
@@ -52,9 +47,20 @@ const Home = () => {
     };
   }, []);
 
+  if (isUserPending)
+    return (
+      <div className={styles.loading}>
+        <RotateLoader
+          color="var(--text-color-secondary)"
+          size={"12px"}
+          speedMultiplier={1.5}
+        />
+      </div>
+    );
+
   return (
     <div className={styles.home}>
-      {user.loading ? (
+      {isUserPending ? (
         <div className={styles.loading}>
           <RotateLoader
             color="var(--text-color-secondary)"

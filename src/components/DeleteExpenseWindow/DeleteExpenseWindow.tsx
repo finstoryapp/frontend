@@ -3,13 +3,37 @@ import styles from "./DeleteExpenseWindow.module.css";
 import { useSelector, useDispatch } from "react-redux";
 import { closeDeleteExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
 import { expensesState } from "@/store/slices/expensesSlice/expensesState";
-import { deleteExpenseById } from "@/store/slices/expensesSlice/expensesThunks";
-import { AppDispatch } from "@/store/store";
 import { ClipLoader } from "react-spinners";
+import { useDeleteExpense } from "@/hooks/expenses/useDeleteExpense";
+import { useExpenses } from "@/hooks/expenses/useExpenses";
+import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
+import { useAccounts } from "@/hooks/accounts/useAccounts";
+import { useUser } from "@/hooks/user/useUser";
+import { useRates } from "@/hooks/accounts/useRates";
 
 export const DeleteExpenseWindow: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { selectedExpenseId, isDeletingExpense } = useSelector(expensesState);
+  const dispatch = useDispatch();
+  const { selectedExpenseId } = useSelector(expensesState);
+  const { currentAccountIndex } = useSelector(accountState);
+
+  const deleteExpense = useDeleteExpense();
+  const { data: expenses } = useExpenses();
+  const { data: accounts } = useAccounts();
+  const { data: user } = useUser();
+  const { data: rates } = useRates();
+  const isDeletingExpense = deleteExpense.isPending;
+
+  const expense = expenses?.find((expense) => expense.id === selectedExpenseId);
+  const amount = Number(expense?.amount);
+
+  const currency = accounts![currentAccountIndex].currency;
+  const defaultCurrency = user?.defaultCurrency;
+
+  const date = new Date(
+    expense?.createdAt ? +expense?.createdAt : 0
+  ).toLocaleString();
+
+  const rate = rates?.find((rate) => rate.currency === currency);
 
   return createPortal(
     <div
@@ -26,6 +50,23 @@ export const DeleteExpenseWindow: React.FC = () => {
           event.stopPropagation();
         }}
       >
+        <p
+          className={styles.data}
+          onClick={() => console.log(rate?.currency, defaultCurrency)}
+        >
+          <span>{amount}</span> <span>{currency}</span>{" "}
+          {!rate?.currency ? null : (
+            <>
+              (
+              <span className={styles.rate}>
+                {rate?.rate ? (amount / rate?.rate).toFixed(2) : null}
+              </span>{" "}
+              <span>{defaultCurrency}</span>)
+            </>
+          )}
+        </p>
+        <p className={styles.date}>{date}</p>
+        <hr className={styles.line} />
         <h3>Удалить запись?</h3>
         <div className={styles.buttons}>
           <button
@@ -34,9 +75,8 @@ export const DeleteExpenseWindow: React.FC = () => {
           >
             Отменить
           </button>
-          <button
-            onClick={() => dispatch(deleteExpenseById(selectedExpenseId))}
-          >
+
+          <button onClick={() => deleteExpense.mutate(selectedExpenseId)}>
             {isDeletingExpense ? (
               <ClipLoader
                 color="var(--text-color)"

@@ -52,3 +52,18 @@
   background-color: var(--primary-color) !important;
   pointer-events: none;
 }
+.line {
+  width: 70%;
+}
+.data span,
+.data,
+.date {
+  user-select: text;
+}
+.date {
+  margin-top: 5px;
+  font-size: 12px;
+}
+.rate {
+  font-family: "GothamProBold";
+}

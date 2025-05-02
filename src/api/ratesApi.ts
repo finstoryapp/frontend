@@ -1,5 +1,4 @@
 import { ICurrencyRate, IGetRate } from "@/types/utilsTypes";
-import { fetchUtil } from "./apiClient";
 
 // Get the rate for using the currency pare
 export async function getRate(args: IGetRate): Promise<ICurrencyRate> {

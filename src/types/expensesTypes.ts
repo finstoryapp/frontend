@@ -10,13 +10,9 @@ export interface IExpense {
   account: IAccount;
 }
 export interface ExpensesState {
-  loadingExpenses: boolean;
   isAddExpenseWindowOpen: boolean;
-  expenses: IExpense[] | null;
-  isAddingExpense: boolean;
   isDeleteExpenseWindow: boolean;
   selectedExpenseId: string;
-  isDeletingExpense: boolean;
 }
 export interface IExpensesAmount {
   accountName: string;

@@ -1,9 +1,12 @@
+"use client";
+
 import styles from "./accounts.module.css";
+import { DefaultCurrencyList } from "@/components/DefaultCurrencyList/DefaultCurrencyList";
 
 const Accounts = () => {
   return (
-    <div className={styles.hello}>
-      <p>Аккаунты</p>
+    <div className={styles.container}>
+      <DefaultCurrencyList />
     </div>
   );
 };

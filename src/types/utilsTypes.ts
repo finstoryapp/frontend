@@ -1,3 +1,4 @@
+import { IAccount } from "./accountsTypes";
 import { IExpense } from "./expensesTypes";
 
 export interface IYearAndMonth {
@@ -9,6 +10,7 @@ export interface WeekDay {
   unix: number;
 }
 export type IGetFullMonthAccountSum = {
+  expenses: IExpense[] | null;
   accountId: number;
 };
 export type IGetRate = {
@@ -20,3 +22,13 @@ export interface ICurrencyRate {
   to: string;
   rate: number;
 }
+export interface IRate {
+  currency: string;
+  rate: number;
+}
+export type IGetFullMonthSum = {
+  expenses: IExpense[] | null;
+  accounts: IAccount[] | null;
+  defaultCurrency: string;
+  rates: IRate[];
+};

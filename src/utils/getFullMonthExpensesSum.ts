@@ -1,40 +1,21 @@
-// Returns the full month sum (in the default currency)
-import { getRate } from "@/api/currenciesApi";
-import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
-
-import { userState } from "@/store/slices/userSlice/userSelectors";
-import { useSelector } from "react-redux";
 import { getFullMonthAccountSum } from "./getFullMonthAccountSum";
+import { IGetFullMonthSum } from "@/types/utilsTypes";
 
-//!TODO -> Complete this function
-export function getFullMonthExpensesSum(): number {
-  const defaultCurrency =
-    useSelector(userState).userData?.defaultCurrency ?? "USD";
+export function getFullMonthExpensesSum(args: IGetFullMonthSum): number {
+  if (!args.accounts || !args.expenses) return 0;
+  const { expenses, accounts, defaultCurrency, rates } = args;
 
-  // Array of objects [{id: string, currency: string}, ...]
-  const accountsData = useSelector(accountState).accounts?.map((account) => {
-    return { id: account.accountId, currency: account.currency };
-  });
+  return accounts.reduce((total, account) => {
+    const sum = getFullMonthAccountSum({
+      expenses,
+      accountId: Number(account.accountId),
+    });
 
-  // [{sum: number, currency: string}, ...]
-  const accountsSum = accountsData?.map((account) => {
-    return {
-      sum: getFullMonthAccountSum({ accountId: Number(account.id) }),
-      currency: account.currency,
-    };
-  });
-
-  // Calculate the total sum
-  const total = accountsSum?.reduce((total, currentAccountSum) => {
-    if (defaultCurrency === currentAccountSum.currency) {
-      return (total += currentAccountSum.sum);
-    } else {
-      const rate = getRate({
-        fromCurrency: defaultCurrency,
-        toCurrency: currentAccountSum.currency,
-      });
-      return total + currentAccountSum.sum;
+    if (account.currency === defaultCurrency) {
+      return total + sum;
     }
+
+    const rate = rates?.find((r) => r.currency === account.currency)?.rate ?? 1;
+    return total + sum / rate;
   }, 0);
-  return total ? total : 0;
 }

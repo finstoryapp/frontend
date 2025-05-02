@@ -3,7 +3,6 @@
 import { page } from "@/store/slices/navbarSlice/navbarSelectors";
 import styles from "./Navbar.module.css";
 import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
 import Image from "next/image";
 import { setNavbarState } from "@/store/slices/navbarSlice/navbarSlice";
 import { Navbar as NavbarInterface } from "@/types/navbarTypes";
@@ -13,7 +12,7 @@ import { paths } from "./const";
 
 const Navbar: React.FC = () => {
   const navbarState = useSelector(page);
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const handleNavigation = (path: string, state: NavbarInterface) => {

@@ -11,6 +11,8 @@ export interface IUser {
 }
 
 export interface UserState {
-  userData: IUser | null;
-  loading: boolean;
+  isPremiumWindow: boolean;
+  isCategoriesWindow: boolean;
+  isAddingCaterogyWindow: boolean;
+  isEditingCategoryWindow: boolean;
 }

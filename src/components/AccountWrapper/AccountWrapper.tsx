@@ -6,9 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentAccountIndex } from "@/store/slices/accountsSlice/accountsSlice";
 import { useEffect } from "react";
 import { getFullMonthAccountSum } from "@/utils/getFullMonthAccountSum";
+import { useAccounts } from "@/hooks/accounts/useAccounts";
+import { useExpenses } from "@/hooks/expenses/useExpenses";
 
 const AccountWrapper: React.FC = () => {
-  const { accounts, currentAccountIndex } = useSelector(accountState);
+  const { data: accounts } = useAccounts();
+  const { data: expenses } = useExpenses();
+  const { currentAccountIndex } = useSelector(accountState);
   const dispatch = useDispatch();
 
   // Change accounts by A and D keys
@@ -30,62 +34,63 @@ const AccountWrapper: React.FC = () => {
     };
   }, [accounts, currentAccountIndex]);
 
-  return (
-    <div className={styles.accountWrapper}>
-      {!accounts?.length && (
-        <span className={styles.accountNoAccount}>Аккаунтов нет.</span>
-      )}
+  if (!accounts?.length)
+    return (
+      <div className={styles.accountWrapper}>
+        <span className={styles.accountNoAccount}>Загрузка аккаунтов...</span>
+      </div>
+    );
 
-      {!!accounts?.length && (
-        <>
-          <button
-            style={currentAccountIndex === 0 ? { visibility: "hidden" } : {}}
-            disabled={currentAccountIndex === 0}
-            onClick={() => {
-              if (currentAccountIndex > 0) {
-                dispatch(setCurrentAccountIndex(currentAccountIndex - 1));
-              }
-            }}
-          >
-            <PrevButtonSvg />
-          </button>
-
-          <div className={styles.accountWrapperBox}>
-            <p className={styles.accountWrapperBoxName}>
-              {accounts[currentAccountIndex]?.accountName}
-            </p>
-            <p className={styles.accountWrapperBoxValue}>
-              {parseFloat(
-                (
-                  -1 *
-                  getFullMonthAccountSum({
-                    accountId: Number(accounts![currentAccountIndex].accountId),
-                  })
-                ).toFixed(2)
-              )}
-              <span> {accounts[currentAccountIndex]?.currency}</span>
-            </p>
-          </div>
-
-          <button
-            style={
-              currentAccountIndex === accounts.length - 1
-                ? { visibility: "hidden" }
-                : {}
+  if (!!accounts?.length)
+    return (
+      <div className={styles.accountWrapper}>
+        <button
+          style={currentAccountIndex === 0 ? { visibility: "hidden" } : {}}
+          disabled={currentAccountIndex === 0}
+          onClick={() => {
+            if (currentAccountIndex > 0) {
+              dispatch(setCurrentAccountIndex(currentAccountIndex - 1));
             }
-            onClick={() => {
-              if (accounts && currentAccountIndex < accounts.length - 1) {
-                dispatch(setCurrentAccountIndex(currentAccountIndex + 1));
-              }
-            }}
-            disabled={currentAccountIndex === accounts.length - 1}
-          >
-            <NextButtonSvg />
-          </button>
-        </>
-      )}
-    </div>
-  );
+          }}
+        >
+          <PrevButtonSvg />
+        </button>
+
+        <div className={styles.accountWrapperBox}>
+          <p className={styles.accountWrapperBoxName}>
+            {accounts[currentAccountIndex]?.accountName}
+          </p>
+          <p className={styles.accountWrapperBoxValue}>
+            {parseFloat(
+              (
+                -1 *
+                getFullMonthAccountSum({
+                  expenses: expenses!,
+                  accountId: Number(accounts![currentAccountIndex].accountId),
+                })
+              ).toFixed(2)
+            )}
+            <span> {accounts[currentAccountIndex]?.currency}</span>
+          </p>
+        </div>
+
+        <button
+          style={
+            currentAccountIndex === accounts.length - 1
+              ? { visibility: "hidden" }
+              : {}
+          }
+          onClick={() => {
+            if (accounts && currentAccountIndex < accounts.length - 1) {
+              dispatch(setCurrentAccountIndex(currentAccountIndex + 1));
+            }
+          }}
+          disabled={currentAccountIndex === accounts.length - 1}
+        >
+          <NextButtonSvg />
+        </button>
+      </div>
+    );
 };
 
 export default AccountWrapper;

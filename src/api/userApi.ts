@@ -28,3 +28,17 @@ export async function getUserData(): Promise<IUser> {
     throw new Error(err instanceof Error ? err.message : "An error occurred");
   }
 }
+
+export async function setCurrency(currency: string) {
+  try {
+    const request = await fetchUtil("api/update_default_currency", {
+      method: "PUT",
+      body: JSON.stringify({
+        currency: currency,
+      }),
+    });
+    return request;
+  } catch (err) {
+    throw new Error(err instanceof Error ? err.message : "An error occurred");
+  }
+}
