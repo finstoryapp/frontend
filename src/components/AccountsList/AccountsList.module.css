@@ -1,0 +1,20 @@
+.accountItem {
+  color: var(--text-color);
+  border-radius: 12px;
+  padding: 12px;
+  background-color: var(--item-background);
+}
+.accountItem:first-child {
+  margin-top: 15px;
+}
+.accountItem:not(:last-child) {
+  margin-bottom: 8px;
+}
+.accountItemHeader {
+  display: flex;
+  justify-content: space-between;
+}
+.accountItemHeader button {
+  border: none;
+  background-color: transparent;
+}

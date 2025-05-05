@@ -19,15 +19,9 @@ export async function getExpenses(
 // Add new expense
 export async function addExpense(args: IAddExpense): Promise<IExpense> {
   try {
-    const expense: IAddExpense = {
-      amount: args.amount,
-      accountId: args.accountId,
-      categoryName: args.categoryName,
-      time: args.time,
-    };
     const request = fetchUtil(`api/add_expense`, {
       method: "POST",
-      body: JSON.stringify(expense),
+      body: JSON.stringify(args),
     });
     return request;
   } catch (err) {

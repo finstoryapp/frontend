@@ -9,7 +9,7 @@ export function useDeleteExpense() {
   const dispatch = useDispatch();
 
   return useMutation<void, Error, string>({
-    mutationFn: (data) => deleteExpense(data),
+    mutationFn: (expenseId) => deleteExpense(expenseId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: EXPENSES_QUERY_KEY,

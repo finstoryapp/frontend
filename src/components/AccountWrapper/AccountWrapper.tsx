@@ -1,38 +1,36 @@
 import NextButtonSvg from "@/svg/NextButtonSvg";
 import PrevButtonSvg from "@/svg/PrevButtonSvg";
 import styles from "./AccountWrapper.module.css";
-import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
+import { accountsState } from "@/store/slices/accountsSlice/accountsState";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentAccountIndex } from "@/store/slices/accountsSlice/accountsSlice";
-import { useEffect } from "react";
 import { getFullMonthAccountSum } from "@/utils/getFullMonthAccountSum";
 import { useAccounts } from "@/hooks/accounts/useAccounts";
 import { useExpenses } from "@/hooks/expenses/useExpenses";
+import useKeyPress from "@/hooks/component/useKeyPress";
 
 const AccountWrapper: React.FC = () => {
   const { data: accounts } = useAccounts();
   const { data: expenses } = useExpenses();
-  const { currentAccountIndex } = useSelector(accountState);
+  const { currentAccountIndex } = useSelector(accountsState);
   const dispatch = useDispatch();
 
-  // Change accounts by A and D keys
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "KeyA") {
-        if (currentAccountIndex > 0) {
-          dispatch(setCurrentAccountIndex(currentAccountIndex - 1));
-        }
-      } else if (event.code === "KeyD") {
-        if (accounts && currentAccountIndex < accounts.length - 1) {
-          dispatch(setCurrentAccountIndex(currentAccountIndex + 1));
-        }
+  useKeyPress({
+    keys: ["KeyA"],
+    callback: () => {
+      if (currentAccountIndex > 0) {
+        dispatch(setCurrentAccountIndex(currentAccountIndex - 1));
       }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [accounts, currentAccountIndex]);
+    },
+  });
+  useKeyPress({
+    keys: ["KeyD"],
+    callback: () => {
+      if (accounts && currentAccountIndex < accounts.length - 1) {
+        dispatch(setCurrentAccountIndex(currentAccountIndex + 1));
+      }
+    },
+  });
 
   if (!accounts?.length)
     return (

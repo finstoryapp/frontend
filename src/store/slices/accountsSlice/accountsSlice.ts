@@ -4,6 +4,9 @@ import { accountsReducers } from "./accountsReducers";
 
 const initialState: AccountsState = {
   currentAccountIndex: 0,
+  currentAccountId: 0,
+  isDeleteAccountWindow: false,
+  isAddingAccountWindow: false,
 };
 
 const accountsSlice = createSlice({
@@ -11,5 +14,10 @@ const accountsSlice = createSlice({
   initialState,
   reducers: accountsReducers,
 });
-export const { setCurrentAccountIndex } = accountsSlice.actions;
+export const {
+  setCurrentAccountIndex,
+  setCurrentAccountId,
+  setIsDeletingAccountWindow,
+  setIsAddingAccountWindow,
+} = accountsSlice.actions;
 export default accountsSlice.reducer;

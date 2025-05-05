@@ -1,7 +1,7 @@
 import { russianDayNames } from "@/app/constants";
 import styles from "./ExpensesContainer.module.css";
 import AccountsWrapper from "@/components/AccountWrapper/AccountWrapper";
-import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
+import { accountsState } from "@/store/slices/accountsSlice/accountsState";
 import { useSelector, useDispatch } from "react-redux";
 import RightArrowLightBlue from "@/svg/RightArrowLightBlue";
 import { ClipLoader } from "react-spinners";
@@ -15,7 +15,7 @@ export const ExpensesContainer: React.FC = () => {
   const { data: user } = useUser();
   const { data: accounts } = useAccounts();
   const { data: expenses, isPending: isExpensesPending } = useExpenses();
-  const currentAccountIndex = useSelector(accountState).currentAccountIndex;
+  const currentAccountIndex = useSelector(accountsState).currentAccountIndex;
 
   if (isExpensesPending)
     return (

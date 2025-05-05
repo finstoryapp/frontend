@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
 import { useEffect, useRef, useState } from "react";
-import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
+import { accountsState } from "@/store/slices/accountsSlice/accountsState";
 import { getWeekDays } from "@/utils/getWeekDays";
 import { useDraggable } from "react-use-draggable-scroll";
 import { ClipLoader } from "react-spinners";
@@ -14,30 +14,27 @@ import { useUser } from "@/hooks/user/useUser";
 import { useAccounts } from "@/hooks/accounts/useAccounts";
 import { useExpenses } from "@/hooks/expenses/useExpenses";
 import { useAddExpense } from "@/hooks/expenses/useAddExpense";
+import useScrollTabs from "@/hooks/component/useScrollTabs";
+import useKeyPress from "@/hooks/component/useKeyPress";
 
 export const AddExpenseWindow: React.FC = () => {
   const dispatch = useDispatch();
-  const { currentAccountIndex } = useSelector(accountState);
+  const { currentAccountIndex } = useSelector(accountsState);
 
   const { data: user } = useUser();
   const { data: accounts } = useAccounts();
   const { data: expenses } = useExpenses();
 
-  const addExpense = useAddExpense();
-  const isAddingExpense = addExpense.isPending;
+  const { mutate: addExpense, isPending: isAddingExpense } = useAddExpense();
 
   const currentAccountName = accounts![currentAccountIndex].accountName;
   const currentAccountCurrency = accounts![currentAccountIndex].currency;
-  const ccurrentAccountId = accounts![currentAccountIndex].accountId;
+  const currentAccountId = accounts![currentAccountIndex].accountId;
 
   const [currentSelectedDayIndex, setCurrentSelectedDayIndex] = useState(4);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expenseValue, setExpenseValue] = useState(0);
-
-  // Used for make categories menu draggable
-  const ref =
-    useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
-  const { events } = useDraggable(ref);
+  const { ref, events } = useScrollTabs();
 
   // Control the expense input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,86 +56,24 @@ export const AddExpenseWindow: React.FC = () => {
     }
   };
 
-  // Close the Add Expense Window by "W" key or "Escape"
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "KeyW" || event.code === "Escape") {
-        dispatch(setAddExpenseWindow(false));
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  useKeyPress({
+    keys: ["KeyW", "Escape"],
+    callback: () => dispatch(setAddExpenseWindow(false)),
+  });
 
-  // Add expense by "Enter" key
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "Enter" && selectedCategory && expenseValue > 0) {
-        addExpense.mutate({
+  useKeyPress({
+    keys: ["Enter"],
+    callback: () => {
+      if (selectedCategory && expenseValue > 0) {
+        addExpense({
           amount: expenseValue,
-          accountId: +ccurrentAccountId,
+          accountId: +currentAccountId,
           categoryName: selectedCategory,
           time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
         });
       }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedCategory, expenseValue]);
-
-  // Drag categories by mouse wheel
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    let scrollAmount = 0;
-    let isScrolling = false;
-
-    const smoothScroll = () => {
-      if (scrollAmount === 0) {
-        isScrolling = false;
-        return;
-      }
-
-      const step = scrollAmount * 0.05; // 5% each frame
-      el.scrollLeft += step;
-      scrollAmount -= step;
-
-      requestAnimationFrame(smoothScroll);
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        scrollAmount += e.deltaY;
-
-        if (!isScrolling) {
-          isScrolling = true;
-          requestAnimationFrame(smoothScroll);
-        }
-      }
-    };
-
-    el.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      el.removeEventListener("wheel", handleWheel);
-    };
-  }, []);
-
-  // Disable scrolling on mount
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      // Restore scrolling on unmount
-      document.body.style.overflow = "";
-    };
-  }, []);
+    },
+  });
 
   return createPortal(
     <div
@@ -239,9 +174,9 @@ export const AddExpenseWindow: React.FC = () => {
           }`}
           onClick={() => {
             if (selectedCategory && expenseValue > 0 && !isAddingExpense) {
-              addExpense.mutate({
+              addExpense({
                 amount: expenseValue,
-                accountId: +ccurrentAccountId,
+                accountId: +currentAccountId,
                 categoryName: selectedCategory,
                 time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
               });

@@ -8,4 +8,22 @@ export const accountsReducers = {
   ) => {
     state.currentAccountIndex = action.payload;
   },
+  setCurrentAccountId: (
+    state: AccountsState,
+    action: PayloadAction<number>
+  ) => {
+    state.currentAccountId = action.payload;
+  },
+  setIsDeletingAccountWindow: (
+    state: AccountsState,
+    action: PayloadAction<boolean>
+  ) => {
+    state.isDeleteAccountWindow = action.payload;
+  },
+  setIsAddingAccountWindow: (
+    state: AccountsState,
+    action: PayloadAction<boolean>
+  ) => {
+    state.isAddingAccountWindow = action.payload;
+  },
 };

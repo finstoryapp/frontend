@@ -6,7 +6,7 @@ import { expensesState } from "@/store/slices/expensesSlice/expensesState";
 import { ClipLoader } from "react-spinners";
 import { useDeleteExpense } from "@/hooks/expenses/useDeleteExpense";
 import { useExpenses } from "@/hooks/expenses/useExpenses";
-import { accountState } from "@/store/slices/accountsSlice/accountSelectors";
+import { accountsState } from "@/store/slices/accountsSlice/accountsState";
 import { useAccounts } from "@/hooks/accounts/useAccounts";
 import { useUser } from "@/hooks/user/useUser";
 import { useRates } from "@/hooks/accounts/useRates";
@@ -14,7 +14,7 @@ import { useRates } from "@/hooks/accounts/useRates";
 export const DeleteExpenseWindow: React.FC = () => {
   const dispatch = useDispatch();
   const { selectedExpenseId } = useSelector(expensesState);
-  const { currentAccountIndex } = useSelector(accountState);
+  const { currentAccountIndex } = useSelector(accountsState);
 
   const deleteExpense = useDeleteExpense();
   const { data: expenses } = useExpenses();

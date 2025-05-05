@@ -7,7 +7,6 @@ import { RotateLoader } from "react-spinners";
 import { useEffect } from "react";
 import { expensesState } from "@/store/slices/expensesSlice/expensesState";
 import ExpensesNavbar from "@/components/ExpensesNavbar/ExpensesNavbar";
-import AddExpensesButton from "@/components/AddExpensesButton/AddExpensesButton";
 import AddExpenseWindow from "@/components/AddExpenseWindow/AddExpenseWindow";
 import { setAddExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
 import DeleteExpenseWindow from "@/components/DeleteExpenseWindow/DeleteExpenseWindow";
@@ -15,6 +14,8 @@ import { useUser } from "@/hooks/user/useUser";
 import { useAccounts } from "@/hooks/accounts/useAccounts";
 import { useExpenses } from "@/hooks/expenses/useExpenses";
 import { setNavbarState } from "@/store/slices/navbarSlice/navbarSlice";
+import AddButton from "@/components/AddButton/AddButton";
+import useKeyPress from "@/hooks/component/useKeyPress";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -34,18 +35,10 @@ const Home = () => {
     dispatch(setNavbarState({ page: "home" }));
   }, []);
 
-  // Open "Add expense" modal window by "W" key
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "KeyW") {
-        dispatch(setAddExpenseWindow(true));
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  useKeyPress({
+    keys: ["KeyW"],
+    callback: () => dispatch(setAddExpenseWindow(true)),
+  });
 
   if (isUserPending)
     return (
@@ -72,7 +65,12 @@ const Home = () => {
         <>
           <ExpensesNavbar />
           <ExpensesContainer />
-          <AddExpensesButton />
+          <AddButton
+            text="Добавить расход"
+            onClick={() => {
+              dispatch(setAddExpenseWindow(true));
+            }}
+          />
           {expenses.isAddExpenseWindowOpen ? <AddExpenseWindow /> : null}
           {expenses.isDeleteExpenseWindow ? <DeleteExpenseWindow /> : null}
         </>

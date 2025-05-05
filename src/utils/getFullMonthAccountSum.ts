@@ -5,14 +5,14 @@ import { IGetFullMonthAccountSum } from "@/types/utilsTypes";
 export function getFullMonthAccountSum(args: IGetFullMonthAccountSum): number {
   if (!args.expenses) return 0;
 
-  const expensesOfTheAccount = args.expenses
-    ? args.expenses.filter((expense) => {
-        return expense.accountId === String(args.accountId);
-      })
-    : [];
+  const expensesOfTheAccount = args.expenses.filter(
+    (expense) => expense.accountId === String(args.accountId)
+  );
+
   const total = expensesOfTheAccount.reduce(
     (acc, expense) => acc + Number(expense.amount),
     0
   );
+  console.log(total);
   return total;
 }
