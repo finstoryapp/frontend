@@ -50,7 +50,7 @@ const StatisticsNavbar: React.FC<StatisticsNavbarProps> = (props) => {
           }}
         />
         {currentStatistics === 0
-          ? "Основной счет"
+          ? "Все счета"
           : String(accounts![currentStatistics - 1].accountName)}
         <NextButtonSvg
           style={{ cursor: "pointer" }}
