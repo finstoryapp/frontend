@@ -51,7 +51,7 @@ const Subscription: React.FC = () => {
       if (status === "paid") {
         location.reload();
       }
-    } catch (err) {
+    } catch {
       alert("Failed to open invoice.");
     }
   };
