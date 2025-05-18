@@ -26,4 +26,10 @@ export const accountsReducers = {
   ) => {
     state.isAddingAccountWindow = action.payload;
   },
+  setIsEditAccountWindow: (
+    state: AccountsState,
+    action: PayloadAction<boolean>
+  ) => {
+    state.isEditAccountWindow = action.payload;
+  },
 };

@@ -3,10 +3,9 @@ import styles from "./AddExpensesWindow.module.css";
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddExpenseWindow } from "@/store/slices/expensesSlice/expensesSlice";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { accountsState } from "@/store/slices/accountsSlice/accountsState";
 import { getWeekDays } from "@/utils/getWeekDays";
-import { useDraggable } from "react-use-draggable-scroll";
 import { ClipLoader } from "react-spinners";
 import { EXPENSE_MAX_AMOUNT } from "@/app/constants";
 import { getFullMonthAccountSum } from "@/utils/getFullMonthAccountSum";
@@ -33,25 +32,31 @@ export const AddExpenseWindow: React.FC = () => {
 
   const [currentSelectedDayIndex, setCurrentSelectedDayIndex] = useState(4);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [expenseValue, setExpenseValue] = useState(0);
+  const [expenseValue, setExpenseValue] = useState<string>("");
+
   const { ref, events } = useScrollTabs();
 
-  // Control the expense input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    const numericValue = Number(rawValue);
 
-    // Validate: up to 3 decimal places only
-    const isValid =
-      /^(\d+)?(\.\d{0,3})?$/.test(rawValue) && !isNaN(numericValue);
+    // Allow empty string so the user can delete all
+    if (rawValue === "") {
+      setExpenseValue("");
+      return;
+    }
+
+    // Validate input: only digits and up to 3 decimals
+    const isValid = /^(\d+)?(\.\d{0,3})?$/.test(rawValue);
 
     if (isValid) {
+      const numericValue = Number(rawValue);
+
       if (numericValue < 0) {
-        setExpenseValue(0);
+        setExpenseValue("0");
       } else if (numericValue > EXPENSE_MAX_AMOUNT) {
-        setExpenseValue(EXPENSE_MAX_AMOUNT);
+        setExpenseValue(EXPENSE_MAX_AMOUNT.toString());
       } else {
-        setExpenseValue(numericValue);
+        setExpenseValue(rawValue);
       }
     }
   };
@@ -64,10 +69,10 @@ export const AddExpenseWindow: React.FC = () => {
   useKeyPress({
     keys: ["Enter"],
     callback: () => {
-      if (selectedCategory && expenseValue > 0) {
+      if (selectedCategory && Number(expenseValue) > 0) {
         addExpense({
-          amount: expenseValue,
-          accountId: +currentAccountId,
+          amount: Number(expenseValue),
+          accountId: Number(currentAccountId),
           categoryName: selectedCategory,
           time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
         });
@@ -93,6 +98,7 @@ export const AddExpenseWindow: React.FC = () => {
           onClick={() => dispatch(setAddExpenseWindow(false))}
         />
         <h2 className={styles.heading}>Добавить расход</h2>
+
         <div className={styles.account}>
           <span className={styles.accountName}>{currentAccountName}</span>
           <div>
@@ -112,6 +118,7 @@ export const AddExpenseWindow: React.FC = () => {
             </span>
           </div>
         </div>
+
         <div className={styles.tabs}>
           {getWeekDays()
             .reverse()
@@ -127,6 +134,7 @@ export const AddExpenseWindow: React.FC = () => {
               </span>
             ))}
         </div>
+
         <div className={styles.categories}>
           <div className={styles.categoriesContainer} {...events} ref={ref}>
             {user?.categories.map((category) => (
@@ -148,35 +156,40 @@ export const AddExpenseWindow: React.FC = () => {
             ))}
           </div>
         </div>
+
         <div className={styles.inputExpenseContainer}>
           <input
             autoFocus
-            value={expenseValue === 0 ? "" : expenseValue}
-            type="number"
-            placeholder={String(expenseValue)}
+            value={expenseValue}
+            type="text"
             onChange={handleChange}
             className={styles.inputExpense}
-            max={EXPENSE_MAX_AMOUNT}
+            inputMode="decimal"
+            pattern="[0-9]*"
             aria-describedby="amount"
-            inputMode="numeric" // Show numeric keyboard on mobile
-            pattern="[0-9]*" // Allow only digits
             onKeyDown={(e) => {
-              // Block unwanted keys like e, E, +, -
               if (["e", "E", "+", "-"].includes(e.key)) {
                 e.preventDefault();
               }
             }}
           />
         </div>
+
         <button
           className={`${styles.addExpenseButton} ${
-            selectedCategory && expenseValue > 0 ? styles.activeButton : ""
+            selectedCategory && Number(expenseValue) > 0
+              ? styles.activeButton
+              : ""
           }`}
           onClick={() => {
-            if (selectedCategory && expenseValue > 0 && !isAddingExpense) {
+            if (
+              selectedCategory &&
+              Number(expenseValue) > 0 &&
+              !isAddingExpense
+            ) {
               addExpense({
-                amount: expenseValue,
-                accountId: +currentAccountId,
+                amount: Number(expenseValue),
+                accountId: Number(currentAccountId),
                 categoryName: selectedCategory,
                 time: getWeekDays().reverse()[currentSelectedDayIndex].unix,
               });

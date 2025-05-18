@@ -14,10 +14,9 @@ import { getFullMonthExpensesSum } from "@/utils/getFullMonthExpensesSum";
 import { useAccounts } from "@/hooks/accounts/useAccounts";
 import { useRates } from "@/hooks/accounts/useRates";
 import { useEffect, useState } from "react";
-import { page } from "@/store/slices/navbarSlice/navbarSelectors";
 
 const ExpensesNavbar: React.FC = () => {
-  const { data: user, refetch: refetchUser } = useUser();
+  const { data: user } = useUser();
   const { data: accounts } = useAccounts();
   const { data: rates, refetch: refetchRates } = useRates();
   const { data: expenses } = useExpenses();
@@ -38,7 +37,7 @@ const ExpensesNavbar: React.FC = () => {
         defaultCurrency: user?.defaultCurrency!,
       }).toFixed(2)
     );
-  }, [rates, user]);
+  }, [rates, user, expenses]);
 
   return (
     <div className={styles.expensesNavbar}>
@@ -69,7 +68,7 @@ const ExpensesNavbar: React.FC = () => {
       <div className={styles.sum}>
         <p className={styles.sumText}>Расход за месяц</p>
         <p className={styles.sumValue} onClick={() => refetchRates()}>
-          {parseFloat(totalSum)}
+          {-1 * parseFloat(totalSum)}
           <span className={styles.sumCurrency}> {defaultCurrency}</span>
         </p>
       </div>

@@ -13,6 +13,5 @@ export function getFullMonthAccountSum(args: IGetFullMonthAccountSum): number {
     (acc, expense) => acc + Number(expense.amount),
     0
   );
-  console.log(total);
   return total;
 }

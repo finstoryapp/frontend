@@ -1,6 +1,9 @@
 import { deleteAccount } from "@/api/accountsApi";
 import { ACCOUNTS_QUERY_KEY } from "@/app/constants";
-import { setIsDeletingAccountWindow } from "@/store/slices/accountsSlice/accountsSlice";
+import {
+  setIsDeletingAccountWindow,
+  setIsEditAccountWindow,
+} from "@/store/slices/accountsSlice/accountsSlice";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 
@@ -15,6 +18,7 @@ export function useDeleteAccount() {
         queryKey: ACCOUNTS_QUERY_KEY,
       });
       dispatch(setIsDeletingAccountWindow(false));
+      dispatch(setIsEditAccountWindow(false));
     },
   });
 }

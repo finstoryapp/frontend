@@ -4,7 +4,7 @@ import NextButtonSvg from "@/svg/NextButtonSvg";
 import { useDispatch } from "react-redux";
 import {
   setCurrentAccountId,
-  setIsDeletingAccountWindow,
+  setIsEditAccountWindow,
 } from "@/store/slices/accountsSlice/accountsSlice";
 
 const AccountsList: React.FC = () => {
@@ -21,7 +21,7 @@ const AccountsList: React.FC = () => {
               <button
                 onClick={() => {
                   dispatch(setCurrentAccountId(+account.id));
-                  dispatch(setIsDeletingAccountWindow(true));
+                  dispatch(setIsEditAccountWindow(true));
                 }}
               >
                 <NextButtonSvg />

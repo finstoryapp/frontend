@@ -7,6 +7,7 @@ const initialState: AccountsState = {
   currentAccountId: 0,
   isDeleteAccountWindow: false,
   isAddingAccountWindow: false,
+  isEditAccountWindow: false,
 };
 
 const accountsSlice = createSlice({
@@ -19,5 +20,6 @@ export const {
   setCurrentAccountId,
   setIsDeletingAccountWindow,
   setIsAddingAccountWindow,
+  setIsEditAccountWindow,
 } = accountsSlice.actions;
 export default accountsSlice.reducer;

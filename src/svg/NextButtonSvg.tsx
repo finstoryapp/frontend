@@ -1,4 +1,7 @@
-const NextButtonSvg: React.FC = () => {
+import { ButtonSvgProps } from "@/types/propsTypes";
+
+const NextButtonSvg: React.FC<ButtonSvgProps> = (props) => {
+  const { onClick, style } = props;
   return (
     <svg
       width="10"
@@ -7,6 +10,8 @@ const NextButtonSvg: React.FC = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       transform="rotate(180)" // Rotates the entire SVG
+      onClick={onClick}
+      style={style}
     >
       <path
         d="M8.75 1.5L1.25 9L8.75 16.5"

@@ -2,7 +2,6 @@ import { getFullMonthAccountSum } from "./getFullMonthAccountSum";
 import { IGetFullMonthSum } from "@/types/utilsTypes";
 
 export function getFullMonthExpensesSum(args: IGetFullMonthSum): number {
-  console.log("Пересчитано с данными: ", args);
   if (!args.accounts || !args.expenses) return 0;
   const { expenses, accounts, defaultCurrency, rates } = args;
   const sum = accounts.reduce((total, account) => {
@@ -18,6 +17,5 @@ export function getFullMonthExpensesSum(args: IGetFullMonthSum): number {
     const rate = rates?.find((r) => r.currency === account.currency)?.rate ?? 1;
     return total + sum / rate;
   }, 0);
-  console.log("Результат вышел такой: ", sum);
   return sum;
 }

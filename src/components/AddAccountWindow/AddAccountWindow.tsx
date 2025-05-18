@@ -2,7 +2,7 @@ import Image from "next/image";
 import styles from "./AddAccountWindow.module.css";
 import { createPortal } from "react-dom";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { setIsAddingAccountWindow } from "@/store/slices/accountsSlice/accountsSlice";
 import { useAddAccount } from "@/hooks/accounts/useAddAccount";
@@ -10,6 +10,7 @@ import { currencies } from "@/app/constants";
 import { useAccounts } from "@/hooks/accounts/useAccounts";
 import useScrollTabs from "@/hooks/component/useScrollTabs";
 import useKeyPress from "@/hooks/component/useKeyPress";
+import { useUser } from "@/hooks/user/useUser";
 
 export const AddAccountWindow: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,9 +19,22 @@ export const AddAccountWindow: React.FC = () => {
   const [accountNameValue, setAccountNameValue] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
   const { ref, events } = useScrollTabs();
+  const { data: user } = useUser();
+
+  useEffect(() => {
+    const index = currencies.indexOf(
+      user?.defaultCurrency ? user?.defaultCurrency : "USD"
+    );
+
+    if (index > -1 && user?.defaultCurrency !== "USD") {
+      currencies.splice(index, 1);
+      currencies.unshift(user?.defaultCurrency ? user?.defaultCurrency : "USD");
+    }
+    setSelectedCurrency(currencies[0]);
+  }, [user]);
 
   useKeyPress({
-    keys: ["KeyW", "Escape"],
+    keys: ["Escape"],
     callback: () => dispatch(setIsAddingAccountWindow(false)),
   });
 
@@ -77,6 +91,7 @@ export const AddAccountWindow: React.FC = () => {
             autoFocus
             value={accountNameValue === "" ? "" : accountNameValue}
             type="text"
+            spellCheck="false"
             placeholder={String(accountNameValue)}
             className={styles.inputAccount}
             onChange={(e) => setAccountNameValue(e.target.value)}
@@ -85,13 +100,18 @@ export const AddAccountWindow: React.FC = () => {
         </div>
         <button
           className={`${styles.addAccountButton} ${
-            selectedCurrency && accountNameValue ? styles.activeButton : ""
+            selectedCurrency &&
+            accountNameValue &&
+            !accounts?.find((acc) => acc.accountName === accountNameValue)
+              ? styles.activeButton
+              : ""
           }`}
           onClick={() => {
             if (
               selectedCurrency &&
               accountNameValue.length > 0 &&
-              !isAddingAccount
+              !isAddingAccount &&
+              !accounts?.find((acc) => acc.accountName === accountNameValue)
             ) {
               addAccount({
                 accountName: accountNameValue,
@@ -133,3 +153,4 @@ export const AddAccountWindow: React.FC = () => {
 };
 
 export default AddAccountWindow;
+//! FIX IT

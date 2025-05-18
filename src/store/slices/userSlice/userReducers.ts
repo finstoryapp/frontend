@@ -8,16 +8,31 @@ export const userReducers = {
   setCategoriesWindow: (state: UserState, action: PayloadAction<boolean>) => {
     state.isCategoriesWindow = action.payload;
   },
-  setEditingCategoryWindow: (
-    state: UserState,
-    action: PayloadAction<boolean>
-  ) => {
-    state.isEditingCategoryWindow = action.payload;
+  setEditCategoryWindow: (state: UserState, action: PayloadAction<boolean>) => {
+    state.isEditCategoryWindow = action.payload;
   },
-  setAddingCategoryWindow: (
+  setAddCategoryWindow: (state: UserState, action: PayloadAction<boolean>) => {
+    state.isAddCategoryWindow = action.payload;
+  },
+  setCurrentCategoryName: (state: UserState, action: PayloadAction<string>) => {
+    state.currentCategoryName = action.payload;
+  },
+  setIsCustomColorWindow: (
     state: UserState,
     action: PayloadAction<boolean>
   ) => {
-    state.isEditingCategoryWindow = action.payload;
+    state.isCustomColorWindow = action.payload;
+  },
+  setIsDeleteCategoryWindow: (
+    state: UserState,
+    action: PayloadAction<boolean>
+  ) => {
+    state.isDeleteCategoryWindow = action.payload;
+  },
+  setIsExportWindow: (state: UserState, action: PayloadAction<boolean>) => {
+    state.isExportWindow = action.payload;
+  },
+  setIsPremuim: (state: UserState, action: PayloadAction<boolean>) => {
+    state.isPremuim = action.payload;
   },
 };

@@ -9,11 +9,24 @@ import DeleteAccountWindow from "@/components/DeleteAccountWindow/DeleteAccountW
 import AddAccountWindow from "@/components/AddAccountWindow/AddAccountWindow";
 import AddButton from "@/components/AddButton/AddButton";
 import { setIsAddingAccountWindow } from "@/store/slices/accountsSlice/accountsSlice";
+import useKeyPress from "@/hooks/component/useKeyPress";
+import EditAccountWindow from "@/components/EditAccountWindow/EditAccountWindow";
+import Subscription from "@/components/Subscription/Subscription";
+import { userState } from "@/store/slices/userSlice/userSelectors";
 
 const Accounts = () => {
   const { isDeleteAccountWindow } = useSelector(accountsState);
   const { isAddingAccountWindow } = useSelector(accountsState);
+  const { isEditAccountWindow } = useSelector(accountsState);
   const dispatch = useDispatch();
+  const { isPremuim } = useSelector(userState);
+
+  useKeyPress({
+    keys: ["KeyW"],
+    callback: () => {
+      dispatch(setIsAddingAccountWindow(true));
+    },
+  });
 
   return (
     <div className={styles.container}>
@@ -25,8 +38,10 @@ const Accounts = () => {
           dispatch(setIsAddingAccountWindow(true));
         }}
       />
-      {isDeleteAccountWindow ? <DeleteAccountWindow /> : null}
       {isAddingAccountWindow ? <AddAccountWindow /> : null}
+      {isEditAccountWindow ? <EditAccountWindow /> : null}
+      {isDeleteAccountWindow ? <DeleteAccountWindow /> : null}
+      {!isPremuim ? <Subscription /> : null}
     </div>
   );
 };

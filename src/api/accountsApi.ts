@@ -1,4 +1,4 @@
-import { IAccount, IAddAccount } from "@/types/accountsTypes";
+import { IAccount, IAddAccount, IUpdateAccount } from "@/types/accountsTypes";
 import { fetchUtil } from "./apiClient";
 
 // Get user's accounts
@@ -31,6 +31,24 @@ export async function addAccount(args: IAddAccount): Promise<void> {
     const request = fetchUtil(`api/add_account`, {
       method: "POST",
       body: JSON.stringify(args),
+    });
+    return request;
+  } catch (err) {
+    throw new Error(err instanceof Error ? err.message : "An error occurred");
+  }
+}
+
+// Update an account
+export async function updateAccount(args: IUpdateAccount): Promise<void> {
+  const updatedAccountData = {
+    accountName: args.accountName,
+    currency: args.currency,
+  };
+
+  try {
+    const request = fetchUtil(`api/update_account/${args.accountId}`, {
+      method: "PUT",
+      body: JSON.stringify(updatedAccountData),
     });
     return request;
   } catch (err) {

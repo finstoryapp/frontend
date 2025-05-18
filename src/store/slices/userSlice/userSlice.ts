@@ -4,9 +4,14 @@ import { userReducers } from "./userReducers";
 
 const initialState: UserState = {
   isPremiumWindow: false,
-  isAddingCaterogyWindow: false,
-  isEditingCategoryWindow: false,
+  isAddCategoryWindow: false,
+  isEditCategoryWindow: false,
   isCategoriesWindow: false,
+  currentCategoryName: "",
+  isCustomColorWindow: false,
+  isDeleteCategoryWindow: false,
+  isExportWindow: false,
+  isPremuim: true,
 };
 
 const userSlice = createSlice({
@@ -15,4 +20,15 @@ const userSlice = createSlice({
   reducers: userReducers,
 });
 
+export const {
+  setCategoriesWindow,
+  setPremiumWindow,
+  setEditCategoryWindow,
+  setAddCategoryWindow,
+  setCurrentCategoryName,
+  setIsCustomColorWindow,
+  setIsDeleteCategoryWindow,
+  setIsExportWindow,
+  setIsPremuim,
+} = userSlice.actions;
 export default userSlice.reducer;

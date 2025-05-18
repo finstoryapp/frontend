@@ -1,0 +1,48 @@
+.back {
+  cursor: pointer;
+}
+.category {
+  border-radius: 5px;
+  border: 1px solid var(--setting-button-border);
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 10px 5px;
+  width: 150px;
+  gap: 5px;
+  transition: background-color 0.3s;
+  background-color: transparent;
+  height: 40px;
+}
+.category p {
+  font-family: "GothamProBold";
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.category:hover {
+  background-color: var(--background-color-primary);
+}
+.circle {
+  border-radius: 50%;
+  min-width: 15px;
+  height: 15px;
+}
+.heading {
+  margin: 0;
+  font-size: 24px;
+}
+.headingContainer {
+  display: flex;
+  align-items: center;
+  column-gap: 24px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.list {
+  width: 310px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 200px;
+}

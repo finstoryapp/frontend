@@ -5,12 +5,22 @@ import { setIsDeletingAccountWindow } from "@/store/slices/accountsSlice/account
 import { ClipLoader } from "react-spinners";
 import { useDeleteAccount } from "@/hooks/accounts/useDeleteAccount";
 import { accountsState } from "@/store/slices/accountsSlice/accountsState";
+import useKeyPress from "@/hooks/component/useKeyPress";
 
 const DeleteAccountWindow: React.FC = () => {
   const dispatch = useDispatch();
   const { currentAccountId } = useSelector(accountsState);
   const { isPending: isDeletingAccount, mutate: DeleteAccount } =
     useDeleteAccount();
+
+  useKeyPress({
+    keys: ["Escape"],
+    callback: () => {
+      if (!isDeletingAccount) {
+        dispatch(setIsDeletingAccountWindow(false));
+      }
+    },
+  });
 
   return createPortal(
     <div

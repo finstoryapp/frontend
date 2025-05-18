@@ -1,23 +1,29 @@
+import { userState } from "@/store/slices/userSlice/userSelectors";
+import { KeyPressType } from "@/types/hookTypes";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-interface keyPressType {
-  keys: string[];
-  callback: () => void;
-}
-
-const useKeyPress = (args: keyPressType) => {
+const useKeyPress = (args: KeyPressType) => {
   const { keys, callback } = args;
+  const { isPremuim } = useSelector(userState);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (keys.includes(event.code)) {
         callback();
       }
     };
-    document.addEventListener("keydown", handleKeyDown);
+
+    if (isPremuim) {
+      document.addEventListener("keyup", handleKeyDown);
+    } else {
+      document.removeEventListener("keyup", handleKeyDown);
+    }
+
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyDown);
     };
-  }, [keys, callback]);
+  }, [keys, callback, isPremuim]);
 };
 
 export default useKeyPress;

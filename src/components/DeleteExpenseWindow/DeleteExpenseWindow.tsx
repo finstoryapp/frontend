@@ -50,10 +50,7 @@ export const DeleteExpenseWindow: React.FC = () => {
           event.stopPropagation();
         }}
       >
-        <p
-          className={styles.data}
-          onClick={() => console.log(rate?.currency, defaultCurrency)}
-        >
+        <p className={styles.data}>
           <span>{amount}</span> <span>{currency}</span>{" "}
           {!rate?.currency ? null : (
             <>
