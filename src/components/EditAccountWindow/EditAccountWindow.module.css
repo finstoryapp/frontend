@@ -1,0 +1,156 @@
+.editAccountWrapper {
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  align-items: flex-end;
+  backdrop-filter: blur(15px) brightness(80%);
+}
+.editAccount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  overflow-y: auto;
+  color: var(--text-color);
+  max-height: 90vh;
+  height: 81vh;
+  width: 100%;
+  box-shadow: 0 -0.2px 0px 2px var(--primary-color);
+  border-radius: 30px 30px 0px 0px;
+  background: var(--background-color-primary);
+}
+.heading {
+  text-align: center;
+}
+.closeButton,
+.deleteButton {
+  cursor: pointer;
+  position: absolute;
+  transition: 0.3s;
+}
+.closeButton {
+  right: 24px;
+  top: 22px;
+}
+.deleteButton {
+  left: 24px;
+  top: 22px;
+}
+.closeButton:hover,
+.deleteButton:hover {
+  transform: scale(1.05);
+}
+.currenciesContainer {
+  background-color: var(--container-color);
+  border-radius: 30px;
+  width: 364px;
+  display: flex;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.currenciesContainer {
+  margin-top: 12px;
+  justify-content: start;
+  max-width: 384px;
+  padding-left: 18px;
+  padding-right: 18px;
+  overflow-x: scroll;
+}
+.currencies span {
+  display: inline-block;
+  border-radius: 8px;
+  background-color: var(--tab-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--tab-color);
+  font-family: "GothamProBold";
+  cursor: pointer;
+  height: 38px;
+}
+.currencies span {
+  padding: 0px 10px;
+  min-width: max-content;
+}
+.currencies span:hover {
+  background-color: var(--tab-hover);
+}
+.currencies span:active {
+  cursor: grab;
+}
+.clicked {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+}
+.inputAccount {
+  border-radius: 8px;
+  background-color: var(--container-color);
+  outline: none;
+  height: 64px;
+  font-size: 30px;
+  font-family: "GothamProBold";
+  text-align: center;
+  width: 240px;
+  box-shadow: 0px 0px 0px 2px var(--primary-color);
+  transition: 30s;
+  caret-color: var(--tab-color);
+}
+.inputAccount::placeholder {
+  color: var(--tab-color);
+  font-family: "GothamProBold";
+}
+.inputAccount:focus {
+  box-shadow: 0 -0.2px 0px 2px var(--primary-color);
+}
+.inputAccountContainer {
+  margin-top: 12px;
+}
+.inputAccountContainer input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-width: 0;
+  color: inherit;
+  display: block;
+  font-family: inherit;
+  margin: 0;
+  opacity: 1;
+  padding: 0;
+}
+.editAccountButton {
+  background-color: var(--disabled-button);
+  width: 288px;
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  border-radius: 20px;
+  margin-top: 12px;
+  border: none;
+  cursor: not-allowed;
+}
+.activeButton {
+  background-color: var(--button-primary-color);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+.activeButton:hover {
+  transform: scale(1.02);
+}

@@ -1,0 +1,16 @@
+.switcher {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+}
+.container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 10px;
+}
+.date {
+  font-family: "GothamProBold";
+  font-size: 18px;
+}

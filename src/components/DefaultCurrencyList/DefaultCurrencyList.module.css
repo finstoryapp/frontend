@@ -1,0 +1,75 @@
+.loading {
+  display: flex;
+  justify-content: center;
+}
+.accountHead {
+  color: var(--text-color);
+  padding: 12px;
+  border-radius: 12px;
+  background-color: var(--account-control-background);
+}
+.accountHeader {
+  display: flex;
+  justify-content: space-between;
+}
+.accountHead p {
+  font-weight: 700;
+  font-size: 20px;
+}
+.currencyHeader {
+  font-size: 13px !important;
+  font-family: GothamProLight;
+  font-weight: 400;
+  margin-bottom: 5px;
+}
+.currencyItem {
+  padding: 0px 10px;
+  display: inline-block;
+  border-radius: 8px;
+  background-color: var(--tab-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--tab-color);
+  font-family: "GothamProBold";
+  cursor: pointer;
+  height: 38px;
+  width: 73px;
+}
+.currencyItem:hover {
+  background-color: var(--tab-hover);
+}
+.selectedCurrency:hover {
+  background-color: var(--account-control-background);
+}
+.currencyItem:active {
+  cursor: grab;
+}
+.selectedCurrency {
+  background-color: var(--account-control-background);
+  color: var(--text-color);
+}
+.defaultCurrencyChoice {
+  display: flex;
+  height: 64px;
+  width: 100%;
+  border-radius: 12px;
+  display: flex;
+  justify-content: start;
+  gap: 3px;
+  overflow: hidden;
+  align-items: center;
+  background-color: var(--item-background);
+}
+.defaultCurrencyChoice span:first-child {
+  margin-left: 10px;
+}
+.defaultCurrencyChoice span:last-child {
+  margin-right: 10px;
+}
+.loadingCurrencies {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}

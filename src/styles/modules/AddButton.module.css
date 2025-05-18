@@ -1,0 +1,28 @@
+.buttonWrapper {
+  border-radius: 20px;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 76px;
+  cursor: pointer;
+}
+.buttonWrapper:hover {
+  background-color: var(--primary-color);
+}
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 20px;
+  width: 288px;
+  height: 56px;
+  font-size: 20px;
+  background-color: transparent;
+  border: none;
+  background-color: var(--button-primary-color);
+  transition: 0.3s;
+}
+.button:hover {
+  transform: scale(1.05);
+}

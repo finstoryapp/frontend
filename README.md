@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Finstory - Финансовый трекер
 
-## Getting Started
+### Мысли в процессе
 
-First, run the development server:
+- Текущую дату нужно записывать в слайсе с расходами, чтобы можно было получить всегда доступ к текущему месяцу. Функция getUnixMonthStartEnd получает текущий выбранный год + номер месяца. Т.е. в currentMonthName нужно хранить число.. От 1 до 12. Проверку на точность этого числа нужно сделать в функции getUnixMonthStartEnd.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Сначала получу расходы, санком. Потом отрисую на ExpensesNavbar год и месяц текущий + сделаю отображение кнопок вперед-назад. Затем добавлю редюсеры для того, чтобы переключаться на следующий месяц и предыдущий.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Ок, пока в санке сделаю текущий год и месяц. Далее буду возможно initialState сразу настраивать под это. Сейчас главное протестировать все и подключить.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Сделать нужно подсчет общей суммы. Сначала я посчитаю сумму конкретного аккаунта. Для этого юзаю отдельную util. Сделать это проще, т.к. нужно считать в одной валюте. А затем уже getFullMonthExpensesSum с учетом разных сумм и высокой производительностью (минимальное кол-во запросов к моему API с расходами).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- К слову, нужно будет проверить/подумать, как сделать API с расходами только для юзеров. Возможно, стоит отдельный модуль в nest сделать.
 
-## Learn More
+- Чтобы проссумировать все расходы за текущий месяц, сначала получу отдельно расходы по каждому аккаунту + их курсы валют. Т.е. мне нужно что-то вроде [{sum: 100, currency: "USD"}, ...] на выходе.
 
-To learn more about Next.js, take a look at the following resources:
+- Далее я должен пройтись по этому циклу и посчитать общую сумму с учетом рейта по отношению к основной валюте.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Допустим, дефолтная валюта = USD, а аккаунта - в GEL. Тогда мне нужен курс USD к GEL, чтобы грубо говоря умножить кол-во USD на кол-во GEL. Например, 1 USD = 2.7 GEL, 100 = 270 GEL.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Надо сделать возможность выделять общие расходы.
 
-## Deploy on Vercel
+-! ПЕРЕЕЗД ВСЕХ АСИНХРОННЫХ ШТУК НА TANSTACK QUERY
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Переезд закончен.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Нужно сделать так, чтобы rates корректно работали. Как это сделать наиболее эффективно? Хранить где-то в tanstack объект с курсами для текущих валют по текущим аккаунтам? - Как вариант. Затем это можно переиспользовать. useRates() ахаха создать; Но по идее мне нужно только один раз получить rates и все. Мб сделать это обычными запросами внутри мутации?
+
+- Начинаю делать аккаунты, стараюсь минимально использовать нейросеть (только для код-чекинга)
+
+- Аккаунты готовы. Остается статистика и настройки с категориями (из базы), а также - подписка. Темы будут в след. обновлении.
+
+- В стате я возьму месяц такой же, который и на главной странице, а что касается раздела - "Все счета" и отдельные аккаунты - будет просто свой отдельный useState(), который будет пробегаться по аккаунтам.
+
+- Далее остается все это отрисовать в диаграмме. Не забыть про % и размер блоков.
+
+- То есть мне нужно вернуть statisticsData массив (!) вместе с объектами, такими как name, value, color (hex) и percentage. На входе что будет? На входе подается список расходов текущий. Именно текущий. Либо.. Может, сразу весь подавать? Просто речь тут про разные валюты.
+  Ок, для начала сделаю это внутри компонента StatisticsPieChart, а дальше попробую вынести логику в другое место.
+
+- Надо создать массив объектов, где я просуммирую все категории. Нужно сначала создать массив объектов, в котором будут просто категории уникальные конкретно в моем случае. Затем я и остальное добавлю, цвета и прочее.
+
+- Теперь я имею уникальные категории. Кроме того, я сразу могу добавлять им их цвет. А сумму сосчитаю потом. Важно еще будет учитывать сумму для общего случая - там нужно будет юзать конвертацию валют.
+
+- Наконец, у меня получилось собрать массив объектов с category и color этой категории. Окэй, теперь пора к суммам.
+
+- Если валюта аккаунта текущего расхода (!) === валюте дефолтной, то все прибавить как обычно.
+
+- Иначе, доставать rates.
+
+- Все же я добавлю в tanstack mutation для подписки. 

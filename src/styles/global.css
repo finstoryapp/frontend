@@ -1,0 +1,56 @@
+@import url("./fonts.css");
+/* Basic theme variables */
+:root {
+  --background-color: #08233f;
+  --background-color-primary: #15314c;
+  --background-dark-color: #0a0f2a;
+  --text-color: #ffffff;
+  --primary-color: #4f93ff;
+  --text-color-secondary: #6d9dcf;
+  --box-shadow-border: #00000040;
+  --text-color-primary: #f7df1e;
+  --button-primary-color: #006fee;
+  --container-color: #1d4a75;
+  --tab-background: #0a2c4c;
+  --tab-color: #6caeed;
+  --tab-hover: #092138;
+  --disabled-button: #94bdff;
+  --item-background: #2a5d91;
+  --danger: #c20e4d;
+  --danger-hover: #df3c75;
+  --account-control-background: #3582ff;
+  --setting-button-border: #2e68a4;
+}
+/* Global styles */
+* {
+  box-sizing: border-box;
+  color: var(--text-color);
+  font-family: "GothamPro";
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  user-select: none;
+}
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background-color: var(--background-color);
+}
+::-webkit-scrollbar {
+  display: none;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+button {
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+}
+p {
+  margin: 0;
+}

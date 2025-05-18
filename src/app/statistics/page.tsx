@@ -1,296 +1,70 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { Spinner } from "@nextui-org/react"; // Добавлен импорт спиннера
+import StatisticsNavbar from "@/components/StatisticsNavbar/StatisticsNavbar";
 import styles from "./statistics.module.css";
-import { fetchUtil } from "@/utils/utilFetch";
-import { IExpense } from "@/types/IExpense";
-import { getUnixMonthStartEnd } from "@/utils/getUnixMonthStartEnd";
+import { useState } from "react";
+import { useAccounts } from "@/hooks/accounts/useAccounts";
+import StatisticsPieChart from "@/components/StatisticsPieChart/StatisticsPieChart";
+import useStatisticsData from "@/hooks/component/useStatisticsData";
+import StatisticsList from "@/components/StatisticsList/StatisticsList";
+import Subscription from "@/components/Subscription/Subscription";
+import { useSelector } from "react-redux";
+import { userState } from "@/store/slices/userSlice/userSelectors";
 
-interface CategorySum {
-  name: string;
-  value: number;
-  color: string;
-}
+const Statistics = () => {
+  const [currentStatistics, setSurrentStatistics] = useState(0);
+  const { data: accounts } = useAccounts();
+  const { isPremuim } = useSelector(userState);
 
-export default function Statistics() {
-  const { userData } = useSelector((state: RootState) => state.user);
-  const { accounts } = useSelector((state: RootState) => state.accounts);
-  const [expenses, setExpenses] = useState<IExpense[] | null>(null);
-  const [categorySums, setCategorySums] = useState<CategorySum[]>([]);
-  const [totalSum, setTotalSum] = useState(0);
-  const [currentAccountIndex, setCurrentAccountIndex] = useState(-1);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [isLoading, setIsLoading] = useState(true);
-  console.log(expenses);
-  const currentAccount =
-    currentAccountIndex === -1
-      ? { accountName: "Все счета", currency: userData?.defaultCurrency }
-      : accounts[currentAccountIndex];
-
-  const normalizeColor = (color?: string): string => {
-    if (!color) return "#cccccc";
-    if (/^#[0-9A-Fa-f]{6}$/.test(color)) return color;
-    if (/^[0-9A-Fa-f]{6}$/.test(color)) return `#${color}`;
-    return "#cccccc";
-  };
-
-  const handlePrevAccount = () => {
-    setCurrentAccountIndex((prev) =>
-      prev <= -1 ? accounts.length - 1 : prev - 1
-    );
-  };
-
-  const handleNextAccount = () => {
-    setCurrentAccountIndex((prev) =>
-      prev >= accounts.length - 1 ? -1 : prev + 1
-    );
-  };
-
-  const handlePrevMonth = () => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setMonth(prev.getMonth() - 1);
-      return newDate;
-    });
-  };
-
-  const handleNextMonth = () => {
-    const nextDate = new Date(currentDate);
-    nextDate.setMonth(currentDate.getMonth() + 1);
-    if (nextDate <= new Date()) {
-      setCurrentDate(nextDate);
-    }
-  };
-
-  const formatMonth = (date: Date) => {
-    return date.toLocaleString("ru-RU", { month: "long", year: "numeric" });
-  };
-
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      setIsLoading(true);
-      try {
-        const { start, end } = getUnixMonthStartEnd(
-          currentDate.getFullYear(),
-          currentDate.getMonth() + 1
-        );
-        const expenses: IExpense[] = await fetchUtil(
-          `api/expenses_list/range?from=${start}&to=${end}`
-        );
-        setExpenses(expenses);
-
-        const sums: { [key: string]: number } = {};
-        let total = 0;
-
-        const filteredExpenses =
-          currentAccountIndex === -1
-            ? expenses
-            : expenses.filter(
-                (exp) =>
-                  exp.accountId === accounts[currentAccountIndex].accountId
-              );
-
-        for (const expense of filteredExpenses) {
-          let amount = Math.abs(Number(expense.amount));
-          if (
-            currentAccountIndex === -1 &&
-            expense.account.currency !== userData?.defaultCurrency
-          ) {
-            try {
-              const response = await fetch(
-                `https://exchange.frontgr.com/get?from=${expense.account.currency}&to=${userData?.defaultCurrency}`
-              );
-              const exchangeRate = await response.json();
-              amount *= exchangeRate.rate;
-            } catch (error) {
-              console.error("Error converting currency:", error);
-            }
-          }
-
-          sums[expense.categoryName] =
-            (sums[expense.categoryName] || 0) + amount;
-          total += amount;
-        }
-
-        const categoryData = Object.entries(sums).map(([name, value]) => {
-          const category = userData?.categories.find(
-            (cat) => cat.name === name
-          );
-          const colorMap: { [key: string]: string } = {};
-          const defaultColor = "#cccccc";
-          return {
-            name,
-            value,
-            color: normalizeColor(
-              colorMap[name] || category?.color || defaultColor
-            ),
-          };
-        });
-
-        setCategorySums(categoryData);
-        setTotalSum(total);
-      } catch (error) {
-        console.error("Error fetching expenses:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (userData && accounts) {
-      fetchExpenses();
-    } else {
-      setIsLoading(false);
-    }
-  }, [userData, accounts, currentAccountIndex, currentDate]);
+  const statisticsData = useStatisticsData({
+    currentStatistics: currentStatistics,
+  });
 
   return (
     <div className={styles.container}>
-      <div className={styles.monthSwitcher}>
-        <button onClick={handlePrevMonth}>
-          <svg
-            width="10"
-            height="18"
-            viewBox="0 0 10 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8.75 1.5L1.25 9L8.75 16.5"
-              stroke="#3E9FFF"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-        <span className={styles.monthName}>{formatMonth(currentDate)}</span>
-        <button
-          onClick={handleNextMonth}
-          disabled={
-            currentDate.getMonth() === new Date().getMonth() &&
-            currentDate.getFullYear() === new Date().getFullYear()
-          }
-        >
-          <svg
-            width="10"
-            height="18"
-            viewBox="0 0 10 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8.75 1.5L1.25 9L8.75 16.5"
-              stroke="#3E9FFF"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </div>
-      <div className={styles.accountSwitcher}>
-        <button onClick={handlePrevAccount}>
-          <svg
-            width="10"
-            height="18"
-            viewBox="0 0 10 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8.75 1.5L1.25 9L8.75 16.5"
-              stroke="#3E9FFF"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-        <span className={styles.accountName}>
-          {currentAccount?.accountName}
-        </span>
-        <button onClick={handleNextAccount}>
-          <svg
-            width="10"
-            height="18"
-            viewBox="0 0 10 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8.75 1.5L1.25 9L8.75 16.5"
-              stroke="#3E9FFF"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </div>
+      <StatisticsNavbar
+        onClickNextAccount={() =>
+          setSurrentStatistics((prevValue) => {
+            if (!accounts) {
+              return prevValue;
+            }
+            if (prevValue === accounts.length) {
+              return 0;
+            } else if (prevValue < accounts.length) {
+              return prevValue + 1;
+            } else {
+              return prevValue;
+            }
+          })
+        }
+        onClickPrevAccount={() =>
+          setSurrentStatistics((prevValue) => {
+            if (!accounts) {
+              return prevValue;
+            }
 
-      {isLoading ? (
-        <div className={styles.loading}>
-          <Spinner />
-        </div>
-      ) : (
-        <>
-          <div className={styles.chartContainer}>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categorySums}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={120}
-                  outerRadius={150}
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
-                  animationDuration={400}
-                  isAnimationActive={false}
-                >
-                  {categorySums
-                    .sort((a, b) => b.value - a.value)
-                    .map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.color}
-                        stroke="none"
-                      />
-                    ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-            <div className={styles.totalSum}>
-              <span className={styles.sumLabel}>Расход за месяц</span>
-              <span className={styles.sumValue}>
-                {totalSum.toFixed(2)} {currentAccount?.currency}
-              </span>
-            </div>
-          </div>
-
-          <div className={styles.legendContainer}>
-            {categorySums
-              .sort((a, b) => b.value - a.value)
-              .map((category, index) => (
-                <div key={index} className={styles.legendItem}>
-                  <div
-                    className={styles.colorIndicator}
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span className={styles.categoryName}>{category.name}</span>
-                  <span className={styles.categoryValue}>
-                    {category.value.toFixed(2)}{" "}
-                    <span>{currentAccount?.currency}</span>
-                  </span>
-                </div>
-              ))}
-          </div>
-        </>
-      )}
+            if (prevValue === 0) {
+              return accounts.length;
+            } else if (prevValue === accounts.length + 1) {
+              return accounts.length - 1;
+            } else if (
+              prevValue === accounts.length ||
+              prevValue < accounts.length
+            ) {
+              return prevValue - 1;
+            }
+            return 0;
+          })
+        }
+        currentStatistics={currentStatistics}
+      />
+      <StatisticsPieChart
+        currentStatistics={currentStatistics}
+        statisticsData={statisticsData}
+      />
+      <StatisticsList currentStatistics={currentStatistics} />
+      {!isPremuim ? <Subscription /> : null}
     </div>
   );
-}
+};
+
+export default Statistics;

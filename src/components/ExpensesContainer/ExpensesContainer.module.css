@@ -1,0 +1,90 @@
+.expenses {
+  color: var(--text-color);
+  min-height: 100vh;
+  background-color: var(--background-color-primary);
+  border-radius: 20px;
+  padding: 11px 11px 186px;
+  box-shadow: 0 0 20px var(--box-shadow-border),
+    0 0 40px var(--box-shadow-border);
+}
+.expensesContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.expenseItem {
+  padding: 0px 10px;
+  background-color: var(--item-background);
+  border-radius: 12px;
+  height: 36px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.expenseItem span,
+.expenseItem p {
+  font-family: "GothamProBold";
+}
+.expenseItemAmount {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: text;
+}
+.expenseItemCategory {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.expenseItemCategory span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.expenseItemCategoryCircle {
+  border-radius: 50%;
+  min-width: 8px;
+  height: 8px;
+  margin-right: 8px;
+}
+.expenseItemButton {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  background-color: transparent;
+  border: none;
+}
+.expenseItemButton::before {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  top: -8px;
+  bottom: -10px;
+  left: -20px;
+  right: -10px;
+}
+/* Flex */
+.expenseItemDate {
+  flex: 0.2;
+}
+.expenseItemAmount {
+  flex: 0.4;
+}
+.expenseItemCategory {
+  flex: 0.4;
+}
+.expenseItemButton {
+  flex: 0.1;
+}
+.loader {
+  text-align: center;
+  margin-top: 64px;
+}

@@ -1,0 +1,21 @@
+.container {
+  position: relative;
+  height: 300px;
+  margin: 16px 0px;
+}
+.totalSum {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.totalSum span {
+  display: block;
+}
+.totalSum span:last-child {
+  user-select: text;
+}
+.totalSum span:last-child {
+  font-family: "GothamProBold";
+}

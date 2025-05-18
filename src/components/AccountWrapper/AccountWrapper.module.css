@@ -1,0 +1,53 @@
+.accountWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 16px;
+}
+.accountWrapperBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.accountWrapperContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.accountWrapperBoxName {
+  color: var(--text-color-secondary);
+  font-size: 20px;
+  font-family: "GothamProBold";
+}
+.accountWrapperBoxValue {
+  font-size: 30px;
+  user-select: text;
+}
+.accountWrapperBoxValue span {
+  font-size: 20px;
+  color: #6d9dcf;
+  font-family: "GothamProBold";
+}
+.accountNoAccount {
+  text-align: center;
+  width: 100%;
+}
+.accountWrapperBox {
+  display: flex;
+  width: 100%;
+}
+.accountWrapper button {
+  position: relative;
+  background-color: transparent;
+  border: none;
+}
+.accountWrapper button::before {
+  content: "";
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  top: 15px;
+  bottom: -10px;
+  left: -20px;
+  right: -10px;
+}

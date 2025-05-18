@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/utils/getWeekDays.js"
+    "src/utils/getWeekDays.js",
+    "src/hooks/use"
   ],
   "exclude": ["node_modules"]
 }
