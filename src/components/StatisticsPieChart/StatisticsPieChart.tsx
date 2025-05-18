@@ -50,7 +50,7 @@ const StatisticsPieChart: React.FC<StatisticsPieChartProps> = (props) => {
       <div className={styles.totalSum}>
         <span className={styles.sumLabel}>Расход за месяц:</span>
         <span className={styles.sumValue}>
-          {-1 * +totalSum}{" "}
+          {(-1 * +totalSum).toFixed(2)}{" "}
           {currentStatistics === 0
             ? user?.defaultCurrency
             : accounts![currentStatistics - 1].currency}
