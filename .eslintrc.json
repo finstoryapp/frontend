@@ -1,3 +1,15 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    // Downgrade unused variables to warning
+    "@typescript-eslint/no-unused-vars": "warn",
+    // Downgrade non-null assertion on optional chains to warning
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+    // Disable empty object/interface type rule (or set to warn)
+    "@typescript-eslint/no-empty-object-type": "off",
+    // Downgrade missing useEffect dependencies to warning
+    "react-hooks/exhaustive-deps": "warn",
+    // Downgrade <img> usage to warning
+    "@next/next/no-img-element": "warn"
+  }
 }

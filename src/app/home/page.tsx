@@ -4,7 +4,7 @@ import styles from "./home.module.css";
 import { useSelector, useDispatch } from "react-redux";
 import { ExpensesContainer } from "@/components/ExpensesContainer/ExpensesContainer";
 import { RotateLoader } from "react-spinners";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { expensesState } from "@/store/slices/expensesSlice/expensesState";
 import ExpensesNavbar from "@/components/ExpensesNavbar/ExpensesNavbar";
 import AddExpenseWindow from "@/components/AddExpenseWindow/AddExpenseWindow";
